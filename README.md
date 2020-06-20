@@ -12,8 +12,12 @@ There are altogether four services:
 
 ## Tech Stack
 Below graph is showing the whole tech tools used in this application.<br>
+![]
+https://github.com/CircEx/book-cataloging/blob/WeiSong/backend/images/tech.jpg
 
 ## The detailed tech process
+![]
+https://github.com/CircEx/book-cataloging/blob/WeiSong/backend/images/detailed.jpg
 
 ## Setup backend
 * step1: install the dependency of Python<br>
