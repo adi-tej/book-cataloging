@@ -11,14 +11,14 @@ There are altogether four services:
 * maintain the orders for books
 
 ## Tech Stack
-Below graph is showing the whole tech tools used in this application.\<br>
+Below graph is showing the whole tech tools used in this application.<br>
 
 ## The detailed tech process
 
 ## Setup backend
-* step1: install the dependency of Python\<br>
-```pip3 install -r requirements.txt```\<br>
-* step2: run the application from project root folder\<br>
-```export FLASK_APP=backend```\<br>
-```export FLASK_ENV=development```\<br>
-```flask run```\<br>
+* step1: install the dependency of Python<br>
+```pip3 install -r requirements.txt```<br>
+* step2: run the application from project root folder<br>
+```export FLASK_APP=backend```<br>
+```export FLASK_ENV=development```<br>
+```flask run```<br>
