@@ -13,9 +13,9 @@ There are altogether four services:
 ## Tech Stack
 Below graph is showing the whole tech tools used in this application.
 
-##The detailed tech process
+## The detailed tech process
 
-##Setup backend
+## Setup backend
 * step1: install the dependency of Python
 pip3 install -r requirements.txt
 * step2: run the application from project root folder
