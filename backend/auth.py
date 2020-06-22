@@ -28,10 +28,16 @@ from http_status import *
 
 auth = Blueprint('auth_api', __name__)
 
-auth_api = opshop_api.namespace(
+login_api = opshop_api.namespace(
     'login',
     description="user authentication process"
 )
+
+password_api = opshop_api.namespace(
+    'password modification',
+    description="user password modification process"
+)
+
 user_login_model = auth_api.model(
     'User',
     {
@@ -46,8 +52,8 @@ def load_user(user_id):
 
 @auth.route('/login/')
 class UserLogin(Resource):
-    @auth_api.expect()
-    @auth_api.doc(
+    @login_api.expect()
+    @login_api.doc(
         description="Login with email and password for token"
     )
     def post(self):
@@ -69,8 +75,8 @@ class UserLogin(Resource):
 @auth.route('/password/')
 class UserPassword(Resource):
     @token_required
-    @auth_api.expect()
-    @auth_api.doc(
+    @password_api.expect()
+    @password_api.doc(
         description="Password modification"
     )
     def post(self):

@@ -45,8 +45,9 @@ class OrderItems(db.Model):
     order_id = db.Column(db.Integer, db.ForeignKey('Order.order_id'), nullable=True)
     item_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), nullable=False)
     item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_+id'))
-    order_date = db.Column(db.Date)
-    order_status = db.Column(db.String(20))
+    quantity = db.Column(db.Integer)
+    single_price = db.Column(db.Float)
+    total_price = db.Column(db.Float)
 
 class Book(db.Model):
     __tablename__ = 'book'
