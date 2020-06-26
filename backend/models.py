@@ -41,6 +41,8 @@ class Order(db.Model):
     order_id = db.Column(db.String, primary_key=True)
     opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
     customer_address = db.Column(db.String(100))
+    customer_name = db.Column(db.String(100))
+    customer_contact = db.Column(db.String(20))
     order_date = db.Column(db.DateTime)
     order_status = db.Column(db.String(20))
     order_items = db.relationship('OrderItems', backref='order', lazy='dynamic')
@@ -56,6 +58,7 @@ class OrderItems(db.Model):
 
 class Book(db.Model):
     __tablename__ = 'book'
+    # book_id should from eBay
     book_id = db.Column(db.String(100), primary_key=True)
     opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
     item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_id'), nullable=False)
