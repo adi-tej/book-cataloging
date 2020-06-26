@@ -7,6 +7,32 @@ from book import books
 from auth import auth
 from order import order
 
+ebay_conn = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
+request_data = {
+    "ApplicationDeliveryPreferences": {
+        "ApplicationEnable": "Enable",
+        "ApplicationURL": "http://127.0.0.1/items/notifications/",
+    },
+
+    "UserDeliveryPrederenceArray": [
+        {
+            "NotificationEnable": {
+                "EventEnable": "Enable",
+                "EventType": "ItemSold"
+            }
+        },
+
+        {
+            "NotificationEnable": {
+                "EventEnable": "Enable",
+                "EventType": "ItemListed"
+            }
+        }
+    ],
+}
+
+ebay_conn.execute("SetNotificationPreferences", request_data)
+
 app = Flask(__name__)
 # for initial application config we should config from a file,
 # because we need config our manager accounts initially...

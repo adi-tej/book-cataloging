@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 from flask_restplus import Api, Resource, fields
 from datetime import datetime
 from uuid import uuid5, NAMESPACE_URL
+from ebaysdk.trading import Connection
 
 from app import opshop_api, db
 from models import Order, OrderItems
@@ -61,8 +62,12 @@ class LocalOrder(Resource):
             db.session.add(order_item)
 
             if data['status'][i] == "listed":
-                # remove from eBay
-                pass
+                conn = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
+                request = {
+                    "EndingReason":"LostOrBroken",
+                    "ItemID":order_item.item_id
+                }
+                response = conn.execute("EndItem", request)
 
         db.session.commit()
 
@@ -80,6 +85,8 @@ class LocalOrderList():
             order_info = json.dumps(order.__dict__)
             return make_response(jsonify({'order':order_info, 'status':GET_SUCCESS}))
 
+    @local_order_api.doc(description="update order information")
+    @token_required
     def put(self, order_id):
         data = json.loads(request.get_data())
         order = Order.query.filter_by(order_id=order_id).first()
@@ -89,7 +96,7 @@ class LocalOrderList():
             order.__dict__ = data
             return make_response(jsonify({'update order':'success', 'status':GET_SUCCESS}))
 
-    @local_order_api.doc(description="retrive order information")
+    @local_order_api.doc(description="delete some order information")
     @token_required
     def delete(self, order_id):
         order = Order.query.filter_by(order_id=order_id).first()
@@ -99,7 +106,6 @@ class LocalOrderList():
             db.session.delete(order)
             db.session.commit()
             return make_response(jsonify({'delete':'success', 'status':GET_SUCCESS}))
-
 
 # on-line order is order management for eBay order
 @Order.route('/online/')
@@ -116,5 +122,10 @@ class OnlineOrderList():
         pass
 
     def delete(self, order_id):
+        pass
+
+@Order.route('/online/notification/')
+class OnlineOrderNotifications():
+    def post(self):
         pass
 

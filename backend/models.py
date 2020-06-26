@@ -58,6 +58,7 @@ class OrderItems(db.Model):
 
 class Book(db.Model):
     __tablename__ = 'book'
+    # book_id should from eBay
     book_id = db.Column(db.String(100), primary_key=True)
     opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
     item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_id'), nullable=False)
