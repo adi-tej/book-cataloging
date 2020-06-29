@@ -63,14 +63,21 @@ class UserLogin(Resource):
 
         user = User.query.filter_by(register_email=user_email).first()
 
+        resp = make_response()
         if not user:
-            return make_response(jsonify({'validation error': 'user not exist', 'status': UNAUTHORIZED}))
+            resp.headers['status'] = UNAUTHORIZED
+            resp.headers['message'] = 'user not exist'
+            return resp
         if not check_password_hash(user.password, password):
-            return make_response(jsonify({'validation error': 'password incorrect', 'status': UNAUTHORIZED}))
+            resp.headers['status'] = UNAUTHORIZED
+            resp.headers['message'] = 'password incorrect'
+            return resp
 
         token = TOKEN.generate_token(user.user_id, user.register_email, user.user_name)
+        resp.headers['API-TOKEN'] = token
+        resp.headers['status'] = POST_SUCCESS
 
-        return make_response(jsonify({'API-TOKEN': token, 'status': POST_SUCCESS}))
+        return resp
 
 @auth.route('/password/')
 class UserPassword(Resource):
@@ -85,14 +92,20 @@ class UserPassword(Resource):
             user_info['register_email'].strip(), user_info['password'].strip()
 
         user = User.query.filter_by(register_email=user_email).first()
+        resp = make_response()
         if not user:
-            return make_response(jsonify({'validation error': 'user not exist', 'status': UNAUTHORIZED}))
+            resp.headers['status'] = UNAUTHORIZED
+            resp.headers['message'] = 'user not exist'
+            return resp
 
         user.password = generate_password_hash(password, method='sha256')
         db.session.add(user)
         db.session.commit()
 
-        return make_response(jsonify({'password update': 'success', 'status': POST_SUCCESS}))
+        resp.headers['status'] = POST_SUCCESS
+        resp.headers['message'] = 'password update success'
+
+        return resp
 
 class JWToken:
     def __init__(self, my_secret_key, expires):
@@ -135,14 +148,21 @@ def token_required(f):
             return jsonify({'error': 'Authentication token is missing', 'status': 401})
 
         result = TOKEN.validate_token(token)
+        resp = make_response()
         if result is 'token expired':
-            return jsonify({'error': 'token expired', 'status': 401})
+            resp.headers['status'] = UNAUTHORIZED
+            resp.headers['message'] = 'token expired'
+            return resp
         elif result is 'invalid token':
-            return jsonify({'error': 'invalid token', 'status': 401})
+            resp.headers['status'] = UNAUTHORIZED
+            resp.headers['message'] = 'invalid token'
+            return resp
         else:
             if result is 'valid token':
                 return f(*args, **kargs)
             else:
-                return jsonify({'error': 'unknown token', 'status': 401})
+                resp.headers['status'] = UNAUTHORIZED
+                resp.headers['message'] = 'unknown token'
+                return resp
     return decorate
 
