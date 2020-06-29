@@ -119,9 +119,9 @@ class OrderList():
         order = Order.query.filter_by(order_id=order_id).first()
         resp = make_response()
         if not order:
-            resp.headers['status'] = GET_SUCCESS
-            resp.headers['message'] = 'order updation success'
-            return make_response(jsonify({'error':'invalid order', 'status':NOT_FOUND}))
+            resp.headers['status'] = NOT_FOUND
+            resp.headers['message'] = 'order not found'
+            return resp
         else:
             db.session.delete(order)
             db.session.commit()
