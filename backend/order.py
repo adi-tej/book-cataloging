@@ -13,14 +13,9 @@ import json
 
 order = Blueprint('order_api', __name__)
 
-local_order_api = opshop_api.namespace(
-    'local order',
+order_api = opshop_api.namespace(
+    'order',
     description="local order management process"
-)
-
-online_order_api = opshop_api.namespace(
-    'online order',
-    description="online order management process"
 )
 
 local_order_model = order_api.model('Order', {
@@ -34,11 +29,10 @@ local_order_model = order_api.model('Order', {
     'status': fields.List
 })
 
-# Local order is for customer in-shop
 @order.route('/local/')
-class LocalOrder(Resource):
-    @local_order_api.doc(description="order from the in shop customer")
-    @local_order_api.expect(local_order_model)
+class Order(Resource):
+    @order_api.doc(description="order from the in shop customer")
+    @order_api.expect(local_order_model)
     @token_required
     def post(self):
         data = json.loads(request.get_data())
@@ -70,62 +64,68 @@ class LocalOrder(Resource):
                 response = conn.execute("EndItem", request)
 
         db.session.commit()
+        resp = make_response()
+        resp.headers['status'] = POST_SUCCESS
+        resp.headers['message'] = 'order creation success'
 
-        return make_response(jsonify({'order_status':'success', 'status':POST_SUCCESS}))
+        return resp
 
-@order.route('/local/<string:order_id>')
-class LocalOrderList():
-    @local_order_api.doc(description="retrive order information")
+@order.route('/orderlist/<string:order_id>')
+class OrderList():
+    # this post method will be used as confirmation from frontend
+    @order_api.doc(description="retrive order information")
+    @token_required
+    def post(self, order_id):
+        pass
+
+    @order_api.doc(description="retrive order information")
     @token_required
     def get(self, order_id):
         order = Order.query.filter_by(order_id=order_id).first()
+        resp = make_response()
         if not order:
-            return make_response(jsonify({'error':'invalid order', 'status':NOT_FOUND}))
+            resp.headers['status'] = NOT_FOUND
+            resp.headers['message'] = 'order not found'
+            return resp
         else:
             order_info = json.dumps(order.__dict__)
-            return make_response(jsonify({'order':order_info, 'status':GET_SUCCESS}))
+            resp.headers['status'] = GET_SUCCESS
+            resp.headers['message'] = 'order information'
+            resp = jsonify(order_info)
+            return resp
 
-    @local_order_api.doc(description="update order information")
+    @order_api.doc(description="update order information")
     @token_required
     def put(self, order_id):
         data = json.loads(request.get_data())
         order = Order.query.filter_by(order_id=order_id).first()
+        resp = make_response()
         if not order:
-            return make_response(jsonify({'error':'invalid order', 'status':NOT_FOUND}))
+            resp.headers['status'] = NOT_FOUND
+            resp.headers['message'] = 'order not found'
+            return resp
         else:
             order.__dict__ = data
-            return make_response(jsonify({'update order':'success', 'status':GET_SUCCESS}))
+            db.session.add(order)
+            db.session.commit()
 
-    @local_order_api.doc(description="delete some order information")
+            resp.headers['status'] = GET_SUCCESS
+            resp.headers['message'] = 'order updation success'
+            return resp
+
+    @order_api.doc(description="delete some order information")
     @token_required
     def delete(self, order_id):
         order = Order.query.filter_by(order_id=order_id).first()
+        resp = make_response()
         if not order:
+            resp.headers['status'] = GET_SUCCESS
+            resp.headers['message'] = 'order updation success'
             return make_response(jsonify({'error':'invalid order', 'status':NOT_FOUND}))
         else:
             db.session.delete(order)
             db.session.commit()
-            return make_response(jsonify({'delete':'success', 'status':GET_SUCCESS}))
-
-# on-line order is order management for eBay order
-@Order.route('/online/')
-class OrderOnline():
-    def post(self):
-        pass
-
-@Order.route('/online/<string:order_id>')
-class OnlineOrderList():
-    def get(self, order_id):
-        pass
-
-    def put(self, order_id):
-        pass
-
-    def delete(self, order_id):
-        pass
-
-@Order.route('/online/notification/')
-class OnlineOrderNotifications():
-    def post(self):
-        pass
+            resp.headers['status'] = GET_SUCCESS
+            resp.headers['message'] = 'order deletion success'
+            return resp
 
