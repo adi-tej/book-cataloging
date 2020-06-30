@@ -65,17 +65,17 @@ class UserLogin(Resource):
 
         resp = make_response()
         if not user:
-            resp.headers['status'] = UNAUTHORIZED
+            resp.status_code = UNAUTHORIZED
             resp.headers['message'] = 'user not exist'
             return resp
         if not check_password_hash(user.password, password):
-            resp.headers['status'] = UNAUTHORIZED
+            resp.status_code = UNAUTHORIZED
             resp.headers['message'] = 'password incorrect'
             return resp
 
         token = TOKEN.generate_token(user.user_id, user.register_email, user.user_name)
         resp.headers['API-TOKEN'] = token
-        resp.headers['status'] = POST_SUCCESS
+        resp.status_code = POST_SUCCESS
 
         return resp
 
@@ -102,7 +102,7 @@ class UserPassword(Resource):
         db.session.add(user)
         db.session.commit()
 
-        resp.headers['status'] = POST_SUCCESS
+        resp.status_code = POST_SUCCESS
         resp.headers['message'] = 'password update success'
 
         return resp
@@ -150,18 +150,18 @@ def token_required(f):
         result = TOKEN.validate_token(token)
         resp = make_response()
         if result is 'token expired':
-            resp.headers['status'] = UNAUTHORIZED
+            resp.status_code = UNAUTHORIZED
             resp.headers['message'] = 'token expired'
             return resp
         elif result is 'invalid token':
-            resp.headers['status'] = UNAUTHORIZED
+            resp.status_code = UNAUTHORIZED
             resp.headers['message'] = 'invalid token'
             return resp
         else:
             if result is 'valid token':
                 return f(*args, **kargs)
             else:
-                resp.headers['status'] = UNAUTHORIZED
+                resp.status_code = UNAUTHORIZED
                 resp.headers['message'] = 'unknown token'
                 return resp
     return decorate
