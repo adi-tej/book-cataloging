@@ -38,7 +38,7 @@ class ItemType(db.Model):
 
 class Order(db.Model):
     __tablename__ = 'order'
-    order_id = db.Column(db.String, primary_key=True)
+    order_id = db.Column(db.String(100), primary_key=True)
     opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
     customer_address = db.Column(db.String(100))
     customer_name = db.Column(db.String(100))
@@ -59,24 +59,24 @@ class OrderItems(db.Model):
 class Book(db.Model):
     __tablename__ = 'book'
     # book_id should from eBay
-    book_id_local = db.Column(db.Integer, primary_key=True)
-    book_id_ebay = db.Column(db.String(100), primary_key=True)
+    book_id_local = db.Column(db.String(100), primary_key=True)
+    book_id_ebay = db.Column(db.String(100))
     opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
     item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_id'), nullable=False)
     title = db.Column(db.String(100))
     author = db.Column(db.String(100))
     publisher = db.Column(db.String(100))
-    publish_date = db.Column(db.Date)
+    publish_date = db.Column(db.DateTime)
     edition = db.Column(db.Integer)
     pages_number = db.Column(db.Integer)
     genre = db.Column(db.String(20))
     cover =db.Column(db.String(100)) # AMZON S3 --> http://applicationurl/cover/1.jpg
     price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
-    description = db.Column(db.String(100))
-    create_date = db.Column(db.Date)
-    update_date = db.Column(db.Date)
+    description = db.Column(db.String(300))
+    create_date = db.Column(db.DateTime)
+    update_date = db.Column(db.DateTime)
     status = db.Column(db.String(20))
     ISBN_10 = db.Column(db.String(100))
     ISBN_13 = db.Column(db.String(100))
-    notes = db.Column(db.String(100))
+    notes = db.Column(db.String(300))
