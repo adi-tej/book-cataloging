@@ -42,24 +42,6 @@ books_list_api = opshop_api.namespace(
 
 isbn_model=books_api.model('ISBN_10',{'ISBN':fields.Integer})
 
-books_model = books_api.model('Book', {
-    'opshop_id':fields.Integer,
-    'title':fields.String,
-    'author':fields.String,
-    'publisher':fields.String,
-    'publish_date':fields.Date,
-    'edition':fields.Integer,
-    'pages_number':fields.Integer,
-    'genre':fields.String,
-    # 'cover': Not sure about the cover
-    'quantity':fields.Integer,
-    'description':fields.String,
-    'ISBN_10':fields.String,
-    'ISBN_13':fields.String,
-    'notes':fields.String,
-    'condition_id':fields.Integer
-})
-
 # Backend expect list of book id from frontend
 list_model = books_api.model('Book list',{
     'books':fields.List,
@@ -83,7 +65,6 @@ def extract_data_google_api(ISBN):
 
     book_info=parsed['items'][0]
 
-
     book_data['title']=book_info['volumeInfo']['title']
     book_data['author']=book_info['volumeInfo']['authors'][0]
     book_data['genre']=book_info['volumeInfo']['categories'][0]
@@ -95,16 +76,11 @@ def extract_data_google_api(ISBN):
     book_data["ISBN_10"]=book_info['volumeInfo']['industryIdentifiers'][0]['identifier']
     book_data["ISBN_13"]=book_info['volumeInfo']["industryIdentifiers"][1]['identifier']
 
-    
-
     return book_data # return dictionary with book data
-
-
 
 @books.route('/')
 class Books(Resource):
     @books_api.doc(description="receive book information from scanning")
-    #@books_api.expect(books_model)
     @books_api.expect(isbn_model)
     @token_required
     def post(self):
