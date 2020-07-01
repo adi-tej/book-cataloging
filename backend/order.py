@@ -108,8 +108,7 @@ class OrderList():
             resp.headers['message'] = 'order not found'
             return resp
         else:
-            order_info = json.dumps(order.__dict__)
-            resp = make_response(jsonify(order_info))
+            resp = make_response(jsonify(order.__dict__))
             resp.status_code = GET_SUCCESS
             resp.headers['message'] = 'order information'
             return resp
@@ -119,13 +118,14 @@ class OrderList():
     def put(self, order_id):
         data = json.loads(request.get_data())
         order = Order.query.filter_by(order_id=order_id).first()
-        resp = make_response()
         if not order:
+            resp = make_response()
             resp.status_code = NOT_FOUND
             resp.headers['message'] = 'order not found'
             return resp
         else:
             order.__dict__ = data
+            resp = make_response(jsonify(order.__dict__))
             db.session.add(order)
             db.session.commit()
 
@@ -137,12 +137,13 @@ class OrderList():
     @token_required
     def delete(self, order_id):
         order = Order.query.filter_by(order_id=order_id).first()
-        resp = make_response()
         if not order:
+            resp = make_response()
             resp.status_code = NOT_FOUND
             resp.headers['message'] = 'order not found'
             return resp
         else:
+            resp = make_response(jsonify(order.__dict__))
             db.session.delete(order)
             db.session.commit()
             resp.status_code = GET_SUCCESS
