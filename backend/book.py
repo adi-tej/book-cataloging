@@ -95,9 +95,9 @@ def extract_data_google_api(ISBN,book):
     book_data["ISBN_10"]=book_info['volumeInfo']['industryIdentifiers'][0]['identifier']
     book_data["ISBN_13"]=book_info['volumeInfo']["industryIdentifiers"][1]['identifier']
 
-    book.__dict__=book_data
+    
 
-    return book # return book object
+    return book # return dictionary with book data
 
 
 
