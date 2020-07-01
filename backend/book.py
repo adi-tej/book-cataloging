@@ -40,6 +40,8 @@ books_list_api = opshop_api.namespace(
     description="book list to ebay and unlist from ebay management"
 )
 
+isbn_model=books_api.model('ISBN_10',{'ISBN':fields.Integer})
+
 books_model = books_api.model('Book', {
     'opshop_id':fields.Integer,
     'title':fields.String,
@@ -65,21 +67,62 @@ list_model = books_api.model('Book list',{
     'purpose':fields.String
 })
 
+def extract_data_google_api(ISBN,book): 
+    API_KEY = "AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o"  # google api key
+    google_url_book = "https://www.googleapis.com/books/v1/volumes?q=isbn:{}&key={}".format(ISBN,API_KEY)     #9781925483598
+    response = requests.get(google_url_book)
+    data = response.text
+
+    parsed = json.loads(data)
+
+    book_data={} # empty dictionary
+
+    if parsed['totalItems']==0:
+        print("item not found in google api ")
+        return  ## what should we return when item not found?
+
+    book_info=parsed['items'][0]
+
+
+    book_data['title']=book_info['volumeInfo']['title']
+    book_data['author']=book_info['volumeInfo']['authors'][0]
+    book_data['genre']=book_info['volumeInfo']['categories'][0]
+    book_data["publisher"]=book_info['volumeInfo']['publisher']
+    book_data["publish_date"]=book_info['volumeInfo']['publishedDate']
+    book_data["pages_number"]=book_info['volumeInfo']['pageCount']
+    book_data["description"]=book_info['volumeInfo']['description']
+    book_data['cover']=book_info['volumeInfo']['imageLinks']['thumbnail']
+    book_data["ISBN_10"]=book_info['volumeInfo']['industryIdentifiers'][0]['identifier']
+    book_data["ISBN_13"]=book_info['volumeInfo']["industryIdentifiers"][1]['identifier']
+
+    book.__dict__=book_data
+
+    return book # return book object
+
+
+
 @books.route('/')
 class Books(Resource):
     @books_api.doc(description="receive book information from scanning")
-    @books_api.expect(books_model)
+    #@books_api.expect(books_model)
+    @books_api.expect(isbn_model)
     @token_required
     def post(self):
         data = json.load(request.get_data())
         book = Book()
-        data['book_id_local'] = book_id_local=uuid5(NAMESPACE_OID, 'v5app')
-        data['book_id_ebay'] = ''
-        data['item_type_id'] = 1
-        data['create_date'] = datetime.now()
-        data['update_date'] = datetime.now()
-        data['status'] = 'unlisted'
-        book.__dict__ = data
+        #data['book_id_local'] = book_id_local=uuid5(NAMESPACE_OID, 'v5app')
+        #data['book_id_ebay'] = ''
+        #data['item_type_id'] = 1
+        #data['create_date'] = datetime.now()
+        #data['update_date'] = datetime.now()
+        #data['status'] = 'unlisted'
+        book=extract_data_google_api(data["ISBN"],book)
+        book.book_id_local=book_id_local=uuid5(NAMESPACE_OID,'v5app')
+        book.book_id_ebay=''
+        book.item_type_id=1
+        book.create_date=datetime.now()
+        book.update_date=datetime.now()
+        book.status='unlisted'
 
         db.session.add(book)
         db.session.commit()
