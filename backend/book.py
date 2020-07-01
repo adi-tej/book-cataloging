@@ -61,7 +61,8 @@ books_model = books_api.model('Book', {
 # Backend expect list of book id from frontend
 list_model = books_api.model('Book list',{
     'books':fields.List,
-    'number':fields.Integer
+    'number':fields.Integer,
+    'purpose':fields.String
 })
 
 @books.route('/')
@@ -150,8 +151,8 @@ class BookList(Resource):
     @token_required
     def post(self):
         data = json.loads(request.get_data())
-        fail_list = []
-        if data['books']:
+        fail_list, fail_unlist = [], []
+        if data['books'] and data['purpose'] == "list":
             for book_id in data['books']:
                 book = Book.query.filter_by(book_local_id=book_id).first()
                 if not book:
@@ -196,11 +197,12 @@ class BookList(Resource):
                         fail_list.append(book_id)
                     else:
                         book.__dict__['status'] = 'listed'
+                        book.__dict__['book_id_ebay'] = response_ebay['ItemID']
                         db.session.add(book)
                         db.session.commit()
 
             if fail_list:
-                fail_dict = {'failed':fail_list}
+                fail_dict = {'failed':fail_list, 'operation':'list'}
                 resp = make_response(jsonify(fail_dict))
                 resp.status_code = BAD_REQUEST
                 resp.headers['message'] = 'some items list failed'
@@ -209,6 +211,29 @@ class BookList(Resource):
                 resp = make_response()
                 resp.status_code = POST_SUCCESS
                 resp.headers['message'] = 'all items list success'
+                return resp
+        elif data['books'] and data['purpose'] == "unlist":
+            for book_id in data['books']:
+                book = Book.query.filter_by(book_local_id=book_id).first()
+                if not book:
+                    fail_unlist.append(book_id)
+                else:
+                    ebay_conn = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
+                    request_info = {
+                        "EndingReason":"LostOrBroken",
+                        "ItemID":book.book_id_ebay
+                    }
+                    response_ebay = ebay_conn.execute("EndItem", request_info)
+            if fail_unlist:
+                fail_dict = {'failed':fail_unlist, 'operation':'unlist'}
+                resp = make_response(jsonify(fail_dict))
+                resp.status_code = BAD_REQUEST
+                resp.headers['message'] = 'some items unlist failed'
+                return resp
+            else:
+                resp = make_response()
+                resp.status_code = POST_SUCCESS
+                resp.headers['message'] = 'all items unlist success'
                 return resp
         else:
             resp = make_response()
