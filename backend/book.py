@@ -1,7 +1,3 @@
-# Ammie: 2/06/2020 For Dev only
-from flask_sqlalchemy import SQLAlchemy
-import werkzeug
-werkzeug.cached_property = werkzeug.utils.cached_property
 from flask import request, jsonify, make_response, Blueprint
 from flask_restplus import fields, Resource
 from uuid import uuid5, NAMESPACE_OID
@@ -68,17 +64,50 @@ class BookActivities(Resource):
     @books_api.doc(description="retrive some book by book id")
     @token_required
     def get(self, book_id):
-        pass
+        book = Book.query.filter_by(book_id_loacl=book_id).first()
+        if not book:
+            resp = make_response()
+            resp.status_code = NOT_FOUND
+            resp.headers['message'] = 'book not found'
+            return resp
+        else:
+            book_info = json.dumps(book.__dict__)
+            resp = make_response(jsonify(book_info))
+            resp.status_code = GET_SUCCESS
+            resp.headers['message'] = 'retrive book information'
+            return resp
 
     @books_api.doc(description="update some book by book id")
     @token_required
     def put(self, book_id):
-        pass
+        data = json.loads(request.get_data())
+        book = Book.query.filter_by(book_id_loacl=book_id).first()
+        if not book:
+            resp = make_response()
+            resp.status_code = NOT_FOUND
+            resp.headers['message'] = 'book not found'
+            return resp
+        else:
+            book.__dict__ = data
+            resp = make_response(jsonify(book.__dict__))
+            resp.status_code = POST_SUCCESS
+            resp.headers['message'] = 'book updation success'
+            return resp
 
     @books_api.doc(description="delete some book by book id")
     @token_required
     def delete(self, book_id):
-        pass
+        book = Book.query.filter_by(book_id_loacl=book_id).first()
+        if not book:
+            resp = make_response()
+            resp.status_code = NOT_FOUND
+            resp.headers['message'] = 'book not found'
+            return resp
+        else:
+            resp = make_response(jsonify(book.__dict__))
+            resp.status_code = GET_SUCCESS
+            resp.headers['message'] = 'book deletion success'
+            return resp
 
 @books.route('/list/')
 class BookList(Resource):
