@@ -67,7 +67,7 @@ list_model = books_api.model('Book list',{
     'purpose':fields.String
 })
 
-def extract_data_google_api(ISBN,book): 
+def extract_data_google_api(ISBN): 
     API_KEY = "AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o"  # google api key
     google_url_book = "https://www.googleapis.com/books/v1/volumes?q=isbn:{}&key={}".format(ISBN,API_KEY)     #9781925483598
     response = requests.get(google_url_book)
@@ -97,7 +97,7 @@ def extract_data_google_api(ISBN,book):
 
     
 
-    return book # return dictionary with book data
+    return book_data # return dictionary with book data
 
 
 
@@ -111,7 +111,7 @@ class Books(Resource):
         data = json.load(request.get_data())
         book = Book()
         
-        book_data=extract_data_google_api(data["ISBN"],book)
+        book_data=extract_data_google_api(data["ISBN"])
         book_data['book_id_local'] = book_id_local=uuid5(NAMESPACE_OID, 'v5app')
         book_data['book_id_ebay'] = ''
         book_data['item_type_id'] = 1
