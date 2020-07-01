@@ -110,19 +110,16 @@ class Books(Resource):
     def post(self):
         data = json.load(request.get_data())
         book = Book()
-        #data['book_id_local'] = book_id_local=uuid5(NAMESPACE_OID, 'v5app')
-        #data['book_id_ebay'] = ''
-        #data['item_type_id'] = 1
-        #data['create_date'] = datetime.now()
-        #data['update_date'] = datetime.now()
-        #data['status'] = 'unlisted'
-        book=extract_data_google_api(data["ISBN"],book)
-        book.book_id_local=book_id_local=uuid5(NAMESPACE_OID,'v5app')
-        book.book_id_ebay=''
-        book.item_type_id=1
-        book.create_date=datetime.now()
-        book.update_date=datetime.now()
-        book.status='unlisted'
+        
+        book_data=extract_data_google_api(data["ISBN"],book)
+        book_data['book_id_local'] = book_id_local=uuid5(NAMESPACE_OID, 'v5app')
+        book_data['book_id_ebay'] = ''
+        book_data['item_type_id'] = 1
+        book_data['create_date'] = datetime.now()
+        book_data['update_date'] = datetime.now()
+        book_data['status'] = 'unlisted'
+
+        book.__dict__=book_data
 
         db.session.add(book)
         db.session.commit()
