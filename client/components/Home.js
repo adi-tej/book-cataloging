@@ -1,9 +1,9 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import Login from "./Login";
 export default function Home({navigation}){
     return(
-        <View>
+        <View style={styles.container}>
             <Text>
                 This is Home Component.
             </Text>
@@ -12,3 +12,9 @@ export default function Home({navigation}){
     )
 
 }
+const styles = StyleSheet.create({
+    container : {
+        flex : 1,
+        margin : '5%'
+    }
+})
