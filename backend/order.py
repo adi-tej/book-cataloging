@@ -11,6 +11,26 @@ from http_status import *
 
 import json
 
+# ======= order spec =========
+# There are two kinds of orders, one is the in shop customer(local) and another is
+# online order from eBay. There are some difference between them
+
+# --> local order
+# 1. user can create local order (local post)
+# 2. user can retrive some order information
+# 3. user can update some order information
+# 4. user can delete some order information
+
+# --> online order
+# 1. user can retrive some order from eBay
+# 2. user can confirm some order from eBay
+# 3. user can cancel(remove/delete) some order from eBay
+
+# For Order resource, it is only designed for the local order creation
+# For OrderList resouce, it is designed for both local and online CRUD
+
+# -- Wei Song
+
 order = Blueprint('order_api', __name__)
 
 order_api = opshop_api.namespace(
@@ -65,7 +85,7 @@ class Order(Resource):
 
         db.session.commit()
         resp = make_response()
-        resp.headers['status'] = POST_SUCCESS
+        resp.status_code = POST_SUCCESS
         resp.headers['message'] = 'order creation success'
 
         return resp
@@ -82,16 +102,15 @@ class OrderList():
     @token_required
     def get(self, order_id):
         order = Order.query.filter_by(order_id=order_id).first()
-        resp = make_response()
         if not order:
-            resp.headers['status'] = NOT_FOUND
+            resp = make_response()
+            resp.status_code = NOT_FOUND
             resp.headers['message'] = 'order not found'
             return resp
         else:
-            order_info = json.dumps(order.__dict__)
-            resp.headers['status'] = GET_SUCCESS
+            resp = make_response(jsonify(order.__dict__))
+            resp.status_code = GET_SUCCESS
             resp.headers['message'] = 'order information'
-            resp = jsonify(order_info)
             return resp
 
     @order_api.doc(description="update order information")
@@ -99,17 +118,18 @@ class OrderList():
     def put(self, order_id):
         data = json.loads(request.get_data())
         order = Order.query.filter_by(order_id=order_id).first()
-        resp = make_response()
         if not order:
-            resp.headers['status'] = NOT_FOUND
+            resp = make_response()
+            resp.status_code = NOT_FOUND
             resp.headers['message'] = 'order not found'
             return resp
         else:
             order.__dict__ = data
+            resp = make_response(jsonify(order.__dict__))
             db.session.add(order)
             db.session.commit()
 
-            resp.headers['status'] = GET_SUCCESS
+            resp.status_code = POST_SUCCESS
             resp.headers['message'] = 'order updation success'
             return resp
 
@@ -117,15 +137,16 @@ class OrderList():
     @token_required
     def delete(self, order_id):
         order = Order.query.filter_by(order_id=order_id).first()
-        resp = make_response()
         if not order:
-            resp.headers['status'] = NOT_FOUND
+            resp = make_response()
+            resp.status_code = NOT_FOUND
             resp.headers['message'] = 'order not found'
             return resp
         else:
+            resp = make_response(jsonify(order.__dict__))
             db.session.delete(order)
             db.session.commit()
-            resp.headers['status'] = GET_SUCCESS
+            resp.status_code = GET_SUCCESS
             resp.headers['message'] = 'order deletion success'
             return resp
 
