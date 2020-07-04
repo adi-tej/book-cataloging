@@ -13,7 +13,7 @@ function TabNavigator(){
     return(
         <Tab.Navigator>
             <Tab.Screen name='Cataloging' component={Cataloging} />
-            <Tab.Screen name='Dashboard' component={Cataloging} />
+            <Tab.Screen name='Dashboard' component={Cataloging} /> {/*???*/}
         </Tab.Navigator>
     )
 }
