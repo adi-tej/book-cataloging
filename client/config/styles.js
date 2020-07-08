@@ -40,6 +40,59 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         color : colors.loginButton,
         fontSize : 18
+    },
+    cameraOption : {
+        height:'5%',
+        justifyContent:'center',
+        alignItems: 'center',
+        backgroundColor:'rgba(0,0,0,0.5)',
+        borderRadius:5,
+        marginTop : '7%'
+    },
+    contextMenuText : {
+        backgroundColor: colors.drawer,
+        fontSize: 24,
+        color: 'white',
+        paddingVertical:'7%',
+        width:'100%',
+        textAlign:'center'
+    },
+    checkoutButton:{
+        flex:1,
+        width:'40%',
+        position:'absolute',
+        justifyContent:'center',
+        backgroundColor:colors.drawer,
+        alignItems:'center',
+        padding:'8%',
+        bottom:'10%',
+        right:'5%',
+        borderRadius:30
+    },
+    contextMenuContainer:{
+        flex:1,
+        backgroundColor:'transparent',
+        marginTop:'10%',
+        marginRight:'10%',
+        width:'35%',
+        justifyContent:'center'
+    },
+    cameraScanTab:{
+        justifyContent:'center'
+    },
+    cameraScanTabLabel:{
+        backgroundColor:'transparent',
+        fontSize : 20,
+        paddingVertical :'5%'
+    },
+    cameraScanTabNavigator:{
+        backgroundColor:'transparent',
+        height:'10%',
+        position: 'absolute',
+        left: 0,
+        bottom: 0,
+        right: 0,
+        borderTopColor:'transparent'
     }
 })
 export default styles
