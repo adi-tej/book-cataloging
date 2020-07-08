@@ -7,6 +7,7 @@ import DrawerNavigator from "./components/DrawerNavigator";
 import Barcode from "./components/Barcode";
 import Listing from "./components/Listing";
 import ImagePickerComponent from "./components/ImagePickerComponent";
+import TestImage from "./components/TestImage";
 
 import Scanner from "./components/Scanner";
 import CameraTabNavigator from "./components/CameraTabNavigator";
@@ -24,6 +25,7 @@ export default function App(){
                 <Stack.Screen name="CameraTab" component={CameraTabNavigator} />
                 <Stack.Screen name="Barcode" component={Barcode}/>
                 <Stack.Screen name="Camera" component={ImagePickerComponent}/>
+                <Stack.Screen name="TestImage" component={TestImage}/>
             </Stack.Navigator>
         </NavigationContainer>
       </MenuProvider>

@@ -31,14 +31,6 @@ export default class ImagePickerComponent extends Component {
         if (!cancelled) this.setState({image: uri});
     };
 
-    // checkLocalImageStatus() {
-    //     if (this.state.localImage == 1) {
-    //         <Image style={{width: 100, height: 100}} source={this.state.image}/>
-    //     } else {
-    //         <Image style={{width: 100, height: 100}} source={{uri: this.state.image}} />
-    //     }
-    // }
-
     render() {
         //return a image as a button
         return (
@@ -48,9 +40,7 @@ export default class ImagePickerComponent extends Component {
                     activityOpacity={0.5}
                     style={styles.container}
                     onPress={this.takePicture.bind(this)}>
-                    {/*{this.checkLocalImageStatus()}*/}
                     {this.state.image && <Image style={{width: 100, height: 100}} source={{uri: this.state.image}} /> }
-                    {/* <Image style={{width: 100, height: 100}} source={this.state.image} />*/}
                 </TouchableOpacity>
             </View>
         );

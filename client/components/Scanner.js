@@ -34,7 +34,7 @@ export default function Scanner({navigation}) {
                             marginLeft : '3%'
                         }]}
                         onPress={() => navigation.navigate('RootNavigator')}>
-                        <Text style={{ fontSize: 30, color: 'white'}}> X </Text>
+                        <Text style={{ fontSize: 30, color: 'white'}}> x </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.cameraOption,{

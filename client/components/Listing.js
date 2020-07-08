@@ -11,12 +11,16 @@ import {
     ScrollView,
 } from 'react-native';
 import ImagePickerComponent from "./ImagePickerComponent";
+import * as Permissions from "expo-permissions";
+import * as ImagePicker from "expo-image-picker";
+import ShowCarousel from "./ShowCarousel";
 
 const width = Dimensions.get('window').width;
 
 export default class Listing extends Component{
     constructor(props) {
         super(props);
+        this.imageID = 0;
         this.state = {
             Title:"",
             ISBN: "",
@@ -26,6 +30,8 @@ export default class Listing extends Component{
             Publisher:"",
             Price: 0,
             Other_details: "",
+            imageArray:[],
+            initImage: null,
         }
     }
 
@@ -33,24 +39,58 @@ export default class Listing extends Component{
         Alert.alert("Listing book: " + this.state.Title)
     }
 
+    deleteImage = (index) =>{
+        const copyImageArray = Object.assign([], this.state.imageArray);
+        copyImageArray.splice(index, 1)
+        this.setState({
+            imageArray: copyImageArray
+        })
+    };
+
+    takePicture = async() => {
+        await Permissions.askAsync(Permissions.CAMERA);
+        const {cancelled, uri} = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [1,1],
+            quality: 0.5
+        });
+        if (!cancelled) {
+            this.setState({initImage: uri});
+            //add this image to imageArray
+            this.imageID = this.imageID + 1;
+            const copyImageArray = Object.assign([], this.state.imageArray);
+            copyImageArray.push({
+                id: this.imageID,
+                image: this.state.initImage
+            })
+            this.setState({
+                imageArray: copyImageArray
+            })
+        }
+    };
+
     render() {
         return (
             <View style={styles.container}>
-                <View style={{flexDirection: "row"}}>
-                    <ScrollView horizontal={true}>
+                <View>
+                    <ScrollView horizontal={true} style={{flexDirection: "row"}}>
+                        {
+                            this.state.imageArray.map((image, index)=>{
+                                return(
+                                    <ShowCarousel
+                                        image={image.image}
+                                        key={image.id}
+                                        delete={this.deleteImage.bind(this, index)}
+                                    />
+                                )
+                            })
+                        }
                         <TouchableOpacity
                             activityOpacity={0.5}
-                            style={styles.image}>
-                             {/*onPress={this.onButtonPress.bind(this)}>*/}
-                            <Text style={{
-                                fontSize: 40,
-                                color: "white",
-                            }}>+</Text>
+                            style={styles.image}
+                            onPress={this.takePicture.bind(this)}>
+                            <Text style={styles.buttonText}>+</Text>
                         </TouchableOpacity>
-                        <ImagePickerComponent style={styles.image} />
-                        <View style={styles.image} />
-                        <View style={styles.image} />
-                        <View style={styles.image} />
                     </ScrollView>
                 </View>
                 <ScrollView>
@@ -65,6 +105,7 @@ export default class Listing extends Component{
                     <TextInput
                         underlineColorAndroid={"transparent"}
                         style={styles.text_input}
+                        keyboardType="number-pad"
                         onChangeText={(ISBN) => this.setState({ISBN})}
                     />
 
@@ -115,11 +156,7 @@ export default class Listing extends Component{
                     activityOpacity={0.5}
                     style={styles.button}
                     onPress={this.onButtonPress.bind(this)}>
-                    <Text style={{
-                        fontSize: 15,
-                        color: "white",
-                        fontWeight: "bold"
-                    }}>List on eBay</Text>
+                    <Text style={styles.buttonText}>List on eBay</Text>
                 </TouchableOpacity>
             </View>
         )
@@ -167,6 +204,11 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         justifyContent:'center',
         alignItems:'center'
-        }
+        },
+    buttonText:{
+        fontSize: 20,
+        color: "white",
+        fontWeight: "bold"
+    }
 
 });

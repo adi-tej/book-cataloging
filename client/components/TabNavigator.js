@@ -11,13 +11,14 @@ import {
 } from 'react-native-popup-menu';
 import Cataloging from "./Cataloging";
 import styles from "../config/styles";
+import Listing from "./Listing";
 
 const Tab = createMaterialTopTabNavigator()
 export default class TabNavigator extends Component{
     render(){
     return(
         <View style={{flex:1}}>
-            <Header style={{backgroundColor:'white'}}>
+            <Header style={{width:'100%',backgroundColor:'white'}}>
                 <Left>
                     <Icon onPress={() => this.props.navigation.toggleDrawer()} name='menu' style={{marginHorizontal:'5%'}}/>
                 </Left>
@@ -25,7 +26,7 @@ export default class TabNavigator extends Component{
                     <Icon name='search' style={{marginHorizontal:'8%'}}/>
                     <Menu>
                         <MenuTrigger>
-                            <Icon type="AntDesign" name="plus" style={{marginHorizontal:'8%'}}/>
+                            <Icon name="add" style={{marginHorizontal:'8%'}}/>
                         </MenuTrigger>
                         <MenuOptions
                             optionsContainerStyle={styles.contextMenuContainer}
@@ -64,7 +65,7 @@ export default class TabNavigator extends Component{
                 </Right>
             </Header>
             <Tab.Navigator initialRouteName="Cataloging">
-                <Tab.Screen name="Active Listing" component={Cataloging} />
+                <Tab.Screen name="Active Listing" component={Listing} />
                 <Tab.Screen name="Pending Orders" component={Cataloging} />
             </Tab.Navigator>
             <TouchableOpacity

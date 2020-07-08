@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import {Text, View, StyleSheet, Button, TouchableOpacity} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import styles from "../config/styles";
+import {Camera} from "expo-camera";
 
-export default function Barcode() {
+export default function Barcode({navigation}) {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
+    const [type, setType] = useState(Camera.Constants.Type.back);
+    const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto)
 
     useEffect(() => {
         (async () => {
@@ -35,7 +39,55 @@ export default function Barcode() {
             <BarCodeScanner
                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}
-            />
+                type={type}
+                flashMode={flashMode}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        backgroundColor: 'transparent',
+                        flexDirection:'row'
+                    }}>
+                    <TouchableOpacity
+                        style={[styles.cameraOption,{
+                            width:'8%',
+                            marginLeft : '3%'
+                        }]}
+                        onPress={() => navigation.navigate('RootNavigator')}>
+                        <Text style={{ fontSize: 18, color: 'white'}}> X </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.cameraOption,{
+                            width:'22%',
+                            marginLeft : '3%'
+                        }]}
+                        onPress={() => {
+                            setFlashMode(
+                                flashMode === Camera.Constants.FlashMode.auto
+                                    ? Camera.Constants.FlashMode.on
+                                    : flashMode === Camera.Constants.FlashMode.on
+                                    ? Camera.Constants.FlashMode.off
+                                    : Camera.Constants.FlashMode.auto
+                            );
+                        }}>
+                        <Text style={{ fontSize: 18, color: 'white' }}> Flash </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.cameraOption,{
+                            width:'35%',
+                            marginLeft : '27%'
+                        }]}
+                        onPress={() => {
+                            setType(
+                                type === Camera.Constants.Type.back
+                                    ? Camera.Constants.Type.front
+                                    : Camera.Constants.Type.back
+                            );
+                        }}>
+                        <Text style={{ fontSize: 18, color: 'white' }}> Switch Cam </Text>
+                    </TouchableOpacity>
+                </View>
+            </BarCodeScanner>
 
             {scanned && (
                 <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
