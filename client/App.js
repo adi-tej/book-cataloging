@@ -6,14 +6,19 @@ import 'react-native-gesture-handler';
 
 import Home from "./components/Home";
 import Cataloging from "./components/Cataloging";
-const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator()
+import Barcode from "./components/Barcode";
+import Listing from "./components/Listing";
+import ImagePickerComponent from "./components/ImagePickerComponent";
 
-function TabNavigator(){
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function TabNavigator({navigation}){
     return(
         <Tab.Navigator>
             <Tab.Screen name='Cataloging' component={Cataloging} />
-            <Tab.Screen name='Dashboard' component={Cataloging} /> {/*???*/}
+            <Tab.Screen name='Dashboard' component={Cataloging} />
+            <Tab.Screen name='Listing' component={Listing} navigation={navigation} />
         </Tab.Navigator>
     )
 }
@@ -33,6 +38,8 @@ export default function App(){
             }}>
           <Stack.Screen name="Home" component={Home}/>
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
+          <Stack.Screen name="Barcode" component={Barcode}/>
+          <Stack.Screen name="Camera" component={ImagePickerComponent}/>
         </Stack.Navigator>
       </NavigationContainer>
   );
