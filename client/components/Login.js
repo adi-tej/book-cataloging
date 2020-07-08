@@ -29,7 +29,7 @@ export default function Login({navigation}){
     }
     const validateEmail = () => {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if(!re.test(String(data.email).toLowerCase())){
+        if(data.email.length>0 && !re.test(String(data.email).toLowerCase())){
             setData({
                 ...data,
                 emailError: true,
@@ -39,7 +39,7 @@ export default function Login({navigation}){
     }
     const handleLogin = () => {
         if(data.email === 'adi@gmail.com' && data.password === '123'){
-            navigation.navigate('rootNavigator')
+            navigation.navigate('RootNavigator')
         }else{
             setData({
                 ...data,
@@ -80,7 +80,7 @@ export default function Login({navigation}){
                     <Text style={{color:'red'}}>Invalid credentials</Text>
                     : null
                 }
-                <Text onPress={() => navigation.navigate('rootNavigator')} style={styles.resetAccountButton}>I don't have an account</Text>
+                <Text onPress={() => navigation.navigate('RootNavigator')} style={styles.resetAccountButton}>I don't have an account</Text>
             </View>
         </KeyboardAwareScrollView>
     )
