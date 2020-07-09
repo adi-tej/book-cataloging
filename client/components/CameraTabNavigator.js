@@ -1,7 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
-import { Text, View,TouchableOpacity} from 'react-native';
-import Scanner from "./Scanner";
+import { View} from 'react-native';
+import Scanner from "./BarcodeScanner";
 import Logout from "./Logout";
 import styles from "../config/styles";
 const Tab = createBottomTabNavigator()

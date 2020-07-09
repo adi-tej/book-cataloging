@@ -2,32 +2,25 @@ import React, {Component} from 'react';
 import {
     Image,
     View,
-    Button, StyleSheet, Dimensions,
+    Text,
+    TouchableOpacity,
 } from 'react-native';
+
+import styles from "../config/styles";
 
 export default class ShowCarousel extends Component {
 
     render() {
         return (
-            <View>
-                <Image style={styles.image} source={{uri:this.props.image}}/>
-                <Button onPress={this.props.delete} title="Delete"/>
+            <View style={styles.imageContainer}>
+                <Image style={styles.imageCarousel} source={{uri:this.props.image}}/>
+                <TouchableOpacity
+                    style={styles.deleteImageButton}
+                    onPress={this.props.delete}>
+                    <Text style={styles.deleteImageButtonText}>x</Text>
+                </TouchableOpacity>
             </View>
         );
     }
 }
 
-const width = Dimensions.get('window').width;
-const styles = StyleSheet.create({
-    image:{
-        backgroundColor: "lightgrey",
-        borderColor: "lightgrey",
-        borderWidth: 0.5,
-        width: width/4,
-        height: width/4,
-        marginHorizontal: 8,
-        marginVertical: 16,
-        justifyContent:'center',
-        alignItems:'center'
-    },
-})

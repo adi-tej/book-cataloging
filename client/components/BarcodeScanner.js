@@ -1,27 +1,49 @@
-import React,{useState,useEffect} from 'react';
-import {Camera} from 'expo-camera';
-import { Text, View,TouchableOpacity} from 'react-native';
-import styles from '../config/styles';
-export default function Scanner({navigation}) {
+import React, { useState, useEffect } from 'react';
+import {Text, View, StyleSheet, Button, TouchableOpacity} from 'react-native';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import styles from "../config/styles";
+import {Camera} from "expo-camera";
+
+export default function Barcode({navigation}) {
     const [hasPermission, setHasPermission] = useState(null);
+    const [scanned, setScanned] = useState(false);
     const [type, setType] = useState(Camera.Constants.Type.back);
-    const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto)
+    const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto);
+    const [barcode, setBarcode] = useState("");
+
     useEffect(() => {
         (async () => {
-            const { status } = await Camera.requestPermissionsAsync();
+            const { status } = await BarCodeScanner.requestPermissionsAsync();
             setHasPermission(status === 'granted');
         })();
     }, []);
 
+    const handleBarCodeScanned = ({ type, data }) => {
+        setScanned(true);
+        setBarcode(data);
+        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    };
+
     if (hasPermission === null) {
-        return <View />;
+        return <Text>Requesting for camera permission</Text>;
     }
     if (hasPermission === false) {
         return <Text>No access to camera</Text>;
     }
+
     return (
-        <View style={{ flex: 1 }}>
-            <Camera style={{ flex: 1 }} type={type} flashMode={flashMode}>
+        <View
+            style={{
+                flex: 1,
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+            }}>
+            <BarCodeScanner
+                onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+                style={StyleSheet.absoluteFillObject}
+                type={type}
+                flashMode={flashMode}
+            >
                 <View
                     style={{
                         flex: 1,
@@ -34,7 +56,7 @@ export default function Scanner({navigation}) {
                             marginLeft : '3%'
                         }]}
                         onPress={() => navigation.navigate('RootNavigator')}>
-                        <Text style={{ fontSize: 30, color: 'white'}}> x </Text>
+                        <Text style={{ fontSize: 18, color: 'white'}}> X </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.cameraOption,{
@@ -66,8 +88,19 @@ export default function Scanner({navigation}) {
                         }}>
                         <Text style={{ fontSize: 18, color: 'white' }}> Switch Cam </Text>
                     </TouchableOpacity>
+
                 </View>
-            </Camera>
+            </BarCodeScanner>
+
+            {/*{scanned && (*/}
+            {/*    <Button*/}
+            {/*        style={{*/}
+            {/*            backgroundColor:'blue',*/}
+            {/*            position: "absolute",*/}
+            {/*            bottom: 30}}*/}
+            {/*        title={'Tap to Scan Again'}*/}
+            {/*        onPress={() => setScanned(false)} />*/}
+            {/*)}*/}
         </View>
     );
 }

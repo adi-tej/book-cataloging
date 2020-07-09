@@ -2,20 +2,17 @@ import React, {  Component } from 'react';
 import {
     Text,
     View,
-    Button,
     TextInput,
     Alert,
     TouchableOpacity,
-    Dimensions,
-    StyleSheet,
     ScrollView,
 } from 'react-native';
-import ImagePickerComponent from "./ImagePickerComponent";
+
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import ShowCarousel from "./ShowCarousel";
+import styles from "../config/styles";
 
-const width = Dimensions.get('window').width;
 
 export default class Listing extends Component{
     constructor(props) {
@@ -87,128 +84,78 @@ export default class Listing extends Component{
                         }
                         <TouchableOpacity
                             activityOpacity={0.5}
-                            style={styles.image}
+                            style={styles.imageContainer}
                             onPress={this.takePicture.bind(this)}>
-                            <Text style={styles.buttonText}>+</Text>
+                            <Text style={styles.loginText}>+</Text>
                         </TouchableOpacity>
                     </ScrollView>
                 </View>
                 <ScrollView>
-                    <Text style={styles.title}>Title: </Text>
+                    <Text style={styles.listingTitle}>Title: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Title) => this.setState({Title})}
                     />
 
-                    <Text style={styles.title}>ISBN: </Text>
+                    <Text style={styles.listingTitle}>ISBN: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         keyboardType="number-pad"
                         onChangeText={(ISBN) => this.setState({ISBN})}
                     />
 
-                    <Text style={styles.title}>Genre: </Text>
+                    <Text style={styles.listingTitle}>Genre: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Genre) => this.setState({Genre})}
                     />
 
-                    <Text style={styles.title}>Author: </Text>
+                    <Text style={styles.listingTitle}>Author: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Author) => this.setState({Author})}
                     />
 
-                    <Text style={styles.title}>Page: </Text>
+                    <Text style={styles.listingTitle}>Page: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Page) => this.setState({Page})}
                     />
 
-                    <Text style={styles.title}>Publisher: </Text>
+                    <Text style={styles.listingTitle}>Publisher: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Publisher) => this.setState({Publisher})}
                     />
 
-                    <Text style={styles.title}>Price: </Text>
+                    <Text style={styles.listingTitle}>Price: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Price) => this.setState({Price})}
                     />
 
-                    <Text style={styles.title}>Other Details: </Text>
+                    <Text style={styles.listingTitle}>Other Details: </Text>
                     <TextInput
                         underlineColorAndroid={"transparent"}
-                        style={styles.text_input}
+                        style={styles.textInput}
                         onChangeText={(Other_details) => this.setState({Other_details})}
                     />
                 </ScrollView>
 
                 <TouchableOpacity
                     activityOpacity={0.5}
-                    style={styles.button}
+                    style={styles.loginButton}
                     onPress={this.onButtonPress.bind(this)}>
-                    <Text style={styles.buttonText}>List on eBay</Text>
+                    <Text style={styles.loginText}>List on eBay</Text>
                 </TouchableOpacity>
             </View>
         )
     }
 }
-
-const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        flexDirection:"column",
-        justifyContent:"space-evenly"
-    },
-    image:{
-        backgroundColor: "lightgrey",
-        borderColor: "lightgrey",
-        borderWidth: 0.5,
-        width: width/4,
-        height: width/4,
-        marginHorizontal: 16,
-        marginVertical: 16,
-        justifyContent:'center',
-        alignItems:'center'
-    },
-    title: {
-        padding: 16,
-        fontSize: 15,
-        color: "black",
-        fontWeight: "bold",
-    },
-    text_input:{
-      width:width-32, //center and keep each side having 16 padding
-      borderColor: "grey",
-      padding:0,
-      borderWidth: 1,
-      alignSelf: "center",
-      justifyContent:'center',
-      alignItems:'center'
-    },
-    button:{
-        width:width-32,
-        height:35,
-        alignSelf:'center',
-        backgroundColor:'skyblue',
-        marginTop:20,
-        marginBottom: 20,
-        justifyContent:'center',
-        alignItems:'center'
-        },
-    buttonText:{
-        fontSize: 20,
-        color: "white",
-        fontWeight: "bold"
-    }
-
-});

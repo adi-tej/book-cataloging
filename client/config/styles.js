@@ -1,5 +1,10 @@
 import {StyleSheet} from "react-native";
 import colors from "./colors";
+
+import { Dimensions } from 'react-native';
+
+const width = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
     container : {
         flexDirection: 'column',
@@ -17,7 +22,7 @@ const styles = StyleSheet.create({
     textInput : {
         width : '100%',
         borderColor: 'black',
-        paddingHorizontal : '10%',
+        paddingHorizontal : '5%',
         borderWidth: 1,
         fontSize : 16,
         marginVertical : '2%',
@@ -93,6 +98,51 @@ const styles = StyleSheet.create({
         bottom: 0,
         right: 0,
         borderTopColor:'transparent'
+    },
+    imageContainer:{
+        flex: 1,
+        backgroundColor: "lightgrey",
+        width: width/4,
+        height: width/4,
+        marginBottom: width/30,
+        marginRight: width/100,
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    imageCarousel:{
+        flex: 1,
+        width: width/4,
+        height: width/4,
+        justifyContent:'center',
+        alignItems:'center',
+        position:'absolute',
+        left:0,
+        right: 0,
+        top: 0,
+        bottom:0
+    },
+    listingTitle: {
+        fontSize: 18,
+        color: "black",
+        fontWeight: "bold",
+    },
+    deleteImageButton:{
+        height: width/30,
+        width: width/30,  //The Width must be the same as the height
+        borderRadius:width/15, //Then Make the Border Radius twice the size of width or Height
+        backgroundColor:'red',
+        borderColor: 'white',
+        position: "absolute",
+        right: 5,
+        top: 5,
+    },
+    deleteImageButtonText: {
+        fontSize: 10,
+        fontWeight: "bold",
+        color: 'white',
+        textAlign:'center',
+        textAlignVertical:'center'
     }
+
 })
 export default styles
