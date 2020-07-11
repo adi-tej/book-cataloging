@@ -4,6 +4,7 @@ import colors from "./colors";
 import { Dimensions } from 'react-native';
 
 const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
     container : {
@@ -206,6 +207,53 @@ const styles = StyleSheet.create({
     priceView:{
         justifyContent: "center",
         width:width/4
-    }
+    },
+
+    //manualInput popup
+    manualBackground:{
+      width:width,
+      height:height
+    },
+    manualPopup: {
+        width: "100%",
+        height: "40%",
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10,
+        position:"absolute",
+        bottom:"10%",
+        backgroundColor:'rgba(255,255,255,0.8)',
+    },
+    manualCloseButton:{
+        position:"absolute",
+        width:"5%",
+        top:"5%",
+        right:"5%",
+    },
+    manualPopupTitle: {
+        marginTop:"10%",
+        marginLeft:"10%",
+        fontSize: 20,
+        color: "black",
+        fontWeight: "bold",
+    },
+    manualISBNInput : {
+        width : '80%',
+        borderColor: 'grey',
+        paddingHorizontal : '5%',
+        borderWidth: 1,
+        fontSize : 18,
+        marginVertical : '2%',
+        marginLeft:"10%",
+        padding : '2%',
+    },
+    searchButton : {
+        width: "50%",
+        marginVertical : '4%',
+        marginLeft:"25%",
+        padding : '3%',
+        color: 'white',
+        backgroundColor: colors.loginButton,
+        alignItems : 'center'
+    },
 })
 export default styles

@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import DrawerNavigator from "./components/DrawerNavigator";
 
 import CameraTabNavigator from "./components/CameraTabNavigator";
+import BookCataloguing from "./components/BookCataloguing";
 const Stack = createStackNavigator();
 
 export default function App(){
@@ -18,6 +19,7 @@ export default function App(){
                 <Stack.Screen name="Landing" component={Home}/>
                 <Stack.Screen name="RootNavigator" component={DrawerNavigator} />
                 <Stack.Screen name="CameraTab" component={CameraTabNavigator} />
+                <Stack.Screen name="BookCataloguing" component={BookCataloguing}/>
             </Stack.Navigator>
         </NavigationContainer>
       </MenuProvider>

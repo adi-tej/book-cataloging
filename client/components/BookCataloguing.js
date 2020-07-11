@@ -7,6 +7,7 @@ import {
     TouchableOpacity,
     ScrollView,
     StyleSheet,
+    SafeAreaView,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import RNPickerSelect from "react-native-picker-select";
@@ -88,7 +89,7 @@ export default class BookCataloguing extends Component{
 
     render() {
         return (
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <KeyboardAwareScrollView behavior="padding">
                 {/*Create an Image Carousel*/}
                 <View>
@@ -229,7 +230,7 @@ export default class BookCataloguing extends Component{
                     onPress={this.onButtonPress.bind(this)}>
                     <Text style={styles.loginText}>List on eBay</Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
         )
     }
 }
