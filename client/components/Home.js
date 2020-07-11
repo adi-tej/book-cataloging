@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {  View } from 'react-native';
 import Login from "./Login";
 import styles from "../config/styles";
 export default function Home({navigation}){
