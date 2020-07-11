@@ -9,9 +9,11 @@ import {
     MenuOption,
     MenuTrigger,
 } from 'react-native-popup-menu';
-import Cataloging from "./Cataloging";
+
 import styles from "../config/styles";
-import Listing from "./Listing";
+import BookCataloguing from "./BookCataloguing";
+import PendingOrders from "./PendingOrders";
+import ActiveListingTab from "./ActiveListingTab";
 
 const Tab = createMaterialTopTabNavigator()
 export default class TabNavigator extends Component{
@@ -65,8 +67,9 @@ export default class TabNavigator extends Component{
                 </Right>
             </Header>
             <Tab.Navigator initialRouteName="Cataloging">
-                <Tab.Screen name="Active Listing" component={Listing} />
-                <Tab.Screen name="Pending Orders" component={Cataloging} />
+                <Tab.Screen name="Active Listing" component={ActiveListingTab} />
+                <Tab.Screen name="Pending Orders" component={PendingOrders} />
+                <Tab.Screen name="Test tab" component={BookCataloguing} />
             </Tab.Navigator>
             <TouchableOpacity
                 style={styles.checkoutButton}>

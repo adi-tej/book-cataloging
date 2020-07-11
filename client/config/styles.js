@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         fontSize : 16,
         marginVertical : '2%',
-        padding : '2%'
+        padding : '2%',
     },
     loginButton : {
         marginVertical : '2%',
@@ -122,19 +122,21 @@ const styles = StyleSheet.create({
         bottom:0
     },
     listingTitle: {
-        fontSize: 18,
+        fontSize: 16,
         color: "black",
         fontWeight: "bold",
     },
     deleteImageButton:{
-        height: width/30,
-        width: width/30,  //The Width must be the same as the height
-        borderRadius:width/15, //Then Make the Border Radius twice the size of width or Height
-        backgroundColor:'red',
+        height: width/20,
+        width: width/20,  //The Width must be the same as the height
+        borderRadius:width/10, //Then Make the Border Radius twice the size of width or Height
         borderColor: 'white',
         position: "absolute",
         right: 5,
         top: 5,
+        justifyContent:'center',
+        alignItems: 'center',
+        backgroundColor:'rgba(255,0,0,0.5)',
     },
     deleteImageButtonText: {
         fontSize: 10,
@@ -142,7 +144,68 @@ const styles = StyleSheet.create({
         color: 'white',
         textAlign:'center',
         textAlignVertical:'center'
-    }
+    },
 
+    //showPendingOrders page
+    orderContainer:{
+        width: "100%",
+        backgroundColor: "lightgrey",
+        borderRadius:5,
+        marginVertical : "2%",
+    },
+    orderNumberText : {
+        paddingHorizontal : '5%',
+        fontSize : 16,
+        marginTop : '5%',
+        fontWeight:"bold"
+    },
+    orderInfoText : {
+        flex: 1,
+        paddingHorizontal : '5%',
+        fontSize : 16,
+        marginTop : '2%',
+        marginBottom: "5%"
+    },
+    requiredText: {
+        color:'red',
+        fontSize : 16,
+    },
+
+    //Active Listing page
+    itemContainer:{
+        width: "100%",
+        height: width/4,
+        backgroundColor: "lightgrey",
+        borderRadius:5,
+        marginVertical : "2%",
+    },
+    itemCoverView:{
+        width: width/4,
+    },
+    itemCover:{
+        width: width/4,
+        height: width/4,
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+        position:'absolute',
+        left:0,
+        top: 0,
+        bottom:0
+    },
+    itemTitleView:{
+        flexDirection:"column",
+        width: width/2.2,
+        marginVertical : '5%',
+        marginHorizontal: "3%"
+    },
+    itemTitle : {
+        fontSize : 16,
+        marginBottom: "2%",
+        fontWeight:"bold",
+    },
+    priceView:{
+        justifyContent: "center",
+        width:width/4
+    }
 })
 export default styles
