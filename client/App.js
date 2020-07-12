@@ -4,14 +4,23 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { MenuProvider } from 'react-native-popup-menu';
 import Home from "./components/Home";
 import DrawerNavigator from "./components/DrawerNavigator";
-
 import CameraTabNavigator from "./components/CameraTabNavigator";
 import BookCataloguing from "./components/BookCataloguing";
+
 const Stack = createStackNavigator();
 
 export default function App(){
   return (
-      <MenuProvider>
+      <MenuProvider style={{
+          backgroundColor:'transparent'
+      }} customStyles={{
+          menuProviderWrapper:{
+              backgroundColor:'transparent'
+          },
+          backdrop:{
+              backgroundColor:'transparent'
+          }
+      }}>
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Home" screenOptions={{
                 headerShown: false

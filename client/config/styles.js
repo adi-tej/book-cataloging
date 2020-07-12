@@ -7,6 +7,9 @@ const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
+    /**
+     * Login
+     */
     container : {
         flexDirection: 'column',
         flex : 1,
@@ -47,6 +50,9 @@ const styles = StyleSheet.create({
         color : colors.loginButton,
         fontSize : 18
     },
+    /**
+     * Barcode Scanner
+     */
     cameraOption : {
         height:'5%',
         justifyContent:'center',
@@ -83,6 +89,9 @@ const styles = StyleSheet.create({
         width:'35%',
         justifyContent:'center'
     },
+    /**
+     * Camera tab navigator
+     */
     cameraScanTab:{
         justifyContent:'center'
     },
@@ -100,6 +109,10 @@ const styles = StyleSheet.create({
         right: 0,
         borderTopColor:'transparent'
     },
+    /**
+     * Book Cataloging
+     * Image carousal
+     */
     imageContainer:{
         flex: 1,
         backgroundColor: "lightgrey",
@@ -147,7 +160,9 @@ const styles = StyleSheet.create({
         textAlignVertical:'center'
     },
 
-    //showPendingOrders page
+    /**
+     * Show pending orders page
+     */
     orderContainer:{
         width: "100%",
         backgroundColor: "lightgrey",
@@ -172,7 +187,9 @@ const styles = StyleSheet.create({
         fontSize : 16,
     },
 
-    //Active Listing page
+    /**
+     * Active listing page
+     */
     itemContainer:{
         width: "100%",
         height: width/4,
@@ -209,7 +226,9 @@ const styles = StyleSheet.create({
         width:width/4
     },
 
-    //manualInput popup
+    /**
+     * Manual input popup
+     */
     manualBackground:{
       width:width,
       height:height

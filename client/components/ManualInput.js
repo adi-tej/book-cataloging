@@ -5,11 +5,11 @@ import {
     SafeAreaView,
     Image, TextInput, TouchableOpacity, Alert,
 } from 'react-native';
-
-import styles from "../config/styles";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import styles from "../config/styles";
+import images from "../config/images";
 
-export default class ManuallyInput extends Component {
+export default class ManualInput extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -34,7 +34,7 @@ export default class ManuallyInput extends Component {
         return (
             <SafeAreaView>
             <KeyboardAwareScrollView>
-                <Image style={styles.manualBackground} source={require("../assets/bookshelf.jpg")}/>
+                <Image style={styles.manualBackground} source={images.bookCover}/>
                 <View style={styles.manualPopup}>
 
                     {/*closeButton*/}
