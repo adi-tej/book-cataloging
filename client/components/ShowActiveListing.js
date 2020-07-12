@@ -5,7 +5,6 @@ import {
     Image,
     TouchableOpacity
 } from "react-native";
-
 import styles from "../config/styles";
 
 //This class is to create a box of each listing item

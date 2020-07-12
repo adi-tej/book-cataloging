@@ -11,11 +11,8 @@ import {
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import RNPickerSelect from "react-native-picker-select";
-import {Icon} from "native-base";
-
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
-
 import ShowCarousel from "./ShowCarousel";
 import styles from "../config/styles";
 

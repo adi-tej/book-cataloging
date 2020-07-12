@@ -2,25 +2,24 @@ import React, {Component} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import {Header, Left, Right, Icon} from "native-base";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { withNavigation, DrawerActions } from 'react-navigation'
 import {
     Menu,
     MenuOptions,
     MenuOption,
     MenuTrigger,
 } from 'react-native-popup-menu';
-
 import styles from "../config/styles";
 import BookCataloguing from "./BookCataloguing";
 import PendingOrders from "./PendingOrders";
 import ActiveListingTab from "./ActiveListingTab";
 
 const Tab = createMaterialTopTabNavigator()
+
 export default class TabNavigator extends Component{
     render(){
     return(
         <View style={{flex:1}}>
-            <Header style={{width:'100%',backgroundColor:'white'}}>
+            <Header style={{backgroundColor:'white'}}>
                 <Left>
                     <Icon onPress={() => this.props.navigation.toggleDrawer()} name='menu' style={{marginHorizontal:'5%'}}/>
                 </Left>
@@ -30,11 +29,7 @@ export default class TabNavigator extends Component{
                         <MenuTrigger>
                             <Icon name="add" style={{marginHorizontal:'8%'}}/>
                         </MenuTrigger>
-                        <MenuOptions
-                            optionsContainerStyle={styles.contextMenuContainer}
-                            customStyles={{
-                                backgroundColor:'transparent'
-                            }}>
+                        <MenuOptions optionsContainerStyle={styles.contextMenuContainer}>
                             <MenuOption onSelect={() => this.props.navigation.navigate('CameraTab')}>
                                 {/*<TouchableOpacity*/}
                                 {/*    style={{*/}
