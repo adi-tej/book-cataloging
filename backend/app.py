@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_restplus import Api
+from os import system
 
 from book import books
 from auth import auth
@@ -71,6 +72,9 @@ opshop_api = Api(
         }
     }
 )
+
+system("python3 opshop_config.py")
+system("python3 user_config.py")
 
 if __name__ == '__main__':
     app.run()
