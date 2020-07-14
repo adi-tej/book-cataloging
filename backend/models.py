@@ -42,7 +42,7 @@ class Order(db.Model):
     opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
     customer_address = db.Column(db.String(100))
     customer_name = db.Column(db.String(100))
-    customer_contact = db.Column(db.String(20))
+    customer_contact = db.Column(db.String(100))
     order_date = db.Column(db.DateTime)
     order_status = db.Column(db.String(20))
     order_items = db.relationship('OrderItems', backref='order', lazy='dynamic')

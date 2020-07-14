@@ -180,7 +180,11 @@ class BookList(Resource):
                     ebay_conn = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
                     request_info = {
                         "Item": {
-                            "Title":book.title,
+                            "Title":book.title + " " + book.book_id_local,
+                            "PictureDetails": {
+                                # This URL shold be replaced by Allen after finishing S3 storage
+                                "PictureURL": "https://picsum.photos/200/300.jpg"
+                            },
                             "Country":"AU",
                             "Location":"Sydney",
                             "Site":"AU",
