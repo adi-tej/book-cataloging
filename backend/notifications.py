@@ -10,7 +10,15 @@ from http_status import *
 
 import json
 
+# ----- notifications spec ------
 # Receive notifications from eBay and make the right response
+# For this part, the backend need the frontend to make the request periodically, which is
+# required by ebay. My idea is we need to let the frontend make a notification request to
+# the backend every 2-3 minutes, if the backend can find the new orders, then it will parse
+# them and forward to the frontend, and for now every order --> every item id (not limited
+# by the id), but I am still not solved how to use one order for many item ids
+
+# -- Wei Song
 
 notification = Blueprint('notification_api', __name__)
 
@@ -19,11 +27,11 @@ notification_api = opshop_api.namespace(
     description="notifications management process"
 )
 
-@notification.route('/notification/')
+@notification.route('/messages/<user_id>')
 class Notifications(Resource):
     @notification_api.doc(description="retrive latest order in real time")
     @token_required
-    def get(self):
+    def get(self, user_id):
         api = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
         past_time = time() - 10 * 60 * 60 - 1*60
         past_time = strftime('%Y-%m-%d %H:%M:%S', localtime(past_time))
@@ -37,12 +45,29 @@ class Notifications(Resource):
         }
 
         resp = api.execute("GetOrders", request_info)
+
+        user = User.query.filter_by(user_id=user_id).first()
+        if not user:
+            resp = make_response()
+            resp.status_code = UNAUTHORIZED
+            resp.headers['message'] = 'user not exist'
+            return resp
+
+        opshop_id = user.opshop_id
+        opshop = Opshop.query.filter_by(opshop_id=opshop_id).first()
+        current_opshop_email = opshop.opshop_ebay_email
+
+        # use opshop email to confirm if there is new order for some opshop
+
+        # need to think of multiple simultaneous requests from different opshops
+
+        # counter
+
         if resp.dict()['ReturnedOrderCountActual'] != 0:
             all_orders = resp.dict()['OrderArray']['Order']
             item_data, order_data = [], []
             counter = 0
             for ebay_order in all_orders:
-                counter += 1
                 order = Order()
                 order.order_id = ebay_order['OrderID']
                 order.customer_address = ebay_order['ShippingAddress']['CityName'] + " " \
@@ -56,7 +81,7 @@ class Notifications(Resource):
                 order.order_status = 'pending'
                 order_data.append(order.__dict__)
                 db.session.add(order)
-                # how to discriminate different op-shop
+                # discriminate different opshops
                 item = Book.query.filter_by(book_id_ebay=item_id).first()
                 if item:
                     item_data.append(item.__dict__)
