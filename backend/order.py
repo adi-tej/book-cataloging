@@ -49,6 +49,10 @@ local_order_model = order_api.model('Order', {
     'status': fields.List
 })
 
+comfirmation_order_model = order_api.model('comfirm_order', {
+    'status': fields.String,
+})
+
 @order.route('/local/')
 class Order(Resource):
     @order_api.doc(description="order from the in shop customer")
@@ -94,9 +98,19 @@ class Order(Resource):
 class OrderList():
     # this post method will be used as confirmation from frontend
     @order_api.doc(description="retrive order information")
+    @order_api.expect(comfirmation_order_model)
     @token_required
     def post(self, order_id):
-        pass
+        data = json.loads(request.get_data())
+        order = Order.query.filter_by(order_id=order_id).first()
+        if data['status'] == "comfirmed":
+            order.status = "comfirmed"
+        elif data['status'] == "cancelled":
+            order.status = "cancelled"
+
+        db.session.add(order)
+        db.session.commit()
+        
 
     @order_api.doc(description="retrive order information")
     @token_required

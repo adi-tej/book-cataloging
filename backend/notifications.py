@@ -18,6 +18,95 @@ import json
 # them and forward to the frontend, and for now every order --> every item id (not limited
 # by the id), but I am still not solved how to use one order for many item ids
 
+# For order cancellation, it should be done by frontend which ebay has provided us the restful
+# api POST request, the cancellation process should be:
+# 1. backend request new 'Completed' order from ebay, and forward this order to frontend
+# 2. if frontend want to cancel, then front need to make a requst:
+#       POST https://api.sandbox.ebay.com/post-order/v2/cancellation/check_eligibility
+#       the headers:
+#           Authorization: TOKEN <OAuth token>
+#           Content-Type: application/json
+#           X-EBAY-C-MARKETPLACE-ID: EBAY_AU
+#           Accept: application/json
+#       the payload:
+#           {
+#               "legacyOrderId": order_id
+#           }
+# 3. After making this request to ebay, frontend shall receive a response:
+# {
+#     "eligible": ture/false,
+#     "failureReason": [
+#         "INVALID_ORDER"
+#     ]
+# }
+# 4. if the order to be cancelled is 'eligible', then make a cancellation request:
+#       POST https://api.sandbox.ebay.com/post-order/v2/cancellation
+#       the headers:
+#           Authorization: TOKEN <OAuth token>
+#           Content-Type: application/json
+#           X-EBAY-C-MARKETPLACE-ID: EBAY_AU
+#           Accept: application/json
+#       the payload:
+#           {
+#               "legacyOrderId": order_id
+#           }
+# 5. The response if the cancellation is success:
+# {
+#     "cancellations": [
+#         {
+#             "cancelId": "5000018282",
+#             "marketplaceId": "EBAY_US",
+#             "legacyOrderId": "170007292461-9190794007",
+#             "requestorType": "SELLER",
+#             "cancelReason": "OUT_OF_STOCK_OR_CANNOT_FULFILL",
+#             "cancelState": "CLOSED",
+#             "cancelStatus": "CANCEL_CLOSED_WITH_REFUND",
+#             "cancelCloseReason": "FULL_REFUNDED",
+#             "paymentStatus": "UNKNOWN",
+#             "requestRefundAmount": {
+#                 "value": 0,
+#                 "currency": "USD"
+#             },
+#             "cancelRequestDate": {
+#                 "value": "2015-05-18T22:42:11.000Z",
+#             },
+#             "cancelCloseDate": {
+#                 "value": "2015-05-18T22:42:11.000Z",
+#             }
+#         },
+#         {
+#             "cancelId": "5000020253",
+#             "marketplaceId": "EBAY_US",
+#             "legacyOrderId": "170007591793-9351013007",
+#             "requestorType": "SELLER",
+#             "cancelReason": "OUT_OF_STOCK_OR_CANNOT_FULFILL",
+#             "cancelState": "CLOSED",
+#             "cancelStatus": "CANCEL_CLOSED_WITH_REFUND",
+#             "cancelCloseReason": "FULL_REFUNDED",
+#             "paymentStatus": "PAYPAL_PAID",
+#             "requestRefundAmount": {
+#                 "value": 2.46,
+#                 "currency": "USD"
+#             },
+#             "cancelRequestDate": {
+#                 "value": "2015-06-13T00:32:09.000Z",
+#             },
+#             "cancelCloseDate": {
+#                 "value": "2015-06-13T00:37:06.000Z",
+#             }
+#         }
+#     ],
+#     "total": 2,
+#     "paginationOutput": {
+#         "offset": 1,
+#         "limit": 6,
+#         "totalPages": 1,
+#         "totalEntries": 2
+#     }
+# }
+#
+# 6. Finally, frontend need to make a request to the backend to tell
+# the frontend has cancelled the order..
 # -- Wei Song
 
 notification = Blueprint('notification_api', __name__)
@@ -42,6 +131,7 @@ class Notifications(Resource):
             "CreateTimeTo": cur_time,
             "IncludeFinalValueFee": True,
             "OrderRole": "Seller",
+            "OrderStatus": "Completed"
         }
 
         resp = api.execute("GetOrders", request_info)
@@ -55,17 +145,12 @@ class Notifications(Resource):
 
         current_opshop_email = user.opshop.opshop_ebay_email
 
-        # use opshop email to confirm if there is new order for some opshop
-
-        # need to think of multiple simultaneous requests from different opshops
-
-        # counter
-
         if resp.dict()['ReturnedOrderCountActual'] != 0:
             all_orders = resp.dict()['OrderArray']['Order']
             item_data, order_data = [], []
             counter = 0
             for ebay_order in all_orders:
+                counter += 1
                 order = Order()
                 order.order_id = ebay_order['OrderID']
                 order.customer_address = ebay_order['ShippingAddress']['CityName'] + " " \
@@ -79,14 +164,17 @@ class Notifications(Resource):
                 order.order_status = 'pending'
                 order_data.append(order.__dict__)
                 db.session.add(order)
-                # discriminate different opshops
+
+                # --> important notes <--
+                # --> important notes <--
+                # At this stage, I assume one order for one item
+                # !!!
                 item = Book.query.filter_by(book_id_ebay=item_id).first()
                 if item:
                     item_data.append(item.__dict__)
-                else:
-                    # This case is not possible
-                    pass
-            db.session.commit()
+
+            if counter != 0:
+                db.session.commit()
 
             resp_payload = {
                 'total':counter,
@@ -105,4 +193,3 @@ class Notifications(Resource):
             resp.headers['message'] = 'no orders from ebay'
             resp.headers['number'] = 0
             return resp
-
