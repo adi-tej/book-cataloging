@@ -26,6 +26,14 @@ import json
 # At this satge I just input my own PayPal account to make sure everthing can work, in the
 # future CircEx need to changed it to CirecEx Payment method
 
+# For item condition
+# ID                    Description
+# 1000                      New(100%)
+# 5000                      Good(90%)
+# 3000                      Used(80%)
+# 1750                      Defects(70%)
+# 7000                      Parts or not working (60%)
+
 # -- Wei Song
 
 books = Blueprint('book_bp', __name__)
@@ -108,6 +116,13 @@ class Books(Resource):
 
 @books.route('/avtivities/<string:book_id>')
 class BookActivities(Resource):
+    # This function is used to add more covers for some book, frontend need
+    # to take the book id to backend
+    @books_api.doc(description="add more covers for some book by book id")
+    @token_required
+    def post(self, book_id):
+        pass
+
     @books_api.doc(description="retrive some book by book id")
     @token_required
     def get(self, book_id):
@@ -183,11 +198,12 @@ class BookList(Resource):
                             "Title":book.title + " " + book.book_id_local,
                             "PictureDetails": {
                                 # This URL shold be replaced by Allen after finishing S3 storage
-                                "PictureURL": "https://picsum.photos/200/300.jpg"
+                                "PictureURL": book.cover
                             },
                             "Country":"AU",
                             "Location":"Sydney",
-                            "Site":"AU",
+                            "Site":"Australia",
+                            "SiteID":15,
                             "ConditionID":book.condition_id,
                             "PaymentMethods":"PayPal",
                             "PayPalEmailAddress":"weisong301@gmail.com",
@@ -199,13 +215,12 @@ class BookList(Resource):
                                 "ReturnsAcceptedOption": "ReturnsAccepted",
                                 "RefundOption": "MoneyBack",
                                 "ReturnsWithinOption": "Days_30",
-                                "Description": "If you are not satisfied, please return.",
                                 "ShippingCostPaidByOption": "Buyer"
                             },
                             "ShippingDetails": {
                                 "ShippingServiceOptions": {
                                     "FreeShipping": "True",
-                                    "ShippingService": "USPSMedia"
+                                    "ShippingService": "ShippingMethodStandard"
                                 }
                             },
                             "DispatchTimeMax": "3"

@@ -53,9 +53,7 @@ class Notifications(Resource):
             resp.headers['message'] = 'user not exist'
             return resp
 
-        opshop_id = user.opshop_id
-        opshop = Opshop.query.filter_by(opshop_id=opshop_id).first()
-        current_opshop_email = opshop.opshop_ebay_email
+        current_opshop_email = user.opshop.opshop_ebay_email
 
         # use opshop email to confirm if there is new order for some opshop
 

@@ -5,8 +5,8 @@ from app import db
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
-    opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('Role.role_id'), nullable=False)
+    opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.opshop_id'), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.role_id'), nullable=False)
     register_email = db.Column(db.String(50), unique=True, nullable=False)
     user_name = db.Column(db.String(50), unique=False, nullable=False)
     password = db.Column(db.String(100), nullable=False)
@@ -36,12 +36,12 @@ class ItemType(db.Model):
     __tablename__ = 'itemtype'
     item_type_id = db.Column(db.Integer, primary_key=True)
     item_type_name = db.Column(db.String(20))
-    items = db.relationship('Book', backref='items', lazy='dynamic')
+    items = db.relationship('Book', backref='item_type', lazy='dynamic')
 
 class Order(db.Model):
     __tablename__ = 'order'
     order_id = db.Column(db.String(100), primary_key=True)
-    opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
+    opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.opshop_id'), nullable=False)
     customer_address = db.Column(db.String(100))
     customer_name = db.Column(db.String(100))
     customer_contact = db.Column(db.String(100))
@@ -51,20 +51,20 @@ class Order(db.Model):
 
 class OrderItems(db.Model):
     __tablename__ = 'orderitems'
-    order_id = db.Column(db.String, db.ForeignKey('Order.order_id'), primary_key=True, nullable=True)
     item_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), primary_key=True, nullable=False)
-    item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_+id'))
+    item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_id'))
     quantity = db.Column(db.Integer)
     single_price = db.Column(db.Float)
     total_price = db.Column(db.Float)
+    belong_order = db.Column(db.String, db.ForeignKey('order.order_id'))
 
 class Book(db.Model):
     __tablename__ = 'book'
     # book_id should from eBay
     book_id_local = db.Column(db.String(100), primary_key=True)
     book_id_ebay = db.Column(db.String(100))
-    opshop_id = db.Column(db.Integer, db.ForeignKey('Opshop.opshop_id'), nullable=False)
-    item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_id'), nullable=False)
+    opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.opshop_id'), nullable=False)
+    item_type_id = db.Column(db.Integer, db.ForeignKey('itemtype.item_type_id'), nullable=False)
     title = db.Column(db.String(100))
     author = db.Column(db.String(100))
     publisher = db.Column(db.String(100))
@@ -72,7 +72,7 @@ class Book(db.Model):
     edition = db.Column(db.Integer)
     pages_number = db.Column(db.Integer)
     genre = db.Column(db.String(20))
-    cover =db.Column(db.String(100)) # AMZON S3 --> http://applicationurl/cover/1.jpg
+    cover1 =db.Column(db.String(100)) # AMZON S3 --> http://applicationurl/cover/1.jpg
     price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
     description = db.Column(db.String(300))
