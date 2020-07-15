@@ -55,7 +55,7 @@ import json
 #     "cancellations": [
 #         {
 #             "cancelId": "5000018282",
-#             "marketplaceId": "EBAY_US",
+#             "marketplaceId": "EBAY_AU",
 #             "legacyOrderId": "170007292461-9190794007",
 #             "requestorType": "SELLER",
 #             "cancelReason": "OUT_OF_STOCK_OR_CANNOT_FULFILL",
@@ -65,7 +65,7 @@ import json
 #             "paymentStatus": "UNKNOWN",
 #             "requestRefundAmount": {
 #                 "value": 0,
-#                 "currency": "USD"
+#                 "currency": "AUD"
 #             },
 #             "cancelRequestDate": {
 #                 "value": "2015-05-18T22:42:11.000Z",
@@ -76,7 +76,7 @@ import json
 #         },
 #         {
 #             "cancelId": "5000020253",
-#             "marketplaceId": "EBAY_US",
+#             "marketplaceId": "EBAY_AU",
 #             "legacyOrderId": "170007591793-9351013007",
 #             "requestorType": "SELLER",
 #             "cancelReason": "OUT_OF_STOCK_OR_CANNOT_FULFILL",
@@ -86,7 +86,7 @@ import json
 #             "paymentStatus": "PAYPAL_PAID",
 #             "requestRefundAmount": {
 #                 "value": 2.46,
-#                 "currency": "USD"
+#                 "currency": "AUD"
 #             },
 #             "cancelRequestDate": {
 #                 "value": "2015-06-13T00:32:09.000Z",
