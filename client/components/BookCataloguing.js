@@ -20,29 +20,38 @@ import styles from "../config/styles";
 export default class BookCataloguing extends Component{
     constructor(props) {
         super(props);
-        this.imageID = 0;
+        this.imageId = 0;
         this.state = {
-            Title:"",
-            ISBN: "",
-            ISBNError:false,
-            Genre: "",
-            Author: "",
-            Pages: 0,
-            Publisher:"",
-            Price: 0,
-            Condition:"",
-            Other_details: "",
+            title:"",
+            isbn: "",
+            isbnError:false,
+            genre: "",
+            author: "",
+            pages: 0,
+            publisher:"",
+            price: 0,
+            condition:"",
+            otherDetails: "",
             imageArray:[],
             initImage: null,
         }
     }
+//TODO: API call to get book data before rendering and set to state
+    componentDidMount() {
+        // axios.get(`http://localhost/book`)
+        //     .then(res => {
+        //         const data = res.data;
+        //         this.setState({ title: data.title });
+        //     })
+    }
 
     onButtonPress() {
-        if (this.state.Title === "" || this.state.Condition === "" || this.state.Price === 0) {
+        if (this.state.title === "" || this.state.condition === "" || this.state.price === 0) {
             Alert.alert("Warning:",
                 "You have to fill out Title, Condition and Price")
         } else{
-            Alert.alert("BookCataloguing book: " + this.state.Title)
+            //TODO: API call to submit and redirect to RootNavigator
+            Alert.alert("BookCataloguing book: " + this.state.title)
         }
     }
 
@@ -55,10 +64,10 @@ export default class BookCataloguing extends Component{
     };
 
     validISBN = () => {
-        if ((this.state.ISBN.length !== 10) && (this.state.ISBN.length !== 13)){
-            this.setState({ISBNError: true})
+        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13)){
+            this.setState({isbnError: true})
         } else{
-            this.setState({ISBNError: false})
+            this.setState({isbnError: false})
         }
     }
 
@@ -72,10 +81,10 @@ export default class BookCataloguing extends Component{
         if (!cancelled) {
             this.setState({initImage: uri});
             //add this image to imageArray
-            this.imageID = this.imageID + 1;
+            this.imageId = this.imageId + 1;
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
-                id: this.imageID,
+                id: this.imageId,
                 image: this.state.initImage
             })
             this.setState({
@@ -83,10 +92,10 @@ export default class BookCataloguing extends Component{
             })
         }
     };
-
+    //TODO: All fields regex check
     render() {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={[styles.container,{marginTop:'10%'}]}>
                 <KeyboardAwareScrollView behavior="padding">
                 {/*Create an Image Carousel*/}
                 <View>
@@ -120,7 +129,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    onChangeText={(Title) => this.setState({Title})}
+                    onChangeText={(title) => this.setState({title})}
                 />
 
                 <Text style={styles.listingTitle}>ISBN: </Text>
@@ -131,9 +140,9 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     maxLength={13}
                     onBlur={this.validISBN.bind(this)}
-                    onChangeText={(ISBN) => this.setState({ISBN})}
+                    onChangeText={(isbn) => this.setState({isbn})}
                 />
-                    {this.state.ISBNError?
+                    {this.state.isbnError?
                         <Text style={{color:'red'}}>Please enter 10 or 13 digits</Text>
                         : null
                     }
@@ -143,7 +152,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    onChangeText={(Genre) => this.setState({Genre})}
+                    onChangeText={(genre) => this.setState({genre})}
                 />
 
                 <Text style={styles.listingTitle}>Author: </Text>
@@ -151,7 +160,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    onChangeText={(Author) => this.setState({Author})}
+                    onChangeText={(author) => this.setState({author})}
                 />
 
                 <Text style={styles.listingTitle}>Page: </Text>
@@ -160,7 +169,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    onChangeText={(Page) => this.setState({Page})}
+                    onChangeText={(page) => this.setState({page})}
                 />
 
                 <Text style={styles.listingTitle}>Publisher: </Text>
@@ -168,7 +177,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     clearButtonMode={"while-editing"}
                     style={styles.textInput}
-                    onChangeText={(Publisher) => this.setState({Publisher})}
+                    onChangeText={(publisher) => this.setState({publisher})}
                 />
 
                 <View style={{flex: 1, flexDirection: "row"}}>
@@ -180,7 +189,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    onChangeText={(Price) => this.setState({Price})}
+                    onChangeText={(price) => this.setState({price})}
                 />
 
 
@@ -189,7 +198,7 @@ export default class BookCataloguing extends Component{
                     <Text style={styles.requiredText}>*</Text>
                 </View>
                 <RNPickerSelect
-                    onValueChange={(Condition) => this.setState({Condition})}
+                    onValueChange={(condition) => this.setState({condition})}
                     style={{
                         ...pickerSelectStyles,
                         // iconContainer: {
@@ -217,7 +226,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     multiline={true}
-                    onChangeText={(Other_details) => this.setState({Other_details})}
+                    onChangeText={(otherDetails) => this.setState({otherDetails})}
                 />
                 </KeyboardAwareScrollView>
 

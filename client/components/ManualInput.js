@@ -13,21 +13,21 @@ export default class ManualInput extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ISBN: "",
-            ISBNError:false,
+            isbn: "",
+            isbnError:false,
         }
     }
 
     validISBN = () => {
-        if ((this.state.ISBN.length !== 10) && (this.state.ISBN.length !== 13)){
-            this.setState({ISBNError: true})
+        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13)){
+            this.setState({isbnError: true})
         } else{
-            this.setState({ISBNError: false})
+            this.setState({isbnError: false})
         }
     }
 
     onButtonPress = () => {
-        Alert.alert("ISBN number is: " + this.state.ISBN)
+        Alert.alert("ISBN number is: " + this.state.isbn)
     }
 
     render() {
@@ -52,9 +52,9 @@ export default class ManualInput extends Component {
                         clearButtonMode={"while-editing"}
                         maxLength={13}
                         onBlur={this.validISBN.bind(this)}
-                        onChangeText={(ISBN) => this.setState({ISBN})}
+                        onChangeText={(isbn) => this.setState({isbn})}
                     />
-                    {this.state.ISBNError?
+                    {this.state.isbnError?
                         <Text style={{color:'red', marginLeft:"10%"}}>Please enter 10 or 13 digits</Text>
                         : null
                     }

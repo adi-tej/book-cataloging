@@ -23,6 +23,14 @@ export default class PendingOrders extends Component {
                 {orderNumber: 11, timeout: "02:16:00", totalPrice: 20},
             ]}
     }
+//TODO: API call to get orders data before rendering and set to state
+    componentDidMount() {
+        // axios.get(`http://localhost/orders`)
+        //     .then(res => {
+        //         const data = res.data;
+        //         this.setState({ title: data.orderArray });
+        //     })
+    }
 
     //This function is to remove a confirmed order
     removeComfirmedOrder = (index) => {

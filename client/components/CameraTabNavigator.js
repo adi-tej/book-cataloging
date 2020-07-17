@@ -3,7 +3,7 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import { View} from 'react-native';
 import Scanner from "./BarcodeScanner";
 import ManualInput from "./ManualInput";
-import Logout from "./Logout";
+import Cataloging from "./Cataloging";
 import styles from "../config/styles";
 
 const Tab = createBottomTabNavigator()
@@ -19,7 +19,7 @@ export default function CameraTabNavigator(){
                 style:styles.cameraScanTabNavigator
             }}>
                 <Tab.Screen name="Barcode" component={Scanner}/>
-                <Tab.Screen name="OCR" component={Logout}/>
+                <Tab.Screen name="OCR" component={Cataloging}/>
                 <Tab.Screen name="Manual" component={ManualInput}/>
             </Tab.Navigator>
         </View>

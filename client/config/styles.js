@@ -92,6 +92,16 @@ const styles = StyleSheet.create({
     /**
      * Camera tab navigator
      */
+    cameraComponent:{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+    },
+    barcodeCameraComponent:{
+        flex: 1,
+        backgroundColor: 'transparent',
+        flexDirection:'row'
+    },
     cameraScanTab:{
         justifyContent:'center'
     },
@@ -111,6 +121,7 @@ const styles = StyleSheet.create({
     },
     /**
      * Book Cataloging
+     * Edit Listing
      * Image carousal
      */
     imageContainer:{

@@ -38,6 +38,7 @@ export default function Login({navigation}){
         }
     }
     const handleLogin = () => {
+        //TODO: API call to login
         if(data.email === 'adi@gmail.com' && data.password === '123'){
             navigation.navigate('RootNavigator')
         }else{
