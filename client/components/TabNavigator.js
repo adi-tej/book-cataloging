@@ -1,13 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import {
-    Menu,
-    MenuOptions,
-    MenuOption,
-    MenuTrigger,
-} from 'react-native-popup-menu';
-import styles from "../config/styles";
 import BookCataloguing from "./BookCataloguing";
 import PendingOrders from "./PendingOrders";
 import ActiveListing from "./ActiveListing";
