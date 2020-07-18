@@ -9,11 +9,15 @@ import styles from "../config/styles";
 
 //This class is to create a box of each listing item
 export default class ShowActiveListing extends Component {
+    //TODO: redirect all props to edit listing
     render() {
         return (
             <TouchableOpacity
                 activityOpacity={0.5}
-                style={styles.itemContainer} onPress={()=>alert("Successful click")}>
+                style={styles.itemContainer} onPress={() => this.props.navigation.navigate('EditListing',{
+                    title:this.props.title,
+                    price:this.props.price
+            })}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
                         <Image style={styles.itemCover} source={{uri:this.props.bookCover}}/>

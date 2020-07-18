@@ -33,6 +33,7 @@
     "react-native-reanimated": "~1.9.0",
     "react-native-safe-area-context": "~3.0.7",
     "react-native-screens": "~2.9.0",
+    "react-native-search-header": "^0.3.5",
     "react-native-tab-view": "^2.14.4",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "^0.13.1",

@@ -21,6 +21,7 @@ export default function Barcode({navigation}) {
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
         setBarcode(data);
+        //TODO: redirect to book cataloging page with barcode/isbn as prop
         alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
 
@@ -33,11 +34,7 @@ export default function Barcode({navigation}) {
 
     return (
         <View
-            style={{
-                flex: 1,
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-            }}>
+            style={styles.cameraComponent}>
             <BarCodeScanner
                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}
@@ -45,11 +42,7 @@ export default function Barcode({navigation}) {
                 flashMode={flashMode}
             >
                 <View
-                    style={{
-                        flex: 1,
-                        backgroundColor: 'transparent',
-                        flexDirection:'row'
-                    }}>
+                    style={styles.barcodeCameraComponent}>
                     <TouchableOpacity
                         style={[styles.cameraOption,{
                             width:'8%',

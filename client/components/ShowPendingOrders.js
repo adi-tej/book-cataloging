@@ -8,7 +8,7 @@ import styles from "../config/styles";
 
 //This class is to create a box of each order
 export default class ShowPendingOrders extends Component {
-
+    //TODO: on press redirect to online order details page
     render() {
         return (
             <TouchableOpacity
