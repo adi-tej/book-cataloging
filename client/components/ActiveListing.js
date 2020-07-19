@@ -29,12 +29,19 @@ export default class ActiveListing extends Component {
 
     //TODO: API call to get data before rendering
     componentDidMount() {
+
         // axios.get(`http://localhost/books`)
         //     .then(res => {
         //         const data = res.data;
         //         this.setState({ infoArray: data.infoArray });
         //     })
     }
+    //TODO: API call to Update state from search
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        //keyword from search
+        //console.warn(this.props.route.params)
+    }
+
     //This function is to add a new order
     addNewListingItem = () => {
         const copyInfoArray = Object.assign([], this.state.infoArray);
@@ -52,6 +59,9 @@ export default class ActiveListing extends Component {
     }
     //TODO: set all fields to prop
     render() {
+
+        //console.warn(this.props.route.params)
+        //this.props.navigation.routes.params.update();
         return (
             <ScrollView style={styles.container}>
                 {

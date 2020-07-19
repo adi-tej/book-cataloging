@@ -14,7 +14,8 @@ export default class ShowActiveListing extends Component {
         return (
             <TouchableOpacity
                 activityOpacity={0.5}
-                style={styles.itemContainer} onPress={() => this.props.navigation.navigate('EditListing',{
+                style={styles.itemContainer} onPress={() => this.props.navigation.navigate('BookCataloguing',{
+                    edit:true,
                     title:this.props.title,
                     price:this.props.price
             })}>

@@ -1,13 +1,5 @@
 import React, {Component} from 'react';
-import {
-    Dimensions,
-    AppRegistry,
-    StyleSheet,
-    View,
-    Text,
-    Button,
-    StatusBar
-} from 'react-native';
+import { View } from 'react-native';
 import SearchHeader from 'react-native-search-header';
 import {Header, Left, Right, Icon} from "native-base";
 import {
@@ -17,6 +9,7 @@ import {
     MenuTrigger,
 } from 'react-native-popup-menu';
 export default function TabHeader({navigation}){
+
     const searchHeaderRef = React.useRef(null);
     return(
         <View>
@@ -26,6 +19,7 @@ export default function TabHeader({navigation}){
                 </Left>
                 <Right>
                     <Icon onPress={() => searchHeaderRef.current.show()} name='search' style={{marginHorizontal:'8%'}}/>
+                    {/* LISTING MENU COMMENTED FOR FUTURE USE*/}
                     {/*<Menu>*/}
                     {/*    <MenuTrigger>*/}
                     <Icon onPress={() => navigation.navigate('CameraTab', {mode: "add"})} name="add" style={{marginHorizontal:'8%'}}/>
@@ -64,15 +58,16 @@ export default function TabHeader({navigation}){
             </Header>
             <SearchHeader
                 ref = { searchHeaderRef }
-                placeholder = 'Search...'
+                placeholder = 'Enter ISBN or title...'
                 placeholderColor = 'gray'
-                pinnedSuggestions = {[ `react-native-search-header`, `react-native`, `javascript` ]}
-                onClear = {() => {
-                    console.log(`Clearing input!`);
-                }}
+                pinnedSuggestions = {[]}
+                // onClear = {() => {
+                //     console.log(`Clearing input!`);
+                // }}
+                enableSuggestion={true}
                 onGetAutocompletions = {async (text) => {
                     if (text) {
-                        const response = await fetch(`http://suggestqueries.google.com/complete/search?client=firefox&q=${text}`, {
+                        const response = await fetch(`http://suggestqueries.google.com/complete/search?client=chrome&q=${text}`, {
                             method: `get`
                         });
                         const data = await response.json();
@@ -80,6 +75,13 @@ export default function TabHeader({navigation}){
                     } else {
                         return [];
                     }
+                }}
+                onHide={() => {
+                    searchHeaderRef.current.clear()
+                }}
+                onSearch={(obj) => {
+                    // update the active listing
+                    navigation.navigate("Active Listing",{search:true,data:obj.nativeEvent.text})
                 }}
             />
         </View>
