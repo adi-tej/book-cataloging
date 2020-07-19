@@ -41,7 +41,7 @@ export default function Barcode({navigation,mode}) {
     };
 
     // -----------------modal setting
-    //TODO: pass the item ISBN to backend and request removal of this item
+    //TODO: API call to pass the item ISBN to backend and request removal of this item
     const onCheckoutPress = (() => {
         Alert.alert("Successfully remove item from eBay!")
         setTimeout(()=>{setModalVisible(false)},1000)

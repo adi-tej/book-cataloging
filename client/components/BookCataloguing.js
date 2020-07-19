@@ -70,6 +70,11 @@ export default class BookCataloguing extends Component{
         }
     }
 
+    onRemoveButtonPress(){
+        //TODO: popup to confirm remove listing
+        //TODO: API call to remove listing
+    }
+
     deleteImage = (index) =>{
         const copyImageArray = Object.assign([], this.state.imageArray);
         copyImageArray.splice(index, 1)
@@ -252,9 +257,18 @@ export default class BookCataloguing extends Component{
                     style={styles.loginButton}
                     onPress={this.onButtonPress.bind(this)}>
                     <Text style={styles.loginText}>{
-                       this.state.edit ? 'Edit' : 'List on eBay'
+                       this.state.edit ? 'Update' : 'List on eBay'
                     }</Text>
                 </TouchableOpacity>
+                {
+                    this.state.edit ?
+                        <TouchableOpacity
+                            activityOpacity={0.5}
+                            style={styles.loginButton}
+                            onPress={this.onRemoveButtonPress.bind(this)}>
+                            <Text style={styles.loginText}>Remove from Listing</Text>
+                        </TouchableOpacity> : null
+                }
             </SafeAreaView>
         )
     }
