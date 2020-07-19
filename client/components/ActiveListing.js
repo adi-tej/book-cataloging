@@ -9,15 +9,21 @@ export default class ActiveListing extends Component {
         this.updateid = "";
         this.updateBookCover = "";
         this.updateTitle = "";
+        this.updateAuthor = "";
         this.updateGenre = "";
         this.updatePrice = 0;
         //TODO: All details of the book
         this.state = {infoArray:[
-                {id: 1, bookCover: "https://picsum.photos/id/237/200/300", title:"Shanghai Girls is a 2009 novel by Lisa See. It centers on the complex relationship between two sisters", genre:"Novel", price: 10},
-                {id: 2, bookCover: "https://picsum.photos/seed/picsum/200/300", title:"Shanghai: This is a beautiful city,Cool", genre:"Novel", price: 100},
-                {id: 3, bookCover: "https://picsum.photos/200/300?grayscale", title:"Shanghai", genre:"Novel", price: 1.2},
-                {id: 4, bookCover: "https://picsum.photos/200/300/?blur", title:"Flower", genre:"Science", price: 10.23},
-                {id: 5, bookCover: "https://picsum.photos/id/870/200/300?grayscale&blur=2", title:"Light tower", genre:"Non-fiction", price: 10.456},
+                {id: 1, bookCover: "https://picsum.photos/id/237/200/300", title:"Shanghai Girls is a 2009 novel by Lisa See. " +
+                        "It centers on the complex relationship between two sisters", author:"Tom", genre:"Novel", price: 10},
+                {id: 2, bookCover: "https://picsum.photos/seed/picsum/200/300", title:"Shanghai: This is a beautiful city,Cool",
+                 author:"Tom", genre:"Novel", price: 100},
+                {id: 3, bookCover: "https://picsum.photos/200/300?grayscale", title:"Shanghai", author:"Tom",
+                    genre:"Novel", price: 1.2},
+                {id: 4, bookCover: "https://picsum.photos/200/300/?blur", title:"Flower", author:"Tom",
+                    genre:"Science", price: 10.23},
+                {id: 5, bookCover: "https://picsum.photos/id/870/200/300?grayscale&blur=2", title:"Light tower",
+                    author:"Tom", genre:"Non-fiction", price: 10.456},
             ]}
     }
 
@@ -36,6 +42,7 @@ export default class ActiveListing extends Component {
             id: this.updateid,
             bookCover: this.updateBookCover,
             title: this.updateTitle,
+            author: this.updateAuthor,
             genre: this.updateGenre,
             price: this.updatePrice
         })
@@ -54,6 +61,7 @@ export default class ActiveListing extends Component {
                                 key={info.id}
                                 bookCover={info.bookCover}
                                 title={info.title}
+                                author={info.author}
                                 genre={info.genre}
                                 price={info.price}
                                 navigation={this.props.navigation}

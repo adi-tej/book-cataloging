@@ -28,7 +28,7 @@ export default function TabHeader({navigation}){
                     <Icon onPress={() => searchHeaderRef.current.show()} name='search' style={{marginHorizontal:'8%'}}/>
                     {/*<Menu>*/}
                     {/*    <MenuTrigger>*/}
-                    <Icon onPress={() => navigation.navigate('CameraTab')} name="add" style={{marginHorizontal:'8%'}}/>
+                    <Icon onPress={() => navigation.navigate('CameraTab', {mode: "add"})} name="add" style={{marginHorizontal:'8%'}}/>
                     {/*</MenuTrigger>*/}
                     {/*<MenuOptions optionsContainerStyle={styles.contextMenuContainer}>*/}
                     {/*    <MenuOption onSelect={() => this.props.navigation.navigate('CameraTab')}>*/}

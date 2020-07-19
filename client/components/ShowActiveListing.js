@@ -24,7 +24,8 @@ export default class ShowActiveListing extends Component {
                     </View>
                     <View style={styles.itemTitleView}>
                         <Text style={styles.itemTitle} numberOfLines={2}>{this.props.title}</Text>
-                        <Text style={{color:"grey"}}>{this.props.genre}</Text>
+                        <Text style={{color:"grey"}}>By {this.props.author}</Text>
+                        {/*<Text style={{color:"grey"}}>{this.props.genre}</Text>*/}
                     </View>
                     <View style={styles.priceView}>
                         <Text style={{fontSize: 16}}>$ {this.props.price}</Text>
