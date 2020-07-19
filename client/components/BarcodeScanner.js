@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Text, View, StyleSheet, Button, TouchableOpacity, Modal, SafeAreaView, Alert} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Modal, SafeAreaView, Alert} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from "../config/styles";
 import {Camera} from "expo-camera";
@@ -9,17 +9,17 @@ export default function Barcode({navigation,mode}) {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [type, setType] = useState(Camera.Constants.Type.back);
-    const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto);
+    // const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto);
     const [modalVisible, setModalVisible] = useState(false);
 
     const [barcode, setBarcode] = useState("");
-    const [title, setTitle] = useState("");
-    const [genre, setGenre] = useState("");
-    const [author, setAuthor] = useState("");
-    const [pages, setPages] = useState(0);
-    const [publisher, setPublisher] = useState("");
-    const [price, setPrice] = useState(0);
-    const [initImage, setInitImage] = useState(null);
+    // const [title, setTitle] = useState("");
+    // const [genre, setGenre] = useState("");
+    // const [author, setAuthor] = useState("");
+    // const [pages, setPages] = useState(0);
+    // const [publisher, setPublisher] = useState("");
+    // const [price, setPrice] = useState(0);
+    // const [initImage, setInitImage] = useState(null);
 
 
     useEffect(() => {
@@ -64,7 +64,7 @@ export default function Barcode({navigation,mode}) {
                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}
                 type={type}
-                flashMode={flashMode}
+                // flashMode={flashMode}
             >
                 <View
                     style={styles.barcodeCameraComponent}>
@@ -129,7 +129,7 @@ export default function Barcode({navigation,mode}) {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     activityOpacity={0.5}
-                                    style={styles.removeButton}
+                                    style={[styles.removeButton, {backgroundColor: "lightgrey"}]}
                                     onPress={()=>{setModalVisible(false)
                                         setScanned(false)
                                     }}>
