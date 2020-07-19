@@ -34,10 +34,20 @@ export default class BookCataloguing extends Component{
             otherDetails: "",
             imageArray:[],
             initImage: null,
+            edit:false
         }
     }
 //TODO: API call to get book data before rendering and set to state
     componentDidMount() {
+        if(this.props.route && this.props.route.params && this.props.route.params.edit){
+            const params = this.props.route.params
+            this.setState({
+                edit:true,
+                title:params.title,
+                price:params.price.toString()
+            })
+        }
+        //this.setState({title:this.props.route.params.title})
         // axios.get(`http://localhost/book`)
         //     .then(res => {
         //         const data = res.data;
@@ -52,6 +62,11 @@ export default class BookCataloguing extends Component{
         } else{
             //TODO: API call to submit and redirect to RootNavigator
             Alert.alert("BookCataloguing book: " + this.state.title)
+            if(this.state.edit){
+                //TODO: API call to edit the listing
+            }else{
+                //TODO: API call to create the listing
+            }
         }
     }
 
@@ -129,6 +144,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
+                    value={this.state.title}
                     onChangeText={(title) => this.setState({title})}
                 />
 
@@ -189,6 +205,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
+                    value={this.state.price}
                     onChangeText={(price) => this.setState({price})}
                 />
 
@@ -234,7 +251,9 @@ export default class BookCataloguing extends Component{
                     activityOpacity={0.5}
                     style={styles.loginButton}
                     onPress={this.onButtonPress.bind(this)}>
-                    <Text style={styles.loginText}>List on eBay</Text>
+                    <Text style={styles.loginText}>{
+                       this.state.edit ? 'Edit' : 'List on eBay'
+                    }</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         )
