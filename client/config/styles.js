@@ -329,5 +329,13 @@ const styles = StyleSheet.create({
         backgroundColor:'rgba(255,255,255, 1)',
     },
 
+    //orderItemDetails
+    scrollContainer : {
+        flexDirection: 'column',
+        paddingHorizontal:"5%",
+        width:"100%",
+        height:"85%",
+    },
+
 })
 export default styles

@@ -79,7 +79,7 @@ export default class BookCataloguing extends Component{
     };
 
     validISBN = () => {
-        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13)){
+        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13) && (this.state.isbn !== "")){
             this.setState({isbnError: true})
         } else{
             this.setState({isbnError: false})
@@ -205,7 +205,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.price}
+                    value={this.state.price.toString()}
                     onChangeText={(price) => this.setState({price})}
                 />
 
