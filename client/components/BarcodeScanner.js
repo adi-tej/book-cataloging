@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import {Text, View, StyleSheet, Button, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, Button, TouchableOpacity, Modal, SafeAreaView, Alert} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from "../config/styles";
 import {Camera} from "expo-camera";
+import Checkout from "./Checkout";
 
-export default function Barcode({navigation}) {
+export default function Barcode({navigation,mode}) {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [type, setType] = useState(Camera.Constants.Type.back);
     const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto);
+    const [modalVisible, setModalVisible] = useState(false);
+
     const [barcode, setBarcode] = useState("");
+    const [title, setTitle] = useState("");
+    const [genre, setGenre] = useState("");
+    const [author, setAuthor] = useState("");
+    const [pages, setPages] = useState(0);
+    const [publisher, setPublisher] = useState("");
+    const [price, setPrice] = useState(0);
+    const [initImage, setInitImage] = useState(null);
+
 
     useEffect(() => {
         (async () => {
@@ -22,8 +33,21 @@ export default function Barcode({navigation}) {
         setScanned(true);
         setBarcode(data);
         //TODO: redirect to book cataloging page with barcode/isbn as prop
-        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+        if (mode === "add") {
+            alert(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
+        } else if (mode === "checkout"){
+            setModalVisible(true);
+        }
     };
+
+    // -----------------modal setting
+    //TODO: pass the item ISBN to backend and request removal of this item
+    const onCheckoutPress = (() => {
+        Alert.alert("Successfully remove item from eBay!")
+        setTimeout(()=>{setModalVisible(false)},1000)
+        setScanned(false)
+    });
+    // -----------------modal setting
 
     if (hasPermission === null) {
         return <Text>Requesting for camera permission</Text>;
@@ -31,6 +55,7 @@ export default function Barcode({navigation}) {
     if (hasPermission === false) {
         return <Text>No access to camera</Text>;
     }
+
 
     return (
         <View
@@ -51,22 +76,22 @@ export default function Barcode({navigation}) {
                         onPress={() => navigation.navigate('RootNavigator')}>
                         <Text style={{ fontSize: 18, color: 'white'}}> X </Text>
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[styles.cameraOption,{
-                            width:'22%',
-                            marginLeft : '3%'
-                        }]}
-                        onPress={() => {
-                            setFlashMode(
-                                flashMode === Camera.Constants.FlashMode.auto
-                                    ? Camera.Constants.FlashMode.on
-                                    : flashMode === Camera.Constants.FlashMode.on
-                                    ? Camera.Constants.FlashMode.off
-                                    : Camera.Constants.FlashMode.auto
-                            );
-                        }}>
-                        <Text style={{ fontSize: 18, color: 'white' }}> Flash </Text>
-                    </TouchableOpacity>
+                    {/*<TouchableOpacity*/}
+                    {/*    style={[styles.cameraOption,{*/}
+                    {/*        width:'22%',*/}
+                    {/*        marginLeft : '3%'*/}
+                    {/*    }]}*/}
+                    {/*    onPress={() => {*/}
+                    {/*        setFlashMode(*/}
+                    {/*            flashMode === Camera.Constants.FlashMode.auto*/}
+                    {/*                ? Camera.Constants.FlashMode.on*/}
+                    {/*                : flashMode === Camera.Constants.FlashMode.on*/}
+                    {/*                ? Camera.Constants.FlashMode.off*/}
+                    {/*                : Camera.Constants.FlashMode.auto*/}
+                    {/*        );*/}
+                    {/*    }}>*/}
+                    {/*    <Text style={{ fontSize: 18, color: 'white' }}> Flash </Text>*/}
+                    {/*</TouchableOpacity>*/}
                     <TouchableOpacity
                         style={[styles.cameraOption,{
                             width:'35%',
@@ -85,15 +110,37 @@ export default function Barcode({navigation}) {
                 </View>
             </BarCodeScanner>
 
-            {/*{scanned && (*/}
-            {/*    <Button*/}
-            {/*        style={{*/}
-            {/*            backgroundColor:'blue',*/}
-            {/*            position: "absolute",*/}
-            {/*            bottom: 30}}*/}
-            {/*        title={'Tap to Scan Again'}*/}
-            {/*        onPress={() => setScanned(false)} />*/}
-            {/*)}*/}
+            {/*---------------------popup for checkout------*/}
+            <Modal
+                transparent={true}
+                visible={modalVisible}
+            >
+                <View style={{backgroundColor:"#000000aa", flex: 1}}>
+                    <View style={styles.checkoutPopup}>
+                        <View style={{paddingVertical:"10%",}}>
+                            {/*TODO: pass bookCover, title, author and price to it*/}
+                            <Checkout />
+                            <View style={styles.buttonView}>
+                                <TouchableOpacity
+                                    activityOpacity={0.5}
+                                    style={styles.removeButton}
+                                    onPress={onCheckoutPress}>
+                                    <Text style={styles.loginText}>Checkout item</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    activityOpacity={0.5}
+                                    style={styles.removeButton}
+                                    onPress={()=>{setModalVisible(false)
+                                        setScanned(false)
+                                    }}>
+                                    <Text style={styles.loginText}>Close</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            {/*---------------------popup for checkout*/}
         </View>
     );
 }

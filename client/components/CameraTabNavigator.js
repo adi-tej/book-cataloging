@@ -7,7 +7,10 @@ import Cataloging from "./Cataloging";
 import styles from "../config/styles";
 
 const Tab = createBottomTabNavigator()
-export default function CameraTabNavigator(){
+export default function CameraTabNavigator({navigation,route}){
+
+    const { mode } = route.params;
+
     return(
         <View  style={{flex:1, backgroundColor: 'transparent',}}>
             <Tab.Navigator initialRouteName="Barcode" tabBarOptions={{
@@ -18,9 +21,10 @@ export default function CameraTabNavigator(){
                 labelStyle:styles.cameraScanTabLabel,
                 style:styles.cameraScanTabNavigator
             }}>
-                <Tab.Screen name="Barcode" component={Scanner}/>
-                <Tab.Screen name="OCR" component={Cataloging}/>
-                <Tab.Screen name="Manual" component={ManualInput}/>
+                <Tab.Screen name="Barcode" children={()=> <Scanner mode={mode} navigation={navigation}/>} />
+                <Tab.Screen name="OCR" children={()=> <Cataloging mode={mode} navigation={navigation}/>} />
+                <Tab.Screen name="Manual" children={()=> <ManualInput mode={mode} navigation={navigation}/>}/>
+
             </Tab.Navigator>
         </View>
     )

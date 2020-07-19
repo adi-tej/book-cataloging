@@ -5,6 +5,10 @@ import BookCataloguing from "./BookCataloguing";
 import PendingOrders from "./PendingOrders";
 import ActiveListing from "./ActiveListing";
 import TabHeader from "./TabHeader";
+
+import styles from "../config/styles";
+import CameraTabNavigator from "./CameraTabNavigator";
+
 const Tab = createMaterialTopTabNavigator()
 
 export default class TabNavigator extends Component{
@@ -16,11 +20,13 @@ export default class TabNavigator extends Component{
                 <Tab.Screen name="Active Listing" component={ActiveListing} />
                 <Tab.Screen name="Pending Orders" component={PendingOrders} />
                 <Tab.Screen name="Test tab" component={BookCataloguing} />
+
             </Tab.Navigator>
-            {/*<TouchableOpacity*/}
-            {/*    style={styles.checkoutButton}>*/}
-            {/*    <Text style={{ fontSize: 24, color: 'white'}}>Checkout</Text>*/}
-            {/*</TouchableOpacity>*/}
+            <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('CameraTab', {mode: "checkout"})}
+                style={styles.checkoutButton}>
+                <Text style={{ fontSize: 24, color: 'white'}}>Checkout</Text>
+            </TouchableOpacity>
         </View>
     )}
 }

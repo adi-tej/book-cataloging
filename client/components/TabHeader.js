@@ -22,7 +22,7 @@ export default function TabHeader({navigation}){
                     {/* LISTING MENU COMMENTED FOR FUTURE USE*/}
                     {/*<Menu>*/}
                     {/*    <MenuTrigger>*/}
-                    <Icon onPress={() => navigation.navigate('CameraTab')} name="add" style={{marginHorizontal:'8%'}}/>
+                    <Icon onPress={() => navigation.navigate('CameraTab', {mode: "add"})} name="add" style={{marginHorizontal:'8%'}}/>
                     {/*</MenuTrigger>*/}
                     {/*<MenuOptions optionsContainerStyle={styles.contextMenuContainer}>*/}
                     {/*    <MenuOption onSelect={() => this.props.navigation.navigate('CameraTab')}>*/}

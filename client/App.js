@@ -22,13 +22,12 @@ export default function App(){
           }
       }}>
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home" screenOptions={{
-                headerShown: false
-            }}>
-                <Stack.Screen name="Landing" component={Home}/>
-                <Stack.Screen name="RootNavigator" component={DrawerNavigator} />
+            <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
+                <Stack.Screen name="Landing" component={Home} />
+                <Stack.Screen name="RootNavigator" component={DrawerNavigator}/>
                 <Stack.Screen name="CameraTab" component={CameraTabNavigator} />
                 <Stack.Screen name="BookCataloguing" component={BookCataloguing}/>
+
             </Stack.Navigator>
         </NavigationContainer>
       </MenuProvider>

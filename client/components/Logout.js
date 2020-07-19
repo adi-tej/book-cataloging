@@ -1,12 +1,12 @@
 import React,{Component} from 'react';
-import { NavigationActions, StackActions } from 'react-navigation';
+import {NavigationActions, SafeAreaView, StackActions} from 'react-navigation';
 
 import { Text, View} from 'react-native';
 export default function Logout({navigation}) {
     return(
-        <View>
+        <SafeAreaView>
             <Text>This is logout</Text>
-        </View>
+        </SafeAreaView>
     )
 }
 // export default class Logout extends Component {
