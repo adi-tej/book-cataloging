@@ -25,8 +25,6 @@ import json
 
 # -- Wei Song
 
-# order = Blueprint('order_api', __name__)
-
 order_api = Namespace(
     'order',
     description="order management for opshop as well as orders from ebay"
@@ -184,4 +182,3 @@ class OrderList(Resource):
             resp.status_code = GET_SUCCESS
             resp.headers['message'] = 'order deletion success'
             return resp
-

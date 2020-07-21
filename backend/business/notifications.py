@@ -121,7 +121,7 @@ class Notifications(Resource):
     @notification_api.response(200, 'orders from ebay')
     @notification_api.response(404, 'no orders found')
     @token_required
-    def get(self, user_id):
+    def get(self, opshop_id):
         api = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
         past_time = time() - 10 * 60 * 60 - 1*60
         past_time = strftime('%Y-%m-%d %H:%M:%S', localtime(past_time))
@@ -136,15 +136,8 @@ class Notifications(Resource):
         }
 
         resp = api.execute("GetOrders", request_info)
-
-        user = User.query.filter_by(user_id=user_id).first()
-        if not user:
-            resp = make_response()
-            resp.status_code = UNAUTHORIZED
-            resp.headers['message'] = 'user not exist'
-            return resp
-
-        current_opshop_email = user.opshop.opshop_ebay_email
+        opshop = Opshop.query.filter_by(opshop_id=opshop_id).first()
+        current_opshop_email = opshop.opshop_ebay_email
 
         if resp.dict()['ReturnedOrderCountActual'] != 0:
             all_orders = resp.dict()['OrderArray']['Order']

@@ -34,7 +34,7 @@ from http_status import *
 user_login_model = auth_api.model(
     'User',
     {
-        'register_email': fields.String,
+        'register_email/user_name': fields.String,
         'password': fields.String
     }
 )
@@ -106,12 +106,18 @@ class UserLogin(Resource):
     )
     def post(self):
         user_info = json.loads(request.data)
-        user_email, password = \
-            user_info['register_email'].strip(), user_info['password'].strip()
+        user_email, user_name, password = '', ''
+        user = User()
+        if user_info['register_email']:
+            user_email, password = \
+                user_info['register_email'].strip(), user_info['password'].strip()
+            user = User.query.filter_by(register_email=user_email).first()
+        elif user_info['user_name']:
+            user_name, password = \
+                user_info['user_name'].strip(), user_info['password'].strip()
+            user = User.query.filter_by(user_name=user_name).first()
 
-        user = User.query.filter_by(register_email=user_email).first()
-
-        resp = make_response()
+        resp = make_response(jsonify(user.__dict__.pop('password')))
         if not user:
             resp.status_code = UNAUTHORIZED
             resp.headers['message'] = 'user not exist'
@@ -127,32 +133,41 @@ class UserLogin(Resource):
 
         return resp
 
-# @auth_api.route('/password/')
-# class UserPassword(Resource):
-#     @token_required
-#     @password_api.expect()
-#     @password_api.doc(
-#         description="Password modification"
-#     )
-#     def post(self):
-#         user_info = json.loads(request.data)
-#         user_email, password = \
-#             user_info['register_email'].strip(), user_info['password'].strip()
-#
-#         user = User.query.filter_by(register_email=user_email).first()
-#         resp = make_response()
-#         if not user:
-#             resp.headers['status'] = UNAUTHORIZED
-#             resp.headers['message'] = 'user not exist'
-#             return resp
-#
-#         user.password = generate_password_hash(password, method='sha256')
-#         db.session.add(user)
-#         db.session.commit()
-#
-#         resp.status_code = POST_SUCCESS
-#         resp.headers['message'] = 'password update success'
-#
-#         return resp
+@auth_api.route('/password/')
+class UserPassword(Resource):
+    @token_required
+    @auth_api.expect(user_login_model)
+    @auth_api.doc(
+        description="Password modification"
+    )
+    @auth_api.response(401, 'user not exist')
+    @auth_api.response(201, 'password update success')
+    def post(self):
+        user_info = json.loads(request.data)
+        user_email, user_name, password = '', ''
+        user = User()
+        if user_info['register_email']:
+            user_email, password = \
+                user_info['register_email'].strip(), user_info['password'].strip()
+            user = User.query.filter_by(register_email=user_email).first()
+        elif user_info['user_name']:
+            user_name, password = \
+                user_info['user_name'].strip(), user_info['password'].strip()
+            user = User.query.filter_by(user_name=user_name).first()
+
+        resp = make_response(user.__dict__.pop('password'))
+        if not user:
+            resp.headers['status'] = UNAUTHORIZED
+            resp.headers['message'] = 'user not exist'
+            return resp
+
+        user.password = generate_password_hash(password, method='sha256')
+        db.session.add(user)
+        db.session.commit()
+
+        resp.status_code = POST_SUCCESS
+        resp.headers['message'] = 'password update success'
+
+        return resp
 
     

@@ -6,7 +6,7 @@ class User(db.Model):
     opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.opshop_id'), nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.role_id'), nullable=False)
     register_email = db.Column(db.String(50), unique=True, nullable=False)
-    user_name = db.Column(db.String(50), unique=False, nullable=False)
+    user_name = db.Column(db.String(50), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
 
 class Role(db.Model):
@@ -73,9 +73,9 @@ class Book(db.Model):
 
 class OrderItems(db.Model):
     __tablename__ = 'orderitems'
+    belong_order = db.Column(db.String(100), db.ForeignKey('order.order_id'), primary_key=True)
     item_id = db.Column(db.String(100), db.ForeignKey('book.book_id_local'), primary_key=True)
     item_type_id = db.Column(db.Integer, db.ForeignKey('itemtype.item_type_id'))
     quantity = db.Column(db.Integer)
     single_price = db.Column(db.Float)
     total_price = db.Column(db.Float)
-    belong_order = db.Column(db.String(100), db.ForeignKey('order.order_id'))
