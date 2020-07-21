@@ -19,7 +19,7 @@ db.session.commit()
 # ---> role information <---
 admin = Role(role_id=1, role_name='admin')
 user = Role(role_id=2, role_name='user')
-db.session.add_all(admin, user)
+db.session.add_all([admin, user])
 db.session.commit()
 
 # ---> user information <---
@@ -28,7 +28,7 @@ user2 = User(opshop_id=1, role_id=2, register_email='kombasseril@gmail.com', use
 user3 = User(opshop_id=1, role_id=2, register_email='', user_name='Adi', password='123456')
 user4 = User(opshop_id=1, role_id=2, register_email='nataliezhong08@gmail.com', user_name='Natalie', password='123456')
 
-db.session.add_all(user1, user2, user3, user4)
+db.session.add_all([user1, user2, user3, user4])
 db.session.commit()
 
 # ---> item types <---

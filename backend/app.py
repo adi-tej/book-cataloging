@@ -51,7 +51,8 @@ app.register_blueprint(books, url_prefix='/book')
 app.register_blueprint(order)
 app.register_blueprint(notification, url_prefix='/notification')
 
-# db.create_all()
+db.drop_all()
+db.create_all()
 
 if __name__ == '__main__':
     app.debug=True

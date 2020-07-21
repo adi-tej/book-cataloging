@@ -15,7 +15,6 @@ class Role(db.Model):
     role_name = db.Column(db.String(20))
     users = db.relationship('User', backref='role', lazy='dynamic')
 
-# This opshop table need to be configured when launching the application
 class Opshop(db.Model):
     __tablename__ = 'opshop'
     opshop_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
@@ -44,15 +43,6 @@ class Order(db.Model):
     order_status = db.Column(db.String(20))
     order_items = db.relationship('OrderItems', backref='order', lazy='dynamic')
 
-class OrderItems(db.Model):
-    __tablename__ = 'orderitems'
-    item_id = db.Column(db.Integer, db.ForeignKey('book.book_id_local'), primary_key=True)
-    item_type_id = db.Column(db.Integer, db.ForeignKey('itemtype.item_type_id'))
-    quantity = db.Column(db.Integer)
-    single_price = db.Column(db.Float)
-    total_price = db.Column(db.Float)
-    belong_order = db.Column(db.String(100), db.ForeignKey('order.order_id'))
-
 class Book(db.Model):
     __tablename__ = 'book'
     # book_id should from eBay
@@ -80,3 +70,12 @@ class Book(db.Model):
     ISBN_10 = db.Column(db.String(100))
     ISBN_13 = db.Column(db.String(100))
     notes = db.Column(db.String(300))
+
+class OrderItems(db.Model):
+    __tablename__ = 'orderitems'
+    item_id = db.Column(db.String(100), db.ForeignKey('book.book_id_local'), primary_key=True)
+    item_type_id = db.Column(db.Integer, db.ForeignKey('itemtype.item_type_id'))
+    quantity = db.Column(db.Integer)
+    single_price = db.Column(db.Float)
+    total_price = db.Column(db.Float)
+    belong_order = db.Column(db.String(100), db.ForeignKey('order.order_id'))
