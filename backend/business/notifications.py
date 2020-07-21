@@ -1,13 +1,12 @@
 from flask import Blueprint, request, jsonify, make_response
-from flask_restplus import Api, Resource, fields
+from flask_restplus import Api, Resource, fields, Namespace
 from ebaysdk.trading import Connection
 from time import time, strftime, localtime
 
-from app import opshop_api, db
-from models import *
-from auth import token_required
+from app import db
+from model.models import *
+from authorization.auth import token_required
 from http_status import *
-
 import json
 
 # ----- notifications spec ------
@@ -109,16 +108,18 @@ import json
 # the frontend has cancelled the order..
 # -- Wei Song
 
-notification = Blueprint('notification_api', __name__)
-
-notification_api = opshop_api.namespace(
-    'notification',
-    description="notifications management process"
+notification = Blueprint('notify', __name__)
+notification_api = Namespace(
+    'notifications',
+    description="receive and manage notifications from ebay, like listing, order.."
 )
 
-@notification.route('/messages/<user_id>')
+@notification_api.route('/messages/<opshop_id>')
 class Notifications(Resource):
     @notification_api.doc(description="retrive latest order in real time")
+    @notification_api.param('opshop_id')
+    @notification_api.response(200, 'orders from ebay')
+    @notification_api.response(404, 'no orders found')
     @token_required
     def get(self, user_id):
         api = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
@@ -189,7 +190,7 @@ class Notifications(Resource):
             return resp
         else:
             resp = make_response()
-            resp.status_code = GET_SUCCESS
+            resp.status_code = NOT_FOUND
             resp.headers['message'] = 'no orders from ebay'
             resp.headers['number'] = 0
             return resp

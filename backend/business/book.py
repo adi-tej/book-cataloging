@@ -1,13 +1,8 @@
 from flask import request, jsonify, make_response, Blueprint
-from flask_restplus import fields, Resource
+from flask_restplus import fields, Resource, Api, Namespace
 from uuid import uuid5, NAMESPACE_OID
 from datetime import datetime
 from ebaysdk.trading import Connection
-
-from auth import token_required
-from models import *
-from app import db, opshop_api
-from http_status import *
 
 import json
 
@@ -36,23 +31,27 @@ import json
 
 # -- Wei Song
 
-books = Blueprint('book_bp', __name__)
-
-books_api = opshop_api.namespace(
+books_api = Namespace(
     'books',
-    description="books management process"
+    description="books sacnning, listing, as well as CRUD"
 )
 
-books_list_api = opshop_api.namespace(
-    'book list&unlist',
-    description="book list to ebay and unlist from ebay management"
-)
+books = Blueprint('book', __name__)
+from app import db
+from authorization.auth import token_required
+from model.models import *
+from http_status import *
+
+# books_list_api = books_api.namespace(
+#     'book list&unlist',
+#     description="book list to ebay and unlist from ebay management"
+# )
 
 isbn_model=books_api.model('ISBN_10',{'ISBN':fields.Integer})
 
 # Backend expect list of book id from frontend
 list_model = books_api.model('Book list',{
-    'books':fields.List,
+    # 'books':fields.Nested(fields.String),
     'number':fields.Integer,
     'purpose':fields.String
 })
@@ -86,10 +85,11 @@ def extract_data_google_api(ISBN):
 
     return book_data # return dictionary with book data
 
-@books.route('/')
+@books_api.route('/')
 class Books(Resource):
     @books_api.doc(description="receive book information from scanning")
     @books_api.expect(isbn_model)
+    @books_api.response(201, 'add book success')
     @token_required
     def post(self):
         data = json.load(request.get_data())
@@ -114,7 +114,8 @@ class Books(Resource):
 
         return resp
 
-@books.route('/avtivities/<string:book_id>')
+@books_api.route('/avtivities/<string:book_id>')
+@books_api.param('book_id')
 class BookActivities(Resource):
     # This function is used to add more covers for some book, frontend need
     # to take the book id to backend
@@ -125,6 +126,8 @@ class BookActivities(Resource):
 
     @books_api.doc(description="retrive some book by book id")
     @token_required
+    @books_api.response(201, 'retrive book information')
+    @books_api.response(404, 'book not found')
     def get(self, book_id):
         book = Book.query.filter_by(book_id_loacl=book_id).first()
         if not book:
@@ -141,6 +144,8 @@ class BookActivities(Resource):
 
     @books_api.doc(description="update some book by book id")
     @token_required
+    @books_api.response(201, 'book updation success')
+    @books_api.response(404, 'book not found')
     def put(self, book_id):
         data = json.loads(request.get_data())
         book = Book.query.filter_by(book_id_loacl=book_id).first()
@@ -160,6 +165,8 @@ class BookActivities(Resource):
 
     @books_api.doc(description="delete some book by book id")
     @token_required
+    @books_api.response(201, 'book deletion success')
+    @books_api.response(404, 'book not found')
     def delete(self, book_id):
         book = Book.query.filter_by(book_id_loacl=book_id).first()
         if not book:
@@ -175,10 +182,14 @@ class BookActivities(Resource):
             resp.headers['message'] = 'book deletion success'
             return resp
 
-@books.route('/list/')
+@books.route('/operations/')
 class BookList(Resource):
-    @books_list_api.doc(description="a list of books will be listed")
-    @books_list_api.expect(list_model)
+    @books_api.doc(description="a list of books will be listed")
+    @books_api.expect(list_model)
+    @books_api.response(201, 'all items list success')
+    @books_api.response(400, 'some items list failed')
+    @books_api.response(201, 'all items unlist success')
+    @books_api.response(400, 'some items unlist failed')
     @token_required
     def post(self):
         data = json.loads(request.get_data())
@@ -201,7 +212,7 @@ class BookList(Resource):
                                 "PictureURL": book.cover
                             },
                             "Country":"AU",
-                            "Location":"Sydney",
+                            "Location":"Sydney, opaddress",
                             "Site":"Australia",
                             "SiteID":15,
                             "ConditionID":book.condition_id,

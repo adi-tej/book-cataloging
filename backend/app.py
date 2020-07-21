@@ -1,13 +1,8 @@
-from flask import Flask
+from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-from flask_restplus import Api
+from flask_restplus import Api, Namespace
 from os import system
-
-from book import books
-from auth import auth
-from order import order
-from notifications import notification
 
 # The below ApplicationURL is just an example, after deploying the app to
 # AWS, need to config the production environment URL.
@@ -18,63 +13,50 @@ from notifications import notification
 
 # -- Wei Song
 
-# --> This part will be configed before the application running <--
-# --> This part will be configed before the application running <--
-ebay_conn = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
-request_data = {
-    "ApplicationDeliveryPreferences": {
-        "ApplicationEnable": "Enable",
-        "ApplicationURL": "http://127.0.0.1/notifications/",
-    },
-
-    "UserDeliveryPrederenceArray": [
-        {
-            "NotificationEnable": {
-                "EventEnable": "Enable",
-                "EventType": "ItemSold"
-            }
-        },
-
-        {
-            "NotificationEnable": {
-                "EventEnable": "Enable",
-                "EventType": "ItemListed"
-            }
-        }
-    ],
-}
-
-# set notification preferences to ebay...
-ebay_conn.execute("SetNotificationPreferences", request_data)
-
 app = Flask(__name__)
 app.config['test'] = True
 app.config['SECRET_KEY'] = 'Royal Never Give Up'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql:///....'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:mysql@127.0.0.1:3306/opshop'
 
 db = SQLAlchemy(app)
 
-app.register_blueprint(auth, url_prefix='/auth')
-app.register_blueprint(books, url_prefix='/book')
-app.register_blueprint(order, url_prefix='/order')
-app.register_blueprint(notification, url_prefix='/notification')
-
 opshop_api = Api(
-    app=app,
+    app,
+    description="opshop api -- book scanning, listing, selling, order management..",
     version='1.0',
-    title='Opshop book&ebay Api',
-    decorators="This api will try to provide service for opshop mobile app",
+    title='Opshop Api',
     authorizations={
         "TOKEN-BASED":{
             "type": "apiKey",
             "name": "API-TOKEN",
-            "in": "header"
+            "in": "header",
         }
-    }
+    },
 )
 
-system("python3 opshop_config.py")
-system("python3 user_config.py")
+from business.book import books, books_api
+from business.notifications import notification, notification_api
+from authorization.auth import auth, auth_api
+from business.order import order, order_api
+
+opshop_api.add_namespace(auth_api, path='/auth')
+opshop_api.add_namespace(books_api, path='/book')
+opshop_api.add_namespace(order_api, path='/order')
+opshop_api.add_namespace(notification_api, path='/notification')
+
+app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(books, url_prefix='/book')
+app.register_blueprint(order)
+app.register_blueprint(notification, url_prefix='/notification')
+
+# from business.order import Order
+# opshop_api.add_resource(Order, '/order/local/')
+
+
+# system("python3 opshop_config.py")
+# system("python3 ./config/user_config.py")
 
 if __name__ == '__main__':
+    app.debug=True
     app.run()

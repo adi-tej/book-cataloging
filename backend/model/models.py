@@ -1,8 +1,6 @@
-from flask_login import UserMixin
-
 from app import db
 
-class User(db.Model, UserMixin):
+class User(db.Model):
     __tablename__ = 'users'
     user_id = db.Column(db.Integer, primary_key=True)
     opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.opshop_id'), nullable=False)
@@ -10,9 +8,6 @@ class User(db.Model, UserMixin):
     register_email = db.Column(db.String(50), unique=True, nullable=False)
     user_name = db.Column(db.String(50), unique=False, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-
-    def get_user(self, _user_id):
-        return User.query.filter_by(user_id=_user_id).first()
 
 class Role(db.Model):
     __tablename__ = 'role'
