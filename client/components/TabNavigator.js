@@ -19,6 +19,7 @@ export default class TabNavigator extends Component{
             <Tab.Navigator initialRouteName="Cataloging">
                 <Tab.Screen name="Active Listing" component={ActiveListing} />
                 <Tab.Screen name="Pending Orders" component={PendingOrders} />
+                <Tab.Screen name="Accepted Orders" component={PendingOrders} />
                 <Tab.Screen name="Test tab" component={BookCataloguing} />
 
             </Tab.Navigator>

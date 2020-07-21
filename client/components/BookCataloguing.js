@@ -10,6 +10,7 @@ import {
     SafeAreaView,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import {Header, Left, Body, Icon} from "native-base";
 import RNPickerSelect from "react-native-picker-select";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
@@ -115,8 +116,15 @@ export default class BookCataloguing extends Component{
     //TODO: All fields regex check
     render() {
         return (
-            <SafeAreaView style={[styles.container,{marginTop:'10%'}]}>
-                <KeyboardAwareScrollView behavior="padding">
+            <SafeAreaView style={{flex:1}}>
+                <Header>
+                    <Left>
+                        <Icon onPress={() => this.props.navigation.goBack()} name='arrow-back' style={{marginHorizontal:'5%'}}/>
+                    </Left>
+                    <Body style={{marginRight:'30%'}}><Text style={styles.listingTitle}>
+                        {this.state.edit ? 'Edit book':'List a book'} </Text></Body>
+                </Header>
+                <KeyboardAwareScrollView behavior="padding" style={[styles.container,{marginTop:'5%'}]}>
                 {/*Create an Image Carousel*/}
                 <View>
                     <ScrollView horizontal={true} style={{flexDirection: "row"}}>
@@ -250,7 +258,6 @@ export default class BookCataloguing extends Component{
                     multiline={true}
                     onChangeText={(otherDetails) => this.setState({otherDetails})}
                 />
-                </KeyboardAwareScrollView>
 
                 <TouchableOpacity
                     activityOpacity={0.5}
@@ -269,6 +276,7 @@ export default class BookCataloguing extends Component{
                             <Text style={styles.loginText}>Remove from Listing</Text>
                         </TouchableOpacity> : null
                 }
+                </KeyboardAwareScrollView>
             </SafeAreaView>
         )
     }

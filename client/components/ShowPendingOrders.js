@@ -13,7 +13,8 @@ export default class ShowPendingOrders extends Component {
         return (
             <TouchableOpacity
                 activityOpacity={0.5}
-                style={styles.orderContainer} onPress={()=>alert("Successful click")}>
+                style={styles.orderContainer}
+                onPress={!this.props.confirmed ? ()=>alert("Successful click") : null}>
                 <Text style={styles.orderNumberText}>Order #: {this.props.orderNumber}</Text>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.orderInfoText}>{this.props.timeout}</Text>
