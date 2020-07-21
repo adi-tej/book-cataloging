@@ -107,7 +107,6 @@ class Order(Resource):
 @order_api.route('/orderlist/<string:order_id>')
 @order_api.param('order_id')
 class OrderList(Resource):
-    # this post method will be used as confirmation from frontend
     @order_api.doc(description="retrive order information")
     @order_api.expect(comfirmation_order_model)
     @order_api.response(201, 'order confirmed success')

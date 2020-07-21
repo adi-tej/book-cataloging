@@ -2,6 +2,7 @@ from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_restplus import Api, Namespace
+import pymysql
 from os import system
 
 # The below ApplicationURL is just an example, after deploying the app to
@@ -17,7 +18,7 @@ app = Flask(__name__)
 app.config['test'] = True
 app.config['SECRET_KEY'] = 'Royal Never Give Up'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:mysql@127.0.0.1:3306/opshop'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:ShermanLemon0301@127.0.0.1:3306/shops'
 
 db = SQLAlchemy(app)
 
@@ -50,12 +51,7 @@ app.register_blueprint(books, url_prefix='/book')
 app.register_blueprint(order)
 app.register_blueprint(notification, url_prefix='/notification')
 
-# from business.order import Order
-# opshop_api.add_resource(Order, '/order/local/')
-
-
-# system("python3 opshop_config.py")
-# system("python3 ./config/user_config.py")
+# db.create_all()
 
 if __name__ == '__main__':
     app.debug=True

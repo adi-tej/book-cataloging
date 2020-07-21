@@ -46,12 +46,12 @@ class Order(db.Model):
 
 class OrderItems(db.Model):
     __tablename__ = 'orderitems'
-    item_id = db.Column(db.Integer, db.ForeignKey('book.book_id'), primary_key=True, nullable=False)
-    item_type_id = db.Column(db.Integer, db.ForeignKey('ItemType.item_type_id'))
+    item_id = db.Column(db.Integer, db.ForeignKey('book.book_id_local'), primary_key=True)
+    item_type_id = db.Column(db.Integer, db.ForeignKey('itemtype.item_type_id'))
     quantity = db.Column(db.Integer)
     single_price = db.Column(db.Float)
     total_price = db.Column(db.Float)
-    belong_order = db.Column(db.String, db.ForeignKey('order.order_id'))
+    belong_order = db.Column(db.String(100), db.ForeignKey('order.order_id'))
 
 class Book(db.Model):
     __tablename__ = 'book'

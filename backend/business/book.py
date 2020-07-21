@@ -42,17 +42,11 @@ from authorization.auth import token_required
 from model.models import *
 from http_status import *
 
-# books_list_api = books_api.namespace(
-#     'book list&unlist',
-#     description="book list to ebay and unlist from ebay management"
-# )
-
 isbn_model=books_api.model('ISBN_10',{'ISBN':fields.Integer})
 
 # Backend expect list of book id from frontend
 list_model = books_api.model('Book list',{
-    # 'books':fields.Nested(fields.String),
-    'number':fields.Integer,
+    'book_id':fields.String,
     'purpose':fields.String
 })
 
@@ -184,7 +178,7 @@ class BookActivities(Resource):
 
 @books.route('/operations/')
 class BookList(Resource):
-    @books_api.doc(description="a list of books will be listed")
+    @books_api.doc(description="list some books to ebay or unlist books from ebay.")
     @books_api.expect(list_model)
     @books_api.response(201, 'all items list success')
     @books_api.response(400, 'some items list failed')
