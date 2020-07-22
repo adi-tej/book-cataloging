@@ -71,6 +71,7 @@ export default class PendingOrders extends Component {
                                 orderNumber={order.orderNumber}
                                 timeout={order.timeout}
                                 totalPrice={order.totalPrice}
+                                navigation={this.props.navigation}
                             />
                         )
                     })

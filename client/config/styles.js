@@ -3,6 +3,7 @@ import colors from "./colors";
 
 
 import { Dimensions } from 'react-native';
+import React from "react";
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -315,11 +316,18 @@ const styles = StyleSheet.create({
     removeButton : {
         width: "45%",
         marginVertical : '4%',
+        marginHorizontal:"2%",
         paddingVertical : '3%',
         color: 'grey',
         fontSize:30,
         backgroundColor: colors.loginButton,
         alignItems : 'center'
+    },
+    modalView:{
+        backgroundColor:"#000000aa",
+        flex: 1,
+        alignItems:"center",
+        justifyContent:"center"
     },
     noIsbnPopup: {
         width: "90%",
@@ -328,6 +336,21 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         backgroundColor:'rgba(255,255,255, 1)',
     },
+
+    //orderItemDetails
+    scrollContainer : {
+        flexDirection: 'column',
+        paddingHorizontal:"5%",
+        width:"100%",
+        height:"85%",
+    },
+
+    //warning popup
+    warningText:{
+        fontSize:16,
+        color:"red",
+        // marginBottom:"2%",
+    }
 
 })
 export default styles
