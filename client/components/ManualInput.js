@@ -74,7 +74,7 @@ export default class ManualInput extends Component {
     //TODO: pass the item ISBN to backend and request removal of this item
     onCheckoutPress = () => {
         Alert.alert("Successfully remove item from eBay!")
-        setTimeout(()=>{this.setState({modalVisible: false})},1000)
+        setTimeout(()=>{this.setState({modalVisible: false})},1500)
     }
     // -----------------noIsbnModal setting
     onSearchPress = () =>{
@@ -156,7 +156,7 @@ export default class ManualInput extends Component {
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         activityOpacity={0.5}
-                                        style={styles.removeButton}
+                                        style={[styles.removeButton, {backgroundColor: "lightgrey"}]}
                                         onPress={()=>this.setState({modalVisible: false})}>
                                         <Text style={styles.loginText}>Close</Text>
                                     </TouchableOpacity>
@@ -172,7 +172,7 @@ export default class ManualInput extends Component {
                     transparent={true}
                     visible={this.state.noIsbnModalVisible}
                 >
-                    <View style={{backgroundColor:"#000000aa", flex: 1, alignItems:"center", justifyContent:"center"}}>
+                    <View style={styles.modalView}>
                         <View style={styles.noIsbnPopup}>
                             <View style={{paddingVertical:"10%",}}>
                                 <TextInput
@@ -192,7 +192,7 @@ export default class ManualInput extends Component {
                                     </TouchableOpacity>
                                     <TouchableOpacity
                                         activityOpacity={0.5}
-                                        style={styles.removeButton}
+                                        style={[styles.removeButton, {backgroundColor: "lightgrey"}]}
                                         onPress={()=>this.setState({noIsbnModalVisible: false})}>
                                         <Text style={styles.loginText}>Close</Text>
                                     </TouchableOpacity>

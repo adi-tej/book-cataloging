@@ -8,6 +8,7 @@ import {
     ScrollView,
     StyleSheet,
     SafeAreaView,
+    Modal,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import RNPickerSelect from "react-native-picker-select";
@@ -22,6 +23,7 @@ export default class BookCataloguing extends Component{
         super(props);
         this.imageId = 0;
         this.state = {
+            modalVisible:false,
             title:"",
             isbn: "",
             isbnError:false,
@@ -71,8 +73,14 @@ export default class BookCataloguing extends Component{
     }
 
     onRemoveButtonPress(){
-        //TODO: popup to confirm remove listing
+        //popup to confirm remove listing
+        this.setState({modalVisible:true})
+    }
+
+    onConfirmRemovePress = () =>{
         //TODO: API call to remove listing
+
+        this.setState({modalVisible:false})
     }
 
     deleteImage = (index) =>{
@@ -84,7 +92,7 @@ export default class BookCataloguing extends Component{
     };
 
     validISBN = () => {
-        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13)){
+        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13) && (this.state.isbn !== "")){
             this.setState({isbnError: true})
         } else{
             this.setState({isbnError: false})
@@ -210,7 +218,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.price}
+                    value={this.state.price.toString()}
                     onChangeText={(price) => this.setState({price})}
                 />
 
@@ -252,9 +260,10 @@ export default class BookCataloguing extends Component{
                 />
                 </KeyboardAwareScrollView>
 
+                <View style={styles.buttonView}>
                 <TouchableOpacity
                     activityOpacity={0.5}
-                    style={styles.loginButton}
+                    style={styles.removeButton}
                     onPress={this.onButtonPress.bind(this)}>
                     <Text style={styles.loginText}>{
                        this.state.edit ? 'Update' : 'List on eBay'
@@ -264,11 +273,49 @@ export default class BookCataloguing extends Component{
                     this.state.edit ?
                         <TouchableOpacity
                             activityOpacity={0.5}
-                            style={styles.loginButton}
+                            style={styles.removeButton}
                             onPress={this.onRemoveButtonPress.bind(this)}>
-                            <Text style={styles.loginText}>Remove from Listing</Text>
+                            <Text style={styles.loginText}>Remove Item</Text>
                         </TouchableOpacity> : null
                 }
+                </View>
+
+                <Modal
+                    transparent={true}
+                    visible={this.state.modalVisible}
+                >
+                    <View style={styles.modalView}>
+                        <View style={styles.noIsbnPopup}>
+                            <View style={{alignItems:"center", justifyItems:"center"}}>
+                                <Text style={[styles.warningText, {paddingHorizontal: "5%",}]}>
+                                    Warning: You will remove this item from eBay and delete it from database.
+                                </Text>
+                                <Text style={[styles.warningText, {
+                                    fontSize: 20,
+                                    fontWeight:"bold",
+                                    padding: "2%",
+                                    color: "black"}]}>
+                                    Do you confirm removal?
+                                </Text>
+                                <View style={styles.buttonView}>
+                                    <TouchableOpacity
+                                        activityOpacity={0.5}
+                                        style={[styles.removeButton, {width:"30%"}]}
+                                        onPress={this.onConfirmRemovePress}>
+                                        <Text style={styles.loginText}>Yes</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        activityOpacity={0.5}
+                                        style={[styles.removeButton, {width:"30%", backgroundColor: "lightgrey"}]}
+                                        onPress={()=>this.setState({modalVisible: false})}>
+                                        <Text style={styles.loginText}>No</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+
+                </Modal>
             </SafeAreaView>
         )
     }
