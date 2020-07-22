@@ -391,15 +391,15 @@ class BookList(Resource):
                             "Title":book.title + " " + book.book_id_local,
                             "PictureDetails": {
                                 # This URL shold be replaced by Allen after finishing S3 storage
-                                "PictureURL": book.cover
+                                "PictureURL": book.cover1,
                             },
                             "Country":"AU",
-                            "Location":"Sydney, opaddress",
+                            "Location":book.opshop.opshop_address,
                             "Site":"Australia",
                             "SiteID":15,
                             "ConditionID":book.condition_id,
                             "PaymentMethods":"PayPal",
-                            "PayPalEmailAddress":"weisong301@gmail.com",
+                            "PayPalEmailAddress":book.opshop.opshop_ebay_email,
                             "Description":book.description,
                             "ListingDuration":"Days_30",
                             "ListingType":"FixedPriceItem",

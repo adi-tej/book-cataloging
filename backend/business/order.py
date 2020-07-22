@@ -39,12 +39,12 @@ from authorization.auth import token_required
 local_order_model = order_api.model('Order', {
     'opshop_id': fields.Integer,
     'order_status': fields.String,
-    'book_id': fields.String,
-    'item_type_id': fields.String,
-    'quantity': fields.Integer,
-    'single_price': fields.Float,
+    'book_id': fields.List(fields.String),
+    'item_type_id': fields.List(fields.String),
+    'quantity': fields.List(fields.Integer),
+    'single_price': fields.List(fields.Float),
     'total_price': fields.Float,
-    'status': fields.String,
+    'item_status': fields.List(fields.String),
 })
 
 comfirmation_order_model = order_api.model('comfirm_order', {
@@ -76,13 +76,13 @@ class Order(Resource):
                     order_id=order.order_id,
                     item_id=data['book_id'][i],
                     item_type_id=data['item_type_id'][i],
-                    quantity=data['quantity'],
-                    single_price=data['single_price'],
-                    total_price=data['total_price']
+                    quantity=data['quantity'][i],
+                    single_price=data['single_price'][i],
+                    total_price=data['quantity'][i] * data['single_price']
                 )
                 db.session.add(order_item)
 
-                if data['status'][i] == "listed":
+                if data['item_status'][i] == "listed":
                     conn = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
                     request = {
                         "EndingReason":"LostOrBroken",

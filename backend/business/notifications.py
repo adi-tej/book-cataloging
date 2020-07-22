@@ -123,6 +123,7 @@ class Notifications(Resource):
     @token_required
     def get(self, opshop_id):
         api = Connection(config_file="ebay.yaml", domain="api.sandbox.ebay.com", debug=True)
+        # get order on ebay created on period: past time point --> current time point
         past_time = time() - 10 * 60 * 60 - 1*60
         past_time = strftime('%Y-%m-%d %H:%M:%S', localtime(past_time))
         cur_time = time() - 10 * 60 * 60
@@ -141,9 +142,10 @@ class Notifications(Resource):
 
         if resp.dict()['ReturnedOrderCountActual'] != 0:
             all_orders = resp.dict()['OrderArray']['Order']
-            item_data, order_data = [], []
+            order_array = []
             counter = 0
             for ebay_order in all_orders:
+                item_id_list, order_item_list, item_data = [], [], []
                 counter += 1
                 order = Order()
                 order.order_id = ebay_order['OrderID']
@@ -152,38 +154,48 @@ class Notifications(Resource):
                     + ebay_order['ShippingAddress']['PostalCode']
                 order.customer_name = ebay_order['ShippingAddress']['Name']
                 order.customer_contact = ebay_order['TranscationArray']['Transaction']['Buyer']['Email']
-                item_id = ebay_order['TranscationArray']['Transaction']['Item']['ItemID']
                 seller_email = ebay_order['SellerEmail']
                 order.order_date = ebay_order['TranscationArray']['Transaction']['CreateDate']
                 order.order_status = 'pending'
+
+                # for one order, there may be many items, they are put into transactions(array)
+                for transaction in ebay_order['TranscationArray']['Transaction']:
+                    item_id = transaction['Item']['ItemID']
+                    item_id_list.append(item_id)
+                    orderitem = OrderItems()
+                    orderitem.belong_order = order.order_id
+                    orderitem.item_id = item_id
+                    orderitem.item_type_id = 1
+                    orderitem.quantity = transaction['QuantityPurchased']
+                    orderitem.total_price = transaction['TransactionPrice']['value']
+                    orderitem.single_price = transaction['TransactionPrice']['value'] / \
+                             transaction['QuantityPurchased']
+                    order_item_list.append(orderitem)
+
                 order_data.append(order.__dict__)
                 db.session.add(order)
+                db.session.add_all(order_item_list)
 
-                # --> important notes <--
-                # --> important notes <--
-                # At this stage, I assume one order for one item
-                # !!!
-                item = Book.query.filter_by(book_id_ebay=item_id).first()
-                if item:
-                    item_data.append(item.__dict__)
+                for item_id in item_id_list:
+                    item = Book.query.filter_by(book_id_ebay=item_id).first()
+                    if item:
+                        item_data.append(item.__dict__)
+                order_array.append({'order_id': order.order_id, 'items': item_data})
 
             if counter != 0:
                 db.session.commit()
 
             resp_payload = {
-                'total':counter,
-                'order':order_data,
-                'items':item_data
+                'order_number': len(order_array),
+                'order_array': order_array
             }
 
             resp = make_response(jsonify(resp_payload))
             resp.status_code = GET_SUCCESS
             resp.headers['message'] = 'orders from ebay'
-            resp.headers['number'] = counter
             return resp
         else:
             resp = make_response()
             resp.status_code = NOT_FOUND
             resp.headers['message'] = 'no orders from ebay'
-            resp.headers['number'] = 0
             return resp
