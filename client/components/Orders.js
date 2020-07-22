@@ -3,7 +3,7 @@ import {ScrollView} from "react-native";
 import styles from "../config/styles";
 import ShowPendingOrders from "./ShowPendingOrders";
 
-export default class PendingOrders extends Component {
+export default class Orders extends Component {
     constructor(props) {
         super(props);
         this.updateOrderNumber = "";

@@ -7,6 +7,7 @@ import {
     Alert,
     TouchableOpacity,
 } from "react-native";
+import {Header, Left, Body, Icon} from "native-base";
 import styles from "../config/styles";
 import ShowOrderItems from "./ShowOrderItems";
 
@@ -35,17 +36,21 @@ export default class OrderItemDetails extends Component {
 
     render() {
         return (
-            <SafeAreaView style={{marginTop:'10%'}}>
-                <View>
-                    <View style={{alignItems:"center"}}>
+            <SafeAreaView>
+                <Header>
+                    <Left>
+                        <Icon onPress={() => this.props.navigation.goBack()} name='arrow-back' style={{marginHorizontal:'5%'}}/>
+                    </Left>
+                    <Body style={{marginRight:'30%'}}>
                         <Text
                             style={{fontSize:20,
                                 fontWeight : 'bold',
                                 marginBottom:"2%"}}>
                             Order#: {this.orderNumber}
                         </Text>
-                    </View>
-
+                    </Body>
+                </Header>
+                <View style={{marginTop:'5%'}}>
                     <ScrollView style={styles.scrollContainer}>
                         {
                             this.state.itemArray.map((info)=> {
