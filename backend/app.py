@@ -17,7 +17,8 @@ app = Flask(__name__)
 app.config['test'] = True
 app.config['SECRET_KEY'] = 'Royal Never Give Up'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:ShermanLemon0301@127.0.0.1:3306/shops'
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    'mysql+pymysql://circex:CircEx2020@opshops.ch3sf71im1th.ap-southeast-2.rds.amazonaws.com:3306/opshopdb'
 
 db = SQLAlchemy(app)
 
