@@ -14,9 +14,9 @@ export default class ShowPendingOrders extends Component {
             <TouchableOpacity
                 activityOpacity={0.5}
                 style={styles.orderContainer}
-                onPress={()=>
+                onPress={!this.props.confirmed ? ()=>
                     this.props.navigation.navigate('OrderDetails',
-                        {orderNumber: this.props.orderNumber})}>
+                        {orderNumber: this.props.orderNumber}) : null}>
                 <Text style={styles.orderNumberText}>Order #: {this.props.orderNumber}</Text>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.orderInfoText}>{this.props.timeout}</Text>

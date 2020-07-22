@@ -3,7 +3,7 @@ import {ScrollView} from "react-native";
 import styles from "../config/styles";
 import ShowPendingOrders from "./ShowPendingOrders";
 
-export default class PendingOrders extends Component {
+export default class Orders extends Component {
     constructor(props) {
         super(props);
         this.updateOrderNumber = "";
@@ -30,6 +30,11 @@ export default class PendingOrders extends Component {
         //         const data = res.data;
         //         this.setState({ title: data.orderArray });
         //     })
+        if(this.props.route.name === "Pending Orders"){
+            //TODO: API call to get pending orders
+        }else{
+            //TODO: API call to get accepted orders
+        }
     }
 
     //This function is to remove a confirmed order
@@ -61,6 +66,7 @@ export default class PendingOrders extends Component {
                     this.state.orderArray.map((order, index)=>{
                         return(
                             <ShowPendingOrders
+                                confirmed={this.props.route.name !== "Pending Orders" }
                                 key={order.orderNumber}
                                 orderNumber={order.orderNumber}
                                 timeout={order.timeout}
