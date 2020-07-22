@@ -1,6 +1,5 @@
 from flask import Flask, Blueprint
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flask_restplus import Api, Namespace
 import pymysql
 from os import system
