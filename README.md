@@ -24,9 +24,9 @@ pip3 install -r requirements.txt
 ```
 * step2: run the application from project backend folder<br>
 ```
-python3 app.py
+python3 manage.py run
 ```
 * step3: setup the database config with another terminal window<br>
 ```
-python3 dbconfig.py
+python3 initdata.py
 ```
