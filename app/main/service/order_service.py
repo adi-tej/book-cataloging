@@ -5,6 +5,7 @@ from ebaysdk.trading import Connection
 
 from .. import db
 from ..http_status import *
+from ..model.models import Order
 
 def create_order(data):
     if data:

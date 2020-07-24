@@ -3,8 +3,7 @@ from datetime import datetime
 from ebaysdk.trading import Connection
 
 from ..http_status import *
-from ..model.image import Image
-from ..model.book import Book
+from ..model.models import Image, Book
 
 def find_book_info(ISBN):  # function to search book in both api
     book_info = extract_data_google_api(ISBN)
