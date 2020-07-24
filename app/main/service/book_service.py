@@ -3,6 +3,8 @@ from datetime import datetime
 from ebaysdk.trading import Connection
 
 from ..http_status import *
+from ..model.image import Image
+from ..model.book import Book
 
 def find_book_info(ISBN):  # function to search book in both api
     book_info = extract_data_google_api(ISBN)
@@ -197,9 +199,16 @@ def retrive_book(data):
 def update_book(data, book_id):
     book = Book.query.filter_by(book_id_loacl=book_id).first()  # fetching saved book info from table
     book_data = book.__dict__
+    new_data = request.form
 
     for key in new_data:
-        book_data[key] = data[key]  # updating new info
+        book_data[key] = new_data[key]  # updating new info
+
+    book.__dict__ = book_data
+    db.session.add(book)
+    db.session.commit()
+
+    image_dict = {}
 
     image_number = 0
     for x in request.files:
@@ -207,19 +216,23 @@ def update_book(data, book_id):
         image = request.files[x]
         image.save(str(image_number) + '.png')
         body = open(str(image_number) + '.png', 'rb')
-        key = str(data['book_id_local']) + '/' + str(image_number) + '.png'
+        key = str(book_data['book_id_local']) + '/' + str(image_number) + '.png'
 
         upload_to_s3(body, key)
         body.close()
         file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
-        book_data['cover' + str(image_number)] = file_url
 
-    book.__dict__ = book_data
-    db.session.add(book)
-    db.session.commit()
+        image_object = image()
+        image_dict['item_id'] = book_data['book_id_local']
+        image_dict['aws_link'] = file_url
+        image_object.__dict__ = image_dict
+        db.session.add(image_object)
+        db.session.commit()
 
     resp = make_response(jsonify(book.__dict__))
+
     resp.status_code = POST_SUCCESS
+    resp.headers['message'] = 'add book success'
 
     return resp
 
