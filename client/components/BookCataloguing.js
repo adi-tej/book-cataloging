@@ -10,7 +10,7 @@ import {
     SafeAreaView,
     Modal,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {Header, Left, Body, Icon} from "native-base";
 import RNPickerSelect from "react-native-picker-select";
 import * as Permissions from "expo-permissions";
