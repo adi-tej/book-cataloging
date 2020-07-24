@@ -147,13 +147,16 @@ export default class BookCataloguing extends Component{
                                 )
                             })
                         }
-                        <TouchableOpacity
-                            activityOpacity={0.5}
-                            style={styles.imageContainer}
-                            onPress={this.takePicture.bind(this)}>
-                            <Text style={styles.loginText}>+</Text>
-                        </TouchableOpacity>
+                        {this.state.imageArray.length < 10 ?
+                            <TouchableOpacity
+                                activityOpacity={0.5}
+                                style={styles.imageContainer}
+                                onPress={this.takePicture.bind(this)}>
+                                <Text style={styles.loginText}>+</Text>
+                            </TouchableOpacity> : null
+                        }
                     </ScrollView>
+                    <Text style={[styles.requiredText, {fontSize: 14, marginBottom:"2%"}]}>* Max number of images: 10</Text>
                 </View>
 
                 {/*Create other information View*/}
