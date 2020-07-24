@@ -20,7 +20,7 @@ export default class ShowPendingOrders extends Component {
                 <Text style={styles.orderNumberText}>Order #: {this.props.orderNumber}</Text>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.orderInfoText}>{this.props.timeout}</Text>
-                    <Text style={styles.orderInfoText}>Total Price: {this.props.totalPrice}</Text>
+                    <Text style={styles.orderInfoText}>Total Price: $ {this.props.totalPrice}</Text>
                 </View>
             </TouchableOpacity>
 

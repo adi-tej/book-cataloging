@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import BookCataloguing from "./BookCataloguing";
 import Orders from "./Orders";
 import ActiveListing from "./ActiveListing";
 import TabHeader from "./TabHeader";
@@ -19,7 +18,6 @@ export default class TabNavigator extends Component{
                 <Tab.Screen name="Active Listing" component={ActiveListing} />
                 <Tab.Screen name="Pending Orders" component={Orders} />
                 <Tab.Screen name="Accepted Orders" component={Orders} />
-                <Tab.Screen name="Test tab" component={BookCataloguing} />
 
             </Tab.Navigator>
             <TouchableOpacity

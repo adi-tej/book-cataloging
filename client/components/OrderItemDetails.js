@@ -50,7 +50,7 @@ export default class OrderItemDetails extends Component {
                         </Text>
                     </Body>
                 </Header>
-                <View style={{marginTop:'5%'}}>
+                <View style={{marginTop:'2%'}}>
                     <ScrollView style={styles.scrollContainer}>
                         {
                             this.state.itemArray.map((info)=> {

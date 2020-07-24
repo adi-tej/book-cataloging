@@ -24,7 +24,9 @@ const styles = StyleSheet.create({
     image:{
         marginTop : '30%',
         marginBottom : '40%',
-        alignSelf : 'center'
+        alignSelf : 'center',
+        height:width*0.5,
+        width:width*0.5,
     },
     textInput : {
         width : '100%',
@@ -342,7 +344,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         paddingHorizontal:"5%",
         width:"100%",
-        height:"85%",
+        height:"80%",
     },
 
     //warning popup
