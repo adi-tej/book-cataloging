@@ -24,4 +24,5 @@ class UserLogout(Resource):
     @api.doc(description="Logout user")
     @token_required
     def post(self):
-        pass
+        token = request.headers.get('token')
+        return Auth.logout(token)

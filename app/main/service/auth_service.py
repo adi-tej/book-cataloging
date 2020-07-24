@@ -1,9 +1,12 @@
 from flask import jsonify, make_response
+import datetime
 
 from app.main.model.user import User
 from app.main.service.user_service import generate_token
 from ..service.blacklist_service import save_token
 from ..http_status import *
+from ..model.blacklist import BlacklistToken
+from .. import db
 
 class Auth:
     expire_in = 6000
@@ -34,12 +37,14 @@ class Auth:
         token = generate_token(expires_in, user.user_id, user.register_email, user.user_name)
         resp_data = {
             'user_info':user.__dict__.pop('password'),
-            'API-TOKEN':token,
+            'token':token,
         }
         resp = make_response(resp_data)
         resp.status_code = POST_SUCCESS
         return resp
 
     @staticmethod
-    def logout(data):
-        pass
+    def logout(token):
+        black_token = BlacklistToken(token=token, datetime=datetime.datetime.now())
+        db.session.add(black_token)
+        db.session.commit()
