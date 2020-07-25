@@ -10,7 +10,7 @@ api = OrderDto.api
 order_items_model = OrderDto.new_order_items
 comfirmation_order_model = OrderDto.confirmation_order_model
 
-@api.route('/checkout')
+@api.route('/checkout/')
 class Order(Resource):
     @api.doc(description="order from the in shop customer")
     @api.expect(order_items_model, validate=True)
@@ -22,7 +22,7 @@ class Order(Resource):
         data = json.loads(request.get_data())
         return create_order(data)
 
-@api.route('/<string:order_id>')
+@api.route('/<string:order_id>/')
 @api.param('order_id')
 class OrderList(Resource):
     @api.doc(description="retrive order information")
@@ -54,3 +54,15 @@ class OrderList(Resource):
     @token_required
     def delete(self, order_id):
         return delete_order(order_id)
+
+@api.route('/retrive/')
+class RetriveOrder(Resource):
+    @api.doc(description="retrive orders according to order status")
+    @api.header('order_status', 'take the order status in the header')
+    @api.response(200, 'order retrive success')
+    @api.response(404, 'not found')
+    @token_required
+    def get(self, order_status):
+        header_data = request.headers
+        token = header_data['token']
+        return retrive_order(header_data, token)

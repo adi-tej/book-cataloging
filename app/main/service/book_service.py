@@ -2,9 +2,14 @@ from flask import jsonify, make_response
 from datetime import datetime
 from ebaysdk.trading import Connection
 import json
+import requests
+from uuid import uuid5, NAMESPACE_OID
+import shutil
+import boto3
 
 from ..http_status import *
 from app.main.model.models import Image, Book
+from app.main.model.user import User
 from app.main.http_status import *
 
 def find_book_info(ISBN):  # function to search book in both api
@@ -363,4 +368,27 @@ def unlist_book(data):
     else:
         resp = make_response(jsonify({'message':'no book found'}))
         resp.status_code = BAD_REQUEST
+        return resp
+
+def retrive_book(header_data, token):
+    payload = TOKEN.serializer.loads(token.encode())
+    user = User.query.filter_by(user_id=payload['user_id']).first()
+    book_list = []
+    if header_data['book_title'] or header_data['isbn']:
+        if header_data['book_title'] and not header_data['isbn']:
+            book_list = Book.query.filter_by(title=header_data['book_title'], opshop_id=user.opshop.opshop_id).all()
+        elif not header_data['book_title'] and header_data['isbn']:
+            book_list = Book.query.filter_by(ISBN_10=header_data['isbn'], opshop_id=user.opshop.opshop_id).all()
+        elif header_data['book_title'] and header_data['isbn']:
+            book_list = Book.query.filter_by(title=header_data['book_title'], ISBN_10=header_data['isbn'], opshop_id=user.opshop.opshop_id).all()
+    else:
+        book_list = Book.query.filter_by(opshop_id=user.opshop.opshop_id).all()
+
+    if book_list:
+        resp = make_response(jsonify(json.dumps(book_list)))
+        resp.status_code = GET_SUCCESS
+        return resp
+    else:
+        resp = make_response(jsonify({'message': 'not found'}))
+        resp.status_code = NOT_FOUND
         return resp

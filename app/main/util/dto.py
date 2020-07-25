@@ -14,7 +14,7 @@ class UserDto:
 class AuthDto:
     api = Namespace('auth', description='user authentication operations')
     user_auth = api.model('auth_info',{
-        'email': fields.String,
+        'register_email': fields.String,
         'password': fields.String
     })
 
@@ -37,7 +37,7 @@ class BookDto:
     api = Namespace('book', description='book related operations')
     isbn_model = api.model('ISBN_10', {'ISBN': fields.Integer})
 
-    book_model = api.model('Book', {
+    book_model = api.model('book', {
         'opshop_id': fields.Integer,
         'title': fields.String,
         'author': fields.String,
@@ -55,7 +55,10 @@ class BookDto:
         'condition_id': fields.Integer
     })
 
-    list_model = api.model('Book list', {
+    list_model = api.model('list book model', {
         'book_id': fields.String,
-        'purpose': fields.String
+    })
+
+    unlist_model = api.model('unlist book model', {
+        'book_id': fields.String,
     })

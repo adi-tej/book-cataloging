@@ -2,6 +2,7 @@ from flask import jsonify, make_response
 from uuid import uuid5, NAMESPACE_URL
 from datetime import datetime
 from ebaysdk.trading import Connection
+import json
 
 from .. import db
 from ..http_status import *
@@ -94,4 +95,22 @@ def delete_order(order_id):
         db.session.delete(order)
         db.session.commit()
         resp.status_code = GET_SUCCESS
+        return resp
+
+def retrive_order(header_data, token):
+    payload = TOKEN.serializer.loads(token.encode())
+    user = User.query.filter_by(user_id=payload['user_id']).first()
+    order_list = []
+    if header_data['order_status']:
+        order_list = Order.query.filter_by(order_status=header_data['order_status'], opshop_id=user.opshop.opshop_id)
+    else:
+        order_list = Order.query.filter_by(opshop_id=user.opshop.opshop_id)
+
+    if order_list:
+        resp = make_response(jsonify(json.dumps(order_list)))
+        resp.status_code = GET_SUCCESS
+        return resp
+    else:
+        resp = make_response(jsonify({'message':'not found'}))
+        resp.status_code = NOT_FOUND
         return resp

@@ -1,20 +1,19 @@
 from flask import jsonify, make_response
-import datetime
 
 from app.main.model.user import User
-from app.main.service.user_service import generate_token
+from app.main.service.user_service import TOKEN
 from ..service.blacklist_service import save_token
 from ..http_status import *
 from ..model.blacklist import BlacklistToken
 from .. import db
 
 class Auth:
-    expire_in = 6000
 
     @staticmethod
     def login(data):
+        print(data)
         user_info = data
-        user_email, user_name, password = '', ''
+        user_email, user_name, password = '', '', ''
         user = User()
         if user_info['register_email']:
             user_email, password = \
@@ -29,14 +28,18 @@ class Auth:
             resp = make_response(jsonify({'message':'user not exist'}))
             resp.status_code = UNAUTHORIZED
             return resp
-        if not User.check_password_hash(user.password, password):
+        if not user.check_password(password):
             resp = make_response(jsonify({'message': 'password not right'}))
             resp.status_code = UNAUTHORIZED
             return resp
 
-        token = generate_token(expires_in, user.user_id, user.register_email, user.user_name)
+        token = TOKEN.generate_token(user.user_id, user.register_email, user.user_name)
         resp_data = {
-            'user_info':user.__dict__.pop('password'),
+            'user_info':{
+                'user_id':user.user_id,
+                'user_name':user.user_name,
+                'register_email':user.register_email
+            },
             'token':token,
         }
         resp = make_response(resp_data)
@@ -45,6 +48,6 @@ class Auth:
 
     @staticmethod
     def logout(token):
-        black_token = BlacklistToken(token=token, datetime=datetime.datetime.now())
+        black_token = BlacklistToken(token=token)
         db.session.add(black_token)
         db.session.commit()

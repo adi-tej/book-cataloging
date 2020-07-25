@@ -5,11 +5,13 @@ import json
 from app.main.service.book_service import *
 from ..util.dto import BookDto
 from ..util.decorator import token_required
+from app.main.service.user_service import TOKEN
 
 api = BookDto.api
 isbn_model = BookDto.isbn_model
 book_model = BookDto.book_model
 list_model = BookDto.list_model
+unlist_model = BookDto.unlist_model
 
 @api.route('/')
 class Books(Resource):
@@ -18,10 +20,10 @@ class Books(Resource):
     @api.response(201, 'add book success')
     @token_required
     def post(self):
-        data = json.load(request.get_data())
+        data = json.loads(request.get_data())
         return retrive_book(data)
 
-@api.route('/<string:book_id>')
+@api.route('/<string:book_id>/')
 @api.param('book_id')
 class BookActivities(Resource):
     # this function is used to correct and update the information with the info returned by staff, you can add more images too.
@@ -46,7 +48,20 @@ class BookActivities(Resource):
     def delete(self, book_id):
         return delete_book(book_id)
 
-@api.route('/list')
+@api.route('/retrive/')
+class RetriveBook(Resource):
+    @api.doc(description="retrive book by title or ISBN, if nothing return all")
+    @api.response(200, 'retrive book success')
+    @api.response(404, 'not found')
+    @api.header('isbn', description="take isbn in the header if you have")
+    @api.header('title', description="take title in the header if you have")
+    @token_required
+    def get(self):
+        header_data = request.headers
+        token = header_data['token']
+        return retrive_book(header_data, token)
+
+@api.route('/list/')
 class BookList(Resource):
     @api.doc(description="list some books to ebay or unlist books from ebay.")
     @api.expect(list_model)
@@ -57,10 +72,10 @@ class BookList(Resource):
         data = json.loads(request.get_data())
         return list_book(data)
 
-@api.route('/unlist')
+@api.route('/unlist/')
 class BookUnlist(Resource):
     @api.doc(description="unlist some books to ebay or unlist books from ebay.")
-    @api.expect(list_model)
+    @api.expect(unlist_model)
     @api.response(201, 'all items unlist success')
     @api.response(400, 'some items unlist failed')
     @token_required

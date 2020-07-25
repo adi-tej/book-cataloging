@@ -9,7 +9,7 @@ from ..util.decorator import token_required
 api = AuthDto.api
 auth_model = AuthDto.user_auth
 
-@api.route('login')
+@api.route('login/')
 class UserLogin(Resource):
     @api.expect(auth_model, validate=True)
     @api.doc(
@@ -19,7 +19,7 @@ class UserLogin(Resource):
         user_info = json.loads(request.data)
         return Auth.login(data=user_info)
 
-@api.route('logout')
+@api.route('logout/')
 class UserLogout(Resource):
     @api.doc(description="Logout user")
     @token_required
