@@ -1,7 +1,7 @@
 from app.main import db
 from app.main.model.models import Opshop, Role, ItemType
 from app.main.model.user import User
-from manage import app
+from app.manage import app
 
 # before running the application, it will make some pre-creating data
 # for the database: there are three aspects: 1. opshops information 2.
