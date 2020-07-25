@@ -49,7 +49,6 @@ class Book(db.Model):
     edition = db.Column(db.Integer)
     pages_number = db.Column(db.Integer)
     genre = db.Column(db.String(20))
-    # all of the covers should be start with "https" NOT "http"
     cover = db.Column(db.String(100)) # AMZON S3 --> https://applicationurl/cover/1.jpg
     price = db.Column(db.Float)
     quantity = db.Column(db.Integer)

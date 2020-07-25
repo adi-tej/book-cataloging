@@ -21,7 +21,6 @@ def find_book_info(ISBN):  # function to search book in both api
 
     return book_info
 
-
 def extract_data_google_api(ISBN):
     API_KEY = "AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o"  # google api key
     google_url_book = "https://www.googleapis.com/books/v1/volumes?q=isbn:{}&key={}".format(ISBN,
@@ -193,10 +192,7 @@ def retrive_book(data):
 
     book.__dict__ = book_data
 
-    db.session.add(book)
-    db.session.commit()
-
-    resp = make_response(jsonify(book.__dict__))
+    resp = make_response(jsonify(json.dumps(book)))
     resp.status_code = POST_SUCCESS
     resp.headers['message'] = 'add book success'
 
@@ -370,7 +366,7 @@ def unlist_book(data):
         resp.status_code = BAD_REQUEST
         return resp
 
-def retrive_book(header_data, token):
+def get_book_by_params(header_data, token):
     payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(user_id=payload['user_id']).first()
     book_list = []
@@ -392,3 +388,6 @@ def retrive_book(header_data, token):
         resp = make_response(jsonify({'message': 'not found'}))
         resp.status_code = NOT_FOUND
         return resp
+
+def confirm_book(data):
+    pass

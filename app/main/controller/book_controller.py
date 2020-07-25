@@ -15,13 +15,38 @@ unlist_model = BookDto.unlist_model
 
 @api.route('/')
 class Books(Resource):
+    @api.doc(description="get all the books")
+    @api.response(200, 'get all books')
+    @token_required
+    def get(self):
+        pass
+
     @api.doc(description="receive book information from scanning")
     @api.expect(isbn_model)
-    @api.response(201, 'add book success')
+    @api.response(201, 'add book success', book_model)
     @token_required
     def post(self):
         data = json.loads(request.get_data())
         return retrive_book(data)
+
+@api.route('/confirm/')
+class BookConfirmation(Resource):
+    def post(self):
+        data = json.loads(request.get_data())
+        return confirm_book(data)
+
+@api.route('/<filter>/')
+class RetriveBook(Resource):
+    @api.doc(description="retrive book by title or ISBN, if nothing return all")
+    @api.response(200, 'retrive book success')
+    @api.response(404, 'not found')
+    @api.header('isbn', description="take isbn in the header if you have")
+    @api.header('title', description="take title in the header if you have")
+    @token_required
+    def get(self,filter):
+        header_data = request.headers
+        token = header_data['token']
+        return get_book_by_params(header_data, token)
 
 @api.route('/<string:book_id>/')
 @api.param('book_id')
@@ -47,19 +72,6 @@ class BookActivities(Resource):
     @api.response(404, 'book not found')
     def delete(self, book_id):
         return delete_book(book_id)
-
-@api.route('/retrive/')
-class RetriveBook(Resource):
-    @api.doc(description="retrive book by title or ISBN, if nothing return all")
-    @api.response(200, 'retrive book success')
-    @api.response(404, 'not found')
-    @api.header('isbn', description="take isbn in the header if you have")
-    @api.header('title', description="take title in the header if you have")
-    @token_required
-    def get(self):
-        header_data = request.headers
-        token = header_data['token']
-        return retrive_book(header_data, token)
 
 @api.route('/list/')
 class BookList(Resource):
