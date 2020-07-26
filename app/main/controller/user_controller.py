@@ -11,13 +11,12 @@ api = UserDto.api
 user_model = UserDto.user
 
 @api.route('/')
-@api.param('user_id', 'user unique id')
 class User(Resource):
     @api.doc('retrive a user')
-    @api.marshal_with(user_model)
-    @api.response(404, 'User not found')
     @api.response(200, description='user information', model=user_model)
+    @api.response(404, 'User not found')
     @api.param('user_id', description='take user id as param')
+    @api.marshal_with(user_model)
     @token_required
     def get(self):
         """ get a user given its identifier"""
@@ -28,5 +27,5 @@ class User(Resource):
                 api.abort(404)
             else:
                 return user
-        # else:
-        #     api.abort(404)
+        else:
+            api.abort(404)

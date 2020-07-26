@@ -27,6 +27,10 @@ class OrderDto:
         'order_status': fields.String,
     })
 
+    order_array_model = api.model('order_array', {
+        'orders': fields.List(fields.Nested(order_model)),
+    })
+
     ordered_item_model = api.model('ordered_item', {
         'item_id': fields.String,
         'price': fields.Float,
@@ -38,8 +42,8 @@ class OrderDto:
     })
 
     confirmation_order_model = api.model('comfirm_order', {
-        'opshop_id': fields.Integer,
-        'status': fields.String,
+        'opeartion': fields.String,
+        'orders': fields.List(fields.Nested(order_model)),
     })
 
 class BookDto:

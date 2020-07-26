@@ -54,15 +54,14 @@ class BookConfirmation(Resource):
 class BookActivities(Resource):
     # this function is used to correct and update the information with the info returned by staff, you can add more images too.
     @api.doc(description="updating the database and ebay with updated book data by the staff ")
-    @api.response(200, 'update book success', model=book_model)
+    @api.response(201, 'update book success', model=book_model)
     @api.response(404, 'not found')
-    @api.marshal_with(book_model)
     @token_required
     def put(self, book_id):
         data = json.load(request.get_data())
         book = update_book(data, book_id)
         if book:
-            return book
+            return marshal(book, book_model), POST_SUCCESS
         else:
             api.abort(404)
 
@@ -96,13 +95,12 @@ class BookList(Resource):
     @api.expect(book_model)
     @api.response(201, 'book list success', model=book_model)
     @api.response(400, 'book list failed')
-    @api.marshal_with(book_model)
     @token_required
     def post(self):
         data = json.loads(request.get_data())
         book = list_book(data)
         if book:
-            return book
+            return marshal(book, book_model), POST_SUCCESS
         else:
             api.abort(404)
 
@@ -112,12 +110,11 @@ class BookUnlist(Resource):
     @api.expect(unlist_model)
     @api.response(201, 'book unlist success', model=book_model)
     @api.response(400, 'book unlist failed')
-    @api.marshal_with(book_model)
     @token_required
     def post(self):
         data = json.loads(request.get_data())
         book = unlist_book(data)
         if book:
-            return book
+            return marshal(book, book_model), POST_SUCCESS
         else:
             api.abort(404)
