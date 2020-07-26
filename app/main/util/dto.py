@@ -76,13 +76,5 @@ class BookDto:
         'books': fields.List(fields.Nested(book_model)),
     })
 
-    list_model = api.model('list book model', {
-        'book_id': fields.String,
-    })
-
-    unlist_model = api.model('unlist book model', {
-        'book_id': fields.String,
-    })
-
 resource_fileds = {}
 resource_fileds['message'] = fields.String

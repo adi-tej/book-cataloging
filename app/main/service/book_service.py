@@ -240,8 +240,8 @@ def delete_book(book_id):
 
     return book
 
-def list_book(data):
-    book = Book.query.filter_by(book_local_id=data['book_id']).first()
+def list_book(book_id):
+    book = Book.query.filter_by(book_local_id=book_id).first()
     if book:
         # build connection with ebay
         # make request body to ebay
@@ -287,7 +287,7 @@ def list_book(data):
 
     return book
 
-def unlist_book(data):
+def unlist_book(book_id):
     book = Book.query.filter_by(book_local_id=book_id).first()
     if book:
         ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)

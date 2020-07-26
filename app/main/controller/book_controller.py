@@ -10,8 +10,6 @@ from app.main.service.user_service import TOKEN
 api = BookDto.api
 isbn_model = BookDto.isbn_model
 book_model = BookDto.book_model
-list_model = BookDto.list_model
-unlist_model = BookDto.unlist_model
 book_array_model = BookDto.book_array_model
 
 @api.route('/')
@@ -89,32 +87,33 @@ class BookActivities(Resource):
         else:
             api.abort(404)
 
-@api.route('/list/')
+@api.route('/list/<book_id>/')
 class BookList(Resource):
     @api.doc(description="list some books to ebay or unlist books from ebay.")
-    @api.expect(book_model)
-    @api.response(201, 'book list success', model=book_model)
+    @api.response(200, 'book list success', model=book_model)
     @api.response(400, 'book list failed')
+    @api.param('book_id', description="take the book id as the parameter")
+    @api.marshal_with(book_model)
     @token_required
-    def post(self):
+    def get(self):
         data = json.loads(request.get_data())
         book = list_book(data)
         if book:
-            return marshal(book, book_model), POST_SUCCESS
+            return book
         else:
             api.abort(404)
 
-@api.route('/unlist/')
+@api.route('/unlist/<book_id>/')
 class BookUnlist(Resource):
     @api.doc(description="unlist some books to ebay or unlist books from ebay.")
-    @api.expect(unlist_model)
-    @api.response(201, 'book unlist success', model=book_model)
+    @api.response(200, 'book unlist success', model=book_model)
     @api.response(400, 'book unlist failed')
+    @api.param('book_id', description="take the book id as the parameter")
+    @api.marshal_with(book_model)
     @token_required
-    def post(self):
-        data = json.loads(request.get_data())
-        book = unlist_book(data)
+    def get(self, book_id):
+        book = unlist_book(book_id)
         if book:
-            return marshal(book, book_model), POST_SUCCESS
+            return book
         else:
             api.abort(404)

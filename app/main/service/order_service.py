@@ -60,8 +60,6 @@ def update_order(data, order_id):
 
 def delete_order(order_id):
     order = Order.query.filter_by(order_id=order_id).first()
-    for key in data.keys():
-        order[key] = data[key]
 
     db.session.delete(order)
     db.session.commit()

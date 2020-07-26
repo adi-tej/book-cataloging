@@ -47,6 +47,7 @@ class OrderList(Resource):
             api.abort(404)
 
     @api.doc(description="update order information")
+    @api.expect(order_model, validate=True)
     @api.response(201, 'order updation success')
     @api.response(404, 'order not found')
     @token_required
