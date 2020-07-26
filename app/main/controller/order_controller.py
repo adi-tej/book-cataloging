@@ -71,7 +71,7 @@ class OrderList(Resource):
     @api.marshal_with(order_model)
     @token_required
     def delete(self, order_id):
-        order = delete_order(order_id)
+        order = delete_order(str(order_id))
         if order:
             return marshal(order, order_model), GET_SUCCESS
         else:

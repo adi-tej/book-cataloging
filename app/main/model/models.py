@@ -33,7 +33,6 @@ class Order(db.Model):
     customer_contact = db.Column(db.String(100))
     order_date = db.Column(db.DateTime)
     order_status = db.Column(db.String(20))
-    order_items = db.relationship('OrderItems', backref='order', lazy='dynamic')
 
 class Book(db.Model):
     __tablename__ = 'book'

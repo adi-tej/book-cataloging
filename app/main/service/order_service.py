@@ -7,6 +7,8 @@ import json
 from .. import db
 from ..http_status import *
 from ..model.models import *
+from ..model.user import User
+from ..util.decorator import TOKEN
 
 def create_order(data, token):
     payload = TOKEN.serializer.loads(token.encode())
@@ -51,7 +53,7 @@ def get_order(order_id):
 def update_order(data, order_id):
     order = Order.query.filter_by(order_id=order_id).first()
     for key in data.keys():
-        order[key] = data[key]
+        order.key = data[key]
 
     db.session.add(order)
     db.session.commit()
@@ -79,16 +81,28 @@ def retrive_order(order_status, token):
 
 def confirm_order(data):
     order_list = data['orders']
+    confirmed_order_list = []
 
-    db.session.add_all(order_list)
+    for order in order_list:
+        old_order = Order.query.filter_by(order_id=order['order_id']).first()
+        old_order.order_status = "confirmed"
+
+        db.session.add(old_order)
+        confirmed_order_list.append(old_order)
     db.session.commit()
 
-    return order_list
+    return  confirmed_order_list
 
 def cancel_order(data):
     order_list = data['orders']
+    cancelled_order_list = []
 
-    db.session.delete_all(order_list)
+    for order in order_list:
+        old_order = Order.query.filter_by(order_id=order['order_id']).first()
+        old_order.order_status = "cancelled"
+
+        db.session.add(old_order)
+        cancelled_order_list.append(old_order)
     db.session.commit()
 
-    return order_list
+    return cancelled_order_list

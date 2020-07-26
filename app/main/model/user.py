@@ -12,7 +12,7 @@ class User(db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('role.role_id'), nullable=False)
     register_email = db.Column(db.String(50), unique=True, nullable=False)
     user_name = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(100), nullable=False)
+    password_hash = db.Column(db.String(100))
 
     def password(self, password):
         self.password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')

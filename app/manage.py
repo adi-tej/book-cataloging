@@ -22,6 +22,8 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def run():
+    db.drop_all()
+    db.create_all()
     app.run()
 
 if __name__ == '__main__':

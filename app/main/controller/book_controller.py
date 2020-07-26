@@ -23,7 +23,7 @@ class Books(Resource):
     @token_required
     def get(self):
         params = request.args
-        token = header_data['token']
+        token = request.headers.get('token')
         book_list = get_book_by_params(params, token)
         book_array = {
             'books': book_list,
