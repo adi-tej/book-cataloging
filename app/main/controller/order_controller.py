@@ -16,66 +16,72 @@ comfirmation_order_model = OrderDto.confirmation_order_model
 class Order(Resource):
     @api.doc(description="retrive orders according to order status (not required)")
     @api.param('order_status', 'take the order status in the parameter')
-    @api.response(200, 'order retrive success')
+    @api.response(200, 'success')
     @api.response(404, 'not found')
-    @api.marshal_list_with(order_array_model)
+    @api.response(401, 'unauthorized')
     @token_required
     def get(self):
         order_status = request.args.get('order_status')
-        token = header_data['token']
+        token = request.headers.get('token')
 
         order_list = retrive_order(order_status, token)
 
+        order_array = {
+            'orders': order_list
+        }
+
         if order_list:
-            return order_list
+            return marshal(order_array, order_array_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'order not found')
 
 @api.route('/<string:order_id>/')
 @api.param('order_id', description='retrive orders according to order_id (required parameter)')
 class OrderList(Resource):
     @api.doc(description="retrive order information")
-    @api.response(200, 'order information')
-    @api.response(404, 'order not found')
-    @api.marshal_with(order_model)
+    @api.response(200, 'success')
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @token_required
     def get(self, order_id):
         order = get_order(order_id)
         if order:
-            return order
+            return marshal(order, order_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'order not found: order id not exist')
 
     @api.doc(description="update order information")
     @api.expect(order_model, validate=True)
-    @api.response(201, 'order updation success')
-    @api.response(404, 'order not found')
+    @api.response(201, 'success')
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @token_required
     def put(self, order_id):
         data = json.loads(request.get_data())
         order = update_order(data, order_id)
-        if order:
+        if order.order_id:
             return marshal(order, order_model), POST_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'order not found: order id not exist')
 
     @api.doc(description="delete some order information")
-    @api.response(200, 'order deletion success')
-    @api.response(404, 'order not found')
+    @api.response(200, 'success')
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @api.marshal_with(order_model)
     @token_required
     def delete(self, order_id):
         order = delete_order(order_id)
         if order:
-            return order
+            return marshal(order, order_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'order not found: order id not exist')
 
 @api.route('/checkout/')
 class OrderCheckout(Resource):
     @api.doc(description="order from the in shop customer")
     @api.expect(new_order_model, validate=True)
-    @api.response(201, 'create order success', model=order_model)
+    @api.response(201, 'success', model=order_model)
     @api.response(401, 'unauthorized')
     @token_required
     def post(self):
@@ -88,7 +94,7 @@ class OrderCheckout(Resource):
 class OrderConfirmation(Resource):
     @api.doc(description="confirm the orders from ebay")
     @api.expect(order_array_model, validate=True)
-    @api.response(201, 'order confirmation success', model=order_array_model)
+    @api.response(201, 'success', model=order_array_model)
     @api.response(401, 'unauthorized')
     @api.response(404, 'not found')
     @token_required
@@ -102,13 +108,13 @@ class OrderConfirmation(Resource):
         if order_list:
             return marshal(order_array, order_array_model), POST_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'orders are not exist')
 
 @api.route('/cancellation/')
 class OrderCancellation(Resource):
     @api.doc(description="cancel the orders from ebay")
     @api.expect(order_array_model, validate=True)
-    @api.response(201, 'order cancellation success', model=order_array_model)
+    @api.response(201, 'success', model=order_array_model)
     @api.response(401, 'unauthorized')
     @api.response(404, 'not found')
     @token_required
@@ -122,4 +128,4 @@ class OrderCancellation(Resource):
         if order_list:
             return marshal(order_array, order_array_model), POST_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'orders are not exist')

@@ -13,6 +13,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = mysql_aws_db
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    RESTPLUS_MASK_SWAGGER = False
 
 class TestingConfig(Config):
     DEBUG = True
@@ -20,10 +21,12 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = mysql_aws_db
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    RESTPLUS_MASK_SWAGGER = False
 
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = mysql_aws_db
+    RESTPLUS_MASK_SWAGGER = False
 
 config_by_name = dict(
     dev=DevelopmentConfig,

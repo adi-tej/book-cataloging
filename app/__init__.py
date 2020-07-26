@@ -21,6 +21,13 @@ api = Api(blueprint,
           title='Opshop flask restplus api',
           version='1.1',
           description='opshop opshop',
+          # authorizations={
+          #     "TOKEN-BASED": {
+          #         "type": "apiKey",
+          #         "name": "API-TOKEN",
+          #         "in": "header"
+          #     }
+          # }
           )
 
 api.add_namespace(user_ns, path='/user')

@@ -11,7 +11,6 @@ class Auth:
 
     @staticmethod
     def login(data):
-        print(data)
         user_info = data
         user_email, user_name, password = '', '', ''
         user = User()
@@ -26,7 +25,7 @@ class Auth:
 
         if not user:
             resp = make_response(jsonify({'message':'user not exist'}))
-            resp.status_code = UNAUTHORIZED
+            resp.status_code = NOT_FOUND
             return resp
         if not user.check_password(password):
             resp = make_response(jsonify({'message': 'password not right'}))

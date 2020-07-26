@@ -182,7 +182,7 @@ def retrive_book(data):
             upload_to_s3(bookcover, key)  # image saved to amazon s3
             bookcover.close()
             file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
-            book_data['cover1'] = file_url  ## amazon url of file overwritten in Book['cover']
+            book_data['cover'] = file_url  ## amazon url of file overwritten in Book['cover']
             new_file.close()
             # os.remove(file_name)
             # print("Attachment Successfully save in S3 Bucket url %s " % (file_url))
@@ -190,39 +190,43 @@ def retrive_book(data):
     except KeyError:
         pass
 
-    return bok
+    return book
 
-def update_book(data, book_id):
+def update_book(data,images, book_id):
     book = Book.query.filter_by(book_id_loacl=book_id).first()  # fetching saved book info from table
-    book_data = book.__dict__
-    new_data = request.form
+    if book:
 
-    for key in new_data:
-        book_data[key] = new_data[key]  # updating new info
+        book_data = book.__dict__
 
-    book.__dict__ = book_data
-    db.session.add(book)
-    db.session.commit()
 
-    image_dict = {}
+        for key in data:
+            book_data[key] = data[key]  # updating new info
 
-    image_number = 0
-    for x in request.files:
-        image_number = image_number + 1
-        image = request.files[x]
-        image.save(str(image_number) + '.png')
-        body = open(str(image_number) + '.png', 'rb')
-        key = str(book_data['book_id_local']) + '/' + str(image_number) + '.png'
+        image_number = 0
+        for x in images:
+            image_number = image_number + 1
+            image = images[x]
+            image.save(str(image_number) + '.png')
+            body = open(str(image_number) + '.png', 'rb')
+            key = str(book_data['book_id_local']) + '/' + str(image_number) + '.png'
 
-        upload_to_s3(body, key)
-        body.close()
-        file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
+            upload_to_s3(body, key)
+            body.close()
+            file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
 
-        image_object = image()
-        image_dict['item_id'] = book_data['book_id_local']
-        image_dict['aws_link'] = file_url
-        image_object.__dict__ = image_dict
-        db.session.add(image_object)
+            image_dict = {}  # dictionary analogues to Image object
+            if image_number == 1:  # saving the 1st image as cover
+                book_data['cover'] = file_url
+
+            image_object = image()
+            image_dict['item_id'] = book_data['book_id_local']
+            image_dict['aws_link'] = file_url
+            image_object.__dict__ = image_dict
+            db.session.add(image_object)
+            db.session.commit()
+
+        book.__dict__ = book_data
+        db.session.add(book)
         db.session.commit()
 
     return book
@@ -316,5 +320,36 @@ def get_book_by_params(params, token):
 
     return book_list
 
-def confirm_book(data):
-    pass
+def confirm_book(data,images):
+
+
+    image_number = 0
+    for x in images: # getting images
+        image_number = image_number + 1
+        image = images[x]
+        image.save(str(image_number) + '.png')
+        body = open(str(image_number) + '.png', 'rb')
+        key = str(data['book_id_local']) + '/' + str(image_number) + '.png'
+
+        upload_to_s3(body, key)
+        body.close()
+        file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
+
+        image_dict = {} # dictionary analogues to Image object
+        if image_number == 1: # saving the 1st image as cover
+            data['cover']=file_url
+
+        image_object = Image()
+        image_dict['item_id'] = data['book_id_local']
+        image_dict['aws_link'] = file_url
+        image_object.__dict__ = image_dict
+        db.session.add(image_object)
+        db.session.commit()
+
+    book=Book()
+
+    book.__dict__ = data
+    db.session.add(book)
+    db.session.commit()
+
+    return book

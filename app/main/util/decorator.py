@@ -2,13 +2,16 @@ from flask import jsonify, make_response, request
 
 from functools import wraps
 from app.main.service.user_service import TOKEN
+from ..http_status import *
 
 def token_required(f):
     @wraps(f)
     def decorate(*args, **kargs):
         token = request.headers.get('token')
         if not token:
-            return jsonify({'error': 'Authentication token is missing', 'status': 401})
+            resp = make_response(jsonify({'error': 'Authentication token is missing'}))
+            resp.status_code = UNAUTHORIZED
+            return resp
 
         result = TOKEN.validate_token(token)
         if result is 'token expired':

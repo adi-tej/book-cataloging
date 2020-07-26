@@ -14,26 +14,30 @@ book_array_model = BookDto.book_array_model
 
 @api.route('/')
 class Books(Resource):
-    @api.doc(description="get all the books")
-    @api.response(200, description='get all books accoring to the parameters', model=book_array_model)
-    @api.response(404, description='not found')
+    @api.doc(description="get all books accoring to parameters'")
+    @api.response(200, 'success', model=book_array_model)
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @api.param('isbn', description="take isbn in the parameter if you have")
     @api.param('title', description="take title in the parameter if you have")
-    @api.marshal_list_with(book_array_model)
     @token_required
     def get(self):
         params = request.args
         token = header_data['token']
         book_list = get_book_by_params(params, token)
+        book_array = {
+            'books': book_list,
+        }
         if book_list:
-            return book_list
+            return marshal(book_array, book_array_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'nothing found')
 
     @api.doc(description="receive book information from scanning")
     @api.expect(isbn_model)
-    @api.response(201, 'book auto description success', book_model)
+    @api.response(201, 'success', book_model)
     @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @token_required
     def post(self):
         data = json.loads(request.get_data())
@@ -42,9 +46,16 @@ class Books(Resource):
 
 @api.route('/confirm/')
 class BookConfirmation(Resource):
+    @api.doc(description="confirm book information from user")
+    @api.expect(isbn_model)
+    @api.response(201, 'success', book_model)
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     def post(self):
-        data = json.loads(request.get_data())
-        book = confirm_book(data)
+        # data = json.loads(request.get_data())
+        data = request.form
+        images = request.files
+        book = confirm_book(data, images)
         return marshal(book, book_model), POST_SUCCESS
 
 @api.route('/<string:book_id>/')
@@ -52,68 +63,71 @@ class BookConfirmation(Resource):
 class BookActivities(Resource):
     # this function is used to correct and update the information with the info returned by staff, you can add more images too.
     @api.doc(description="updating the database and ebay with updated book data by the staff ")
-    @api.response(201, 'update book success', model=book_model)
+    @api.response(201, 'success', model=book_model)
     @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @token_required
     def put(self, book_id):
-        data = json.load(request.get_data())
-        book = update_book(data, book_id)
+        # data = json.load(request.get_data())
+        data = request.form
+        images = request.files
+        book = update_book(data, images, book_id)
         if book:
             return marshal(book, book_model), POST_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'not found, book id not exist')
 
     @api.doc(description="retrive some book by book id")
-    @api.response(200, 'book information', model=book_model)
+    @api.response(200, 'success', model=book_model)
     @api.response(404, 'not found')
-    @api.marshal_with(book_model)
+    @api.response(401, 'unauthorized')
     @token_required
     def get(self, book_id):
         book = get_book(book_id)
         if book:
-            return book
+            return marshal(book, book_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'not found, book id not exist')
 
     @api.doc(description="delete some book by book id")
-    @api.response(200, 'book deletion success', model=book_model)
-    @api.response(404, 'book not found')
-    @api.marshal_with(book_model)
+    @api.response(200, 'success', model=book_model)
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @token_required
     def delete(self, book_id):
         book = delete_book(book_id)
         if book:
-            return book
+            return marshal(book, book_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'not found, book id not exist')
 
 @api.route('/list/<book_id>/')
 class BookList(Resource):
     @api.doc(description="list some books to ebay or unlist books from ebay.")
-    @api.response(200, 'book list success', model=book_model)
-    @api.response(400, 'book list failed')
+    @api.response(200, 'success', model=book_model)
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @api.param('book_id', description="take the book id as the parameter")
-    @api.marshal_with(book_model)
     @token_required
     def get(self):
         data = json.loads(request.get_data())
         book = list_book(data)
         if book:
-            return book
+            return marshal(book, book_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'not found, book id not exist')
 
 @api.route('/unlist/<book_id>/')
 class BookUnlist(Resource):
     @api.doc(description="unlist some books to ebay or unlist books from ebay.")
-    @api.response(200, 'book unlist success', model=book_model)
-    @api.response(400, 'book unlist failed')
+    @api.response(200, 'success', model=book_model)
+    @api.response(404, 'not found')
+    @api.response(401, 'unauthorized')
     @api.param('book_id', description="take the book id as the parameter")
-    @api.marshal_with(book_model)
     @token_required
     def get(self, book_id):
         book = unlist_book(book_id)
         if book:
-            return book
+            return marshal(book, book_model), GET_SUCCESS
         else:
-            api.abort(404)
+            api.abort(404, 'not found, book id not exist')
