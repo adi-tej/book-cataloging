@@ -1,24 +1,32 @@
-from flask import request
-from flask_restplus import Resource
+from flask import request, make_response, jsonify
+from flask_restplus import Resource, marshal
+import json
 
-from ..util.dto import UserDto
+from ..util.dto import UserDto, resource_fileds
 from ..service.user_service import get_a_user, get_all_users
 from ..util.decorator import token_required
+from ..http_status import *
 
 api = UserDto.api
 user_model = UserDto.user
 
-@api.route('/<user_id>')
+@api.route('/')
 @api.param('user_id', 'user unique id')
-@api.response(404, 'User not found')
 class User(Resource):
     @api.doc('retrive a user')
     @api.marshal_with(user_model)
+    @api.response(404, 'User not found')
+    @api.response(200, description='user information', model=user_model)
+    @api.param('user_id', description='take user id as param')
     @token_required
-    def get(self, user_id):
+    def get(self):
         """ get a user given its identifier"""
-        user = get_a_user(user_id)
-        if not user:
-            api.abort(404)
-        else:
-            return user
+        user_id = request.args.get('user_id')
+        if user_id:
+            user = get_a_user(user_id)
+            if not user:
+                api.abort(404)
+            else:
+                return user
+        # else:
+        #     api.abort(404)

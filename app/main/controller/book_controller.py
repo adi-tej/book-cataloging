@@ -1,5 +1,5 @@
 from flask import request
-from flask_restplus import Resource
+from flask_restplus import Resource, marshal
 import json
 
 from app.main.service.book_service import *
@@ -12,85 +12,112 @@ isbn_model = BookDto.isbn_model
 book_model = BookDto.book_model
 list_model = BookDto.list_model
 unlist_model = BookDto.unlist_model
+book_array_model = BookDto.book_array_model
 
 @api.route('/')
 class Books(Resource):
     @api.doc(description="get all the books")
-    @api.response(200, 'get all books')
+    @api.response(200, description='get all books accoring to the parameters', model=book_array_model)
+    @api.response(404, description='not found')
+    @api.param('isbn', description="take isbn in the parameter if you have")
+    @api.param('title', description="take title in the parameter if you have")
+    @api.marshal_list_with(book_array_model)
     @token_required
     def get(self):
-        pass
+        params = request.args
+        token = header_data['token']
+        book_list = get_book_by_params(params, token)
+        if book_list:
+            return book_list
+        else:
+            api.abort(404)
 
     @api.doc(description="receive book information from scanning")
     @api.expect(isbn_model)
-    @api.response(201, 'add book success', book_model)
+    @api.response(201, 'book auto description success', book_model)
+    @api.response(404, 'not found')
     @token_required
     def post(self):
         data = json.loads(request.get_data())
-        return retrive_book(data)
+        book = retrive_book(data)
+        return marshal(book, book_model), POST_SUCCESS
 
 @api.route('/confirm/')
 class BookConfirmation(Resource):
     def post(self):
         data = json.loads(request.get_data())
-        return confirm_book(data)
-
-@api.route('/<filter>/')
-class RetriveBook(Resource):
-    @api.doc(description="retrive book by title or ISBN, if nothing return all")
-    @api.response(200, 'retrive book success')
-    @api.response(404, 'not found')
-    @api.header('isbn', description="take isbn in the header if you have")
-    @api.header('title', description="take title in the header if you have")
-    @token_required
-    def get(self,filter):
-        header_data = request.headers
-        token = header_data['token']
-        return get_book_by_params(header_data, token)
+        book = confirm_book(data)
+        return marshal(book, book_model), POST_SUCCESS
 
 @api.route('/<string:book_id>/')
-@api.param('book_id')
+@api.param('book_id', 'book_id is required parameter if lookup books by id')
 class BookActivities(Resource):
     # this function is used to correct and update the information with the info returned by staff, you can add more images too.
     @api.doc(description="updating the database and ebay with updated book data by the staff ")
-    @api.response(201, 'add book success')
+    @api.response(200, 'update book success', model=book_model)
+    @api.response(404, 'not found')
+    @api.marshal_with(book_model)
     @token_required
     def put(self, book_id):
         data = json.load(request.get_data())
-        return update_book(data, book_id)
+        book = update_book(data, book_id)
+        if book:
+            return book
+        else:
+            api.abort(404)
 
     @api.doc(description="retrive some book by book id")
-    @api.response(201, 'retrive book information')
-    @api.response(404, 'book not found')
+    @api.response(200, 'book information', model=book_model)
+    @api.response(404, 'not found')
+    @api.marshal_with(book_model)
     @token_required
     def get(self, book_id):
-        return get_book(book_id)
+        book = get_book(book_id)
+        if book:
+            return book
+        else:
+            api.abort(404)
 
     @api.doc(description="delete some book by book id")
-    @token_required
-    @api.response(201, 'book deletion success')
+    @api.response(200, 'book deletion success', model=book_model)
     @api.response(404, 'book not found')
+    @api.marshal_with(book_model)
+    @token_required
     def delete(self, book_id):
-        return delete_book(book_id)
+        book = delete_book(book_id)
+        if book:
+            return book
+        else:
+            api.abort(404)
 
 @api.route('/list/')
 class BookList(Resource):
     @api.doc(description="list some books to ebay or unlist books from ebay.")
-    @api.expect(list_model)
-    @api.response(201, 'all items list success')
-    @api.response(400, 'some items list failed')
+    @api.expect(book_model)
+    @api.response(201, 'book list success', model=book_model)
+    @api.response(400, 'book list failed')
+    @api.marshal_with(book_model)
     @token_required
     def post(self):
         data = json.loads(request.get_data())
-        return list_book(data)
+        book = list_book(data)
+        if book:
+            return book
+        else:
+            api.abort(404)
 
 @api.route('/unlist/')
 class BookUnlist(Resource):
     @api.doc(description="unlist some books to ebay or unlist books from ebay.")
     @api.expect(unlist_model)
-    @api.response(201, 'all items unlist success')
-    @api.response(400, 'some items unlist failed')
+    @api.response(201, 'book unlist success', model=book_model)
+    @api.response(400, 'book unlist failed')
+    @api.marshal_with(book_model)
     @token_required
     def post(self):
         data = json.loads(request.get_data())
-        return unlist_book(data)
+        book = unlist_book(data)
+        if book:
+            return book
+        else:
+            api.abort(404)

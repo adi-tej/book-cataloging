@@ -45,7 +45,6 @@ class Book(db.Model):
     title = db.Column(db.String(100))
     author = db.Column(db.String(100))
     publisher = db.Column(db.String(100))
-    publish_date = db.Column(db.DateTime)
     edition = db.Column(db.Integer)
     pages_number = db.Column(db.Integer)
     genre = db.Column(db.String(20))
@@ -59,12 +58,12 @@ class Book(db.Model):
     ISBN_10 = db.Column(db.String(100))
     ISBN_13 = db.Column(db.String(100))
     notes = db.Column(db.String(300))
+    condition = db.Column(db.Integer)
 
 class OrderItems(db.Model):
     __tablename__ = 'orderitems'
-    belong_order = db.Column(db.String(100), db.ForeignKey('order.order_id'), primary_key=True)
+    order_id = db.Column(db.String(100), db.ForeignKey('order.order_id'), primary_key=True)
     item_id = db.Column(db.String(100), db.ForeignKey('book.book_id_local'), primary_key=True)
-    item_type_id = db.Column(db.Integer, db.ForeignKey('itemtype.item_type_id'))
     quantity = db.Column(db.Integer)
     single_price = db.Column(db.Float)
     total_price = db.Column(db.Float)

@@ -7,20 +7,22 @@ from ..util.dto import OrderDto
 from ..util.decorator import token_required
 
 api = OrderDto.api
-order_items_model = OrderDto.new_order_items
+order_model = OrderDto.order_model
+new_order_model = OrderDto.new_order_model
 comfirmation_order_model = OrderDto.confirmation_order_model
 
 @api.route('/checkout/')
 class Order(Resource):
     @api.doc(description="order from the in shop customer")
-    @api.expect(order_items_model, validate=True)
-    @api.response(201, 'create order success')
+    @api.expect(new_order_model, validate=True)
+    @api.response(201, 'create order success', model=order_model)
     @api.response(401, 'unauthorized')
-    @api.response(400, 'bad request')
     @token_required
     def post(self):
+        token = request.headers.get('token')
         data = json.loads(request.get_data())
-        return create_order(data)
+        order = create_order(data, token)
+        return order
 
 @api.route('/<string:order_id>/')
 @api.param('order_id')
@@ -28,6 +30,7 @@ class OrderList(Resource):
     @api.doc(description="retrive order information")
     @api.expect(comfirmation_order_model)
     @api.response(201, 'order confirmed success')
+    @api.response(401, 'unauthorized')
     @token_required
     def post(self, order_id):
         data = json.loads(request.get_data())

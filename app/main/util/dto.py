@@ -8,7 +8,6 @@ class UserDto:
         'role_id':fields.Integer,
         'register_email':fields.String,
         'user_name':fields.String,
-        'password':fields.String
     })
 
 class AuthDto:
@@ -20,12 +19,22 @@ class AuthDto:
 
 class OrderDto:
     api = Namespace('order', description='order management operations')
-    new_order_items = api.model('new_order_items', {
-        'opshop_id':fields.Integer,
-        'book_id':fields.List(fields.String),
-        'quantity':fields.List(fields.Integer),
-        'total_price':fields.List(fields.Float),
-        'item_status':fields.List(fields.String)
+
+    order_model = api.model('order', {
+        'order_id': fields.String,
+        'opshop_id': fields.Integer,
+        'order_date': fields.DateTime,
+        'order_status': fields.String,
+    })
+
+    ordered_item_model = api.model('ordered_item', {
+        'item_id': fields.String,
+        'price': fields.Float,
+        'item_status': fields.String,
+    })
+
+    new_order_model = api.model('new_order', {
+        'items': fields.List(fields.Nested(ordered_item_model)),
     })
 
     confirmation_order_model = api.model('comfirm_order', {
@@ -38,21 +47,29 @@ class BookDto:
     isbn_model = api.model('ISBN_10', {'ISBN': fields.Integer})
 
     book_model = api.model('book', {
+        'book_id_local': fields.String,
+        'book_id_ebay': fields.String,
         'opshop_id': fields.Integer,
         'title': fields.String,
         'author': fields.String,
         'publisher': fields.String,
-        'publish_date': fields.Date,
         'edition': fields.Integer,
         'pages_number': fields.Integer,
         'genre': fields.String,
         'cover': fields.String,
         'quantity': fields.Integer,
         'description': fields.String,
+        'create_date': fields.DateTime,
+        'update_date': fields.DateTime,
+        'status' :fields.String,
         'ISBN_10': fields.String,
         'ISBN_13': fields.String,
         'notes': fields.String,
-        'condition_id': fields.Integer
+        'condition': fields.Integer
+    })
+
+    book_array_model = api.model('book_array', {
+        'books': fields.List(fields.Nested(book_model)),
     })
 
     list_model = api.model('list book model', {
@@ -62,3 +79,6 @@ class BookDto:
     unlist_model = api.model('unlist book model', {
         'book_id': fields.String,
     })
+
+resource_fileds = {}
+resource_fileds['message'] = fields.String

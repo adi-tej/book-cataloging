@@ -190,13 +190,7 @@ def retrive_book(data):
     except KeyError:
         pass
 
-    book.__dict__ = book_data
-
-    resp = make_response(jsonify(json.dumps(book)))
-    resp.status_code = POST_SUCCESS
-    resp.headers['message'] = 'add book success'
-
-    return resp
+    return bok
 
 def update_book(data, book_id):
     book = Book.query.filter_by(book_id_loacl=book_id).first()  # fetching saved book info from table
@@ -231,163 +225,96 @@ def update_book(data, book_id):
         db.session.add(image_object)
         db.session.commit()
 
-    resp = make_response(jsonify(book.__dict__))
-
-    resp.status_code = POST_SUCCESS
-    resp.headers['message'] = 'add book success'
-
-    return resp
+    return book
 
 def get_book(book_id):
     book = Book.query.filter_by(book_id_loacl=book_id).first()
-    if not book:
-        resp = make_response(jsonify({'message':'book not found'}))
-        resp.status_code = NOT_FOUND
-        return resp
-    else:
-        book_info = json.dumps(book.__dict__)
-        resp = make_response(jsonify(book_info))
-        resp.status_code = GET_SUCCESS
-        return resp
+    return book
 
 def delete_book(book_id):
     book = Book.query.filter_by(book_id_loacl=book_id).first()
-    if not book:
-        resp = make_response(jsonify({'message': 'book not found'}))
-        resp.status_code = NOT_FOUND
-        return resp
-    else:
+    if book:
         resp = make_response(jsonify(book.__dict__))
         db.session.remove(book)
         db.session.commit()
-        resp.status_code = GET_SUCCESS
-        return resp
+
+    return book
 
 def list_book(data):
-    fail_list = []
-    if data['books']:
-        for book_id in data['books']:
-            book = Book.query.filter_by(book_local_id=book_id).first()
-            if not book:
-                fail_list.append(book_id)
-            else:
-                # build connection with ebay
-                # make request body to ebay
-                # execute request to ebay and get response
-                ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
-                request_info = {
-                    "Item": {
-                        "Title": book.title + " " + book.book_id_local,
-                        "PictureDetails": {
-                            # This URL shold be replaced by Allen after finishing S3 storage
-                            "PictureURL": book.cover1,
-                        },
-                        "Country": "AU",
-                        "Location": book.opshop.opshop_address,
-                        "Site": "Australia",
-                        "SiteID": 15,
-                        "ConditionID": book.condition_id,
-                        "PaymentMethods": "PayPal",
-                        "PayPalEmailAddress": book.opshop.opshop_ebay_email,
-                        "Description": book.description,
-                        "ListingDuration": "Days_30",
-                        "ListingType": "FixedPriceItem",
-                        "Currency": "AUD",
-                        "ReturnPolicy": {
-                            "ReturnsAcceptedOption": "ReturnsAccepted",
-                            "RefundOption": "MoneyBack",
-                            "ReturnsWithinOption": "Days_30",
-                            "ShippingCostPaidByOption": "Buyer"
-                        },
-                        "ShippingDetails": {
-                            "ShippingServiceOptions": {
-                                "FreeShipping": "True",
-                                "ShippingService": "ShippingMethodStandard"
-                            }
-                        },
-                        "DispatchTimeMax": "3"
-                    },
-                }
-                response_ebay = ebay_conn.execute("AddItem", request_info)
-                # book list failed
-                if not response_ebay['Category2ID']:
-                    fail_list.append(book_id)
-                else:
-                    book.__dict__['status'] = 'listed'
-                    book.__dict__['book_id_ebay'] = response_ebay['ItemID']
-                    db.session.add(book)
-                    db.session.commit()
+    book = Book.query.filter_by(book_local_id=data['book_id']).first()
+    if book:
+        # build connection with ebay
+        # make request body to ebay
+        # execute request to ebay and get response
+        ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
+        request_info = {
+            "Item": {
+                "Title": book.title + " " + book.book_id_local,
+                "PictureDetails": {
+                    # This URL shold be replaced by Allen after finishing S3 storage
+                    "PictureURL": book.cover,
+                },
+                "Country": "AU",
+                "Location": book.opshop.opshop_address,
+                "Site": "Australia",
+                "SiteID": 15,
+                "ConditionID": book.condition_id,
+                "PaymentMethods": "PayPal",
+                "PayPalEmailAddress": book.opshop.opshop_ebay_email,
+                "Description": book.description,
+                "ListingDuration": "Days_30",
+                "ListingType": "FixedPriceItem",
+                "Currency": "AUD",
+                "ReturnPolicy": {
+                    "ReturnsAcceptedOption": "ReturnsAccepted",
+                    "RefundOption": "MoneyBack",
+                    "ReturnsWithinOption": "Days_30",
+                    "ShippingCostPaidByOption": "Buyer"
+                },
+                "ShippingDetails": {
+                    "ShippingServiceOptions": {
+                        "FreeShipping": "True",
+                        "ShippingService": "ShippingMethodStandard"
+                    }
+                },
+                "DispatchTimeMax": "3"
+            },
+        }
+        ebay_conn.execute("AddItem", request_info)
+        book.status = 'listed'
+        db.session.add(book)
+        db.session.commit()
 
-        if fail_list:
-            fail_dict = {
-                'failed':fail_list,
-                'operation':'list',
-                'message':'some items list failed'
-            }
-            resp = make_response(jsonify(fail_dict))
-            resp.status_code = BAD_REQUEST
-            return resp
-        else:
-            resp = make_response(jsonify({'message':'all items list success'}))
-            resp.status_code = POST_SUCCESS
-            return resp
-    else:
-        resp = make_response(jsonify({'message':'no book found'}))
-        resp.status_code = BAD_REQUEST
-        return resp
+    return book
 
 def unlist_book(data):
-    fail_unlist = []
-    if data['books']:
-        for book_id in data['books']:
-            book = Book.query.filter_by(book_local_id=book_id).first()
-            if not book:
-                fail_unlist.append(book_id)
-            else:
-                ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
-                request_info = {
-                    "EndingReason": "LostOrBroken",
-                    "ItemID": book.book_id_ebay
-                }
-                response_ebay = ebay_conn.execute("EndItem", request_info)
-        if fail_unlist:
-            fail_dict = {'failed': fail_unlist, 'operation': 'unlist'}
-            resp = make_response(jsonify(fail_dict))
-            resp.status_code = BAD_REQUEST
-            resp.headers['message'] = 'some items unlist failed'
-            return resp
-        else:
-            resp = make_response()
-            resp.status_code = POST_SUCCESS
-            resp.headers['message'] = 'all items unlist success'
-            return resp
-    else:
-        resp = make_response(jsonify({'message':'no book found'}))
-        resp.status_code = BAD_REQUEST
-        return resp
+    book = Book.query.filter_by(book_local_id=book_id).first()
+    if book:
+        ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
+        request_info = {
+            "EndingReason": "LostOrBroken",
+            "ItemID": book.book_id_ebay
+        }
+        ebay_conn.execute("EndItem", request_info)
 
-def get_book_by_params(header_data, token):
+    return book
+
+def get_book_by_params(params, token):
     payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(user_id=payload['user_id']).first()
     book_list = []
-    if header_data['book_title'] or header_data['isbn']:
-        if header_data['book_title'] and not header_data['isbn']:
-            book_list = Book.query.filter_by(title=header_data['book_title'], opshop_id=user.opshop.opshop_id).all()
-        elif not header_data['book_title'] and header_data['isbn']:
-            book_list = Book.query.filter_by(ISBN_10=header_data['isbn'], opshop_id=user.opshop.opshop_id).all()
-        elif header_data['book_title'] and header_data['isbn']:
-            book_list = Book.query.filter_by(title=header_data['book_title'], ISBN_10=header_data['isbn'], opshop_id=user.opshop.opshop_id).all()
-    else:
-        book_list = Book.query.filter_by(opshop_id=user.opshop.opshop_id).all()
 
-    if book_list:
-        resp = make_response(jsonify(json.dumps(book_list)))
-        resp.status_code = GET_SUCCESS
-        return resp
+    if params['isbn'] or params['title']:
+        if params['isbn'] and params['title']:
+            book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'], opshop_id=user.opshop.opshop_id)
+        elif params['isbn'] and not params['title']:
+            book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.opshop_id)
+        elif not params['isbn'] and params['title']:
+            book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.opshop_id)
     else:
-        resp = make_response(jsonify({'message': 'not found'}))
-        resp.status_code = NOT_FOUND
-        return resp
+        book_list = Book.query.filter_by(opshop_id=user.opshop.opshop_id)
+
+    return book_list
 
 def confirm_book(data):
     pass
