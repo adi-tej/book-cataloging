@@ -1,5 +1,5 @@
 from app.main import db
-from app.main.model.models import Opshop, Role, ItemType
+from app.main.model.models import *
 from app.main.model.user import User
 from app.manage import app
 
@@ -43,3 +43,4 @@ with app.app_context():
 
     db.session.add(itemtype1)
     db.session.commit()
+

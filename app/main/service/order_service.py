@@ -12,29 +12,30 @@ from ..util.decorator import TOKEN
 
 def create_order(data, token):
     payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(user_id=payload['user_id']).first()
+    user = User.query.filter_by(user_id=str(payload['user_id'])).first()
     order = Order(
-        order_id=uuid5(NAMESPACE_URL, 'v5_app'),
+        order_id=str(uuid5(NAMESPACE_URL, 'v5_app')),
         opshop_id=user.opshop.opshop_id,
         order_date=datetime.now(),
         order_status='confirmed'
     )
     db.session.add(order)
+    db.session.commit()
 
     items = data['items']
 
     for item in items:
         order_item = OrderItems(
             order_id=order.order_id,
-            item_id=item.item_id,
+            item_id=item['item_id'],
             quantity=1,
-            single_price=item.price,
-            total_price=item.price
+            single_price=item['price'],
+            total_price=item['price']
         )
         db.session.add(order_item)
 
-        if item.status == "listed":
-            item_obj = Book.query.filter_by(book_id=item.item_id).first()
+        if item['item_status'] == "listed":
+            item_obj = Book.query.filter_by(book_id=item['item_id']).first()
             conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
             request = {
                 "EndingReason":"LostOrBroken",
@@ -52,18 +53,18 @@ def get_order(order_id):
 
 def update_order(data, order_id):
     order = Order.query.filter_by(order_id=order_id).first()
-    for key in data.keys():
-        order.key = data[key]
-
-    db.session.add(order)
-    db.session.commit()
-
+    if data:
+        if data['order_status'] == "pending":
+            order.order_status = "pending"
+        elif data['order_status'] == "confirmed":
+            order.order_status = "pending"
+        db.session.commit()
     return order
 
 def delete_order(order_id):
     order = Order.query.filter_by(order_id=order_id).first()
 
-    db.session.delete(order)
+    order.order_status = "deleted"
     db.session.commit()
 
     return order
@@ -87,7 +88,6 @@ def confirm_order(data):
         old_order = Order.query.filter_by(order_id=order['order_id']).first()
         old_order.order_status = "confirmed"
 
-        db.session.add(old_order)
         confirmed_order_list.append(old_order)
     db.session.commit()
 

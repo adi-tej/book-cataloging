@@ -19,7 +19,7 @@ class Order(Resource):
     @api.response(200, 'success')
     @api.response(404, 'not found')
     @api.response(401, 'unauthorized')
-    @token_required
+    # @token_required
     def get(self):
         order_status = request.args.get('order_status')
         token = request.headers.get('token')
@@ -56,7 +56,7 @@ class OrderList(Resource):
     @api.response(404, 'not found')
     @api.response(401, 'unauthorized')
     @token_required
-    def put(self, order_id):
+    def post(self, order_id):
         data = json.loads(request.get_data())
         order = update_order(data, order_id)
         if order.order_id:
