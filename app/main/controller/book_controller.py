@@ -110,9 +110,8 @@ class BookList(Resource):
     @api.response(401, 'unauthorized')
     @api.param('book_id', description="take the book id as the parameter")
     @token_required
-    def get(self):
-        data = json.loads(request.get_data())
-        book = list_book(data)
+    def get(self, book_id):
+        book = list_book(str(book_id))
         if book:
             return marshal(book, book_model), GET_SUCCESS
         else:

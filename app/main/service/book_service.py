@@ -6,12 +6,17 @@ import requests
 from uuid import uuid5, NAMESPACE_OID
 import shutil
 import boto3
+from botocore.client import Config
+import os
 
 from ..http_status import *
 from app.main.model.models import Image, Book
 from app.main.model.user import User
 from app.main.http_status import *
 from ..util.decorator import TOKEN
+from .. import db
+
+path = os.path.abspath("./main/ebay_config.yaml")
 
 def find_book_info(ISBN):  # function to search book in both api
     book_info = extract_data_google_api(ISBN)
@@ -253,11 +258,11 @@ def update_book(data,images, book_id):
     return book
 
 def get_book(book_id):
-    book = Book.query.filter_by(book_id_loacl=book_id).first()
+    book = Book.query.filter_by(book_id_local=book_id).first()
     return book
 
 def delete_book(book_id):
-    book = Book.query.filter_by(book_id_loacl=book_id).first()
+    book = Book.query.filter_by(book_id_local=book_id).first()
     if book:
         resp = make_response(jsonify(book.__dict__))
         db.session.remove(book)
@@ -266,24 +271,24 @@ def delete_book(book_id):
     return book
 
 def list_book(book_id):
-    book = Book.query.filter_by(book_local_id=book_id).first()
+    book = Book.query.filter_by(book_id_local=book_id).first()
     if book:
         # build connection with ebay
         # make request body to ebay
         # execute request to ebay and get response
-        ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
+        ebay_conn = Connection(config_file=path, domain="api.sandbox.ebay.com", debug=True)
         request_info = {
             "Item": {
                 "Title": book.title + " " + book.book_id_local,
-                "PictureDetails": {
-                    # This URL shold be replaced by Allen after finishing S3 storage
-                    "PictureURL": book.cover,
-                },
+                # "PictureDetails": {
+                #     # This URL shold be replaced by Allen after finishing S3 storage
+                #     "PictureURL": book.cover,
+                # },
                 "Country": "AU",
                 "Location": book.opshop.opshop_address,
                 "Site": "Australia",
                 "SiteID": 15,
-                "ConditionID": book.condition_id,
+                "ConditionID": book.condition,
                 "PaymentMethods": "PayPal",
                 "PayPalEmailAddress": book.opshop.opshop_ebay_email,
                 "Description": book.description,
@@ -313,9 +318,9 @@ def list_book(book_id):
     return book
 
 def unlist_book(book_id):
-    book = Book.query.filter_by(book_local_id=book_id).first()
+    book = Book.query.filter_by(book_id_local=book_id).first()
     if book:
-        ebay_conn = Connection(config_file="ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
+        ebay_conn = Connection(config_file=path, domain="api.sandbox.ebay.com", debug=True)
         request_info = {
             "EndingReason": "LostOrBroken",
             "ItemID": book.book_id_ebay
@@ -342,7 +347,6 @@ def get_book_by_params(params, token):
     return book_list
 
 def confirm_book(data,images):
-
 
     image_number = 0
     for x in images: # getting images

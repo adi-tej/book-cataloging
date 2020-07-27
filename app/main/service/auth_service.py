@@ -17,11 +17,11 @@ class Auth:
         if user_info['email']:
             user_email, password = \
                 user_info['email'].strip(), user_info['password'].strip()
-            user = User.query.filter_by(register_email=user_email).first()
+            user = User.query.filter_by(email=user_email).first()
         elif user_info['username']:
             user_name, password = \
                 user_info['username'].strip(), user_info['password'].strip()
-            user = User.query.filter_by(user_name=user_name).first()
+            user = User.query.filter_by(username=user_name).first()
 
         if not user:
             resp = make_response(jsonify({'message':'user not exist'}))
@@ -32,12 +32,12 @@ class Auth:
             resp.status_code = UNAUTHORIZED
             return resp
 
-        token = TOKEN.generate_token(user.user_id, user.register_email, user.user_name)
+        token = TOKEN.generate_token(user.user_id, user.email, user.username)
         resp_data = {
             'user_info':{
                 'user_id':user.user_id,
-                'username':user.user_name,
-                'email':user.register_email
+                'username':user.username,
+                'email':user.email
             },
             'token':token,
         }

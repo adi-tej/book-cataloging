@@ -20,25 +20,15 @@ class AuthDto:
 class OrderDto:
     api = Namespace('order', description='order management operations')
 
-    order_model = api.model('order', {
-        'order_id': fields.String,
-        'opshop_id': fields.Integer,
-        'order_date': fields.DateTime,
-        'order_status': fields.String,
-    })
-
-    order_array_model = api.model('order_array', {
-        'orders': fields.List(fields.Nested(order_model)),
-    })
-
     ordered_item_model = api.model('ordered_item', {
         'item_id': fields.String,
-        'price': fields.Float,
-        'item_status': fields.String,
+        'quantity': fields.Integer,
+        'total_price': fields.Float,
     })
 
     order_items_model = api.model('order_items', {
         'order_id': fields.String,
+        'order_status': fields.String,
         'items': fields.List(fields.Nested(ordered_item_model))
     })
 
@@ -48,11 +38,6 @@ class OrderDto:
 
     new_order_model = api.model('new_order', {
         'items': fields.List(fields.Nested(ordered_item_model)),
-    })
-
-    confirmation_order_model = api.model('comfirm_order', {
-        'opeartion': fields.String,
-        'orders': fields.List(fields.Nested(order_model)),
     })
 
 class BookDto:
