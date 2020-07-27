@@ -3,7 +3,7 @@ import {ScrollView} from "react-native";
 import styles from "../config/styles";
 import ShowPendingOrders from "./ShowPendingOrders";
 
-export default class PendingOrders extends Component {
+export default class Orders extends Component {
     constructor(props) {
         super(props);
         this.updateOrderNumber = "";
@@ -22,6 +22,19 @@ export default class PendingOrders extends Component {
                 {orderNumber: 10, timeout: "02:36:20", totalPrice: 20},
                 {orderNumber: 11, timeout: "02:16:00", totalPrice: 20},
             ]}
+    }
+//TODO: API call to get orders data before rendering and set to state
+    componentDidMount() {
+        // axios.get(`http://localhost/orders`)
+        //     .then(res => {
+        //         const data = res.data;
+        //         this.setState({ title: data.orderArray });
+        //     })
+        if(this.props.route.name === "Pending Orders"){
+            //TODO: API call to get pending orders
+        }else{
+            //TODO: API call to get accepted orders
+        }
     }
 
     //This function is to remove a confirmed order
@@ -53,10 +66,12 @@ export default class PendingOrders extends Component {
                     this.state.orderArray.map((order, index)=>{
                         return(
                             <ShowPendingOrders
+                                confirmed={this.props.route.name !== "Pending Orders" }
                                 key={order.orderNumber}
                                 orderNumber={order.orderNumber}
                                 timeout={order.timeout}
                                 totalPrice={order.totalPrice}
+                                navigation={this.props.navigation}
                             />
                         )
                     })

@@ -8,16 +8,19 @@ import styles from "../config/styles";
 
 //This class is to create a box of each order
 export default class ShowPendingOrders extends Component {
-
+    //TODO: on press redirect to online order details page
     render() {
         return (
             <TouchableOpacity
                 activityOpacity={0.5}
-                style={styles.orderContainer} onPress={()=>alert("Successful click")}>
+                style={styles.orderContainer}
+                onPress={!this.props.confirmed ? ()=>
+                    this.props.navigation.navigate('OrderDetails',
+                        {orderNumber: this.props.orderNumber}) : null}>
                 <Text style={styles.orderNumberText}>Order #: {this.props.orderNumber}</Text>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.orderInfoText}>{this.props.timeout}</Text>
-                    <Text style={styles.orderInfoText}>Total Price: {this.props.totalPrice}</Text>
+                    <Text style={styles.orderInfoText}>Total Price: $ {this.props.totalPrice}</Text>
                 </View>
             </TouchableOpacity>
 

@@ -8,42 +8,84 @@ import {
     ScrollView,
     StyleSheet,
     SafeAreaView,
+    Modal,
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {Header, Left, Body, Icon} from "native-base";
 import RNPickerSelect from "react-native-picker-select";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import ShowCarousel from "./ShowCarousel";
 import styles from "../config/styles";
-
+import api ,{setClientToken} from "../config/axios";
 
 export default class BookCataloguing extends Component{
     constructor(props) {
         super(props);
-        this.imageID = 0;
+        this.imageId = 0;
         this.state = {
-            Title:"",
-            ISBN: "",
-            ISBNError:false,
-            Genre: "",
-            Author: "",
-            Pages: 0,
-            Publisher:"",
-            Price: 0,
-            Condition:"",
-            Other_details: "",
+            modalVisible:false,
+            title:"",
+            isbn: "",
+            isbnError:false,
+            genre: "",
+            author: "",
+            pages: 0,
+            publisher:"",
+            price: 0,
+            condition:"",
+            otherDetails: "",
             imageArray:[],
             initImage: null,
+            edit:false
         }
+    }
+//TODO: API call to get book data before rendering and set to state
+    componentDidMount() {
+        if(this.props.route && this.props.route.params && this.props.route.params.edit){
+            const params = this.props.route.params
+            this.setState({
+                edit:true,
+                title:params.title,
+                price:params.price.toString()
+            })
+        }
+        // api.get(`/user/home`)
+        //     .then(res => {
+        //         console.warn(res)
+        //         const data = res.data;
+        //         this.setState({ title: data.title });
+        //     }).catch((error)=>{
+        //         console.log("Api call error");
+        //         console.warn(error.message);
+        // });
+
     }
 
     onButtonPress() {
-        if (this.state.Title === "" || this.state.Condition === "" || this.state.Price === 0) {
+        if (this.state.title === "" || this.state.condition === "" || this.state.price === 0) {
             Alert.alert("Warning:",
                 "You have to fill out Title, Condition and Price")
         } else{
-            Alert.alert("BookCataloguing book: " + this.state.Title)
+            //TODO: API call to submit and redirect to RootNavigator
+            Alert.alert("BookCataloguing book: " + this.state.title)
+            if(this.state.edit){
+                //TODO: API call to edit the listing
+            }else{
+                //TODO: API call to create the listing
+            }
         }
+    }
+
+    onRemoveButtonPress(){
+        //popup to confirm remove listing
+        this.setState({modalVisible:true})
+    }
+
+    onConfirmRemovePress = () =>{
+        //TODO: API call to remove listing
+
+        this.setState({modalVisible:false})
     }
 
     deleteImage = (index) =>{
@@ -55,10 +97,10 @@ export default class BookCataloguing extends Component{
     };
 
     validISBN = () => {
-        if ((this.state.ISBN.length !== 10) && (this.state.ISBN.length !== 13)){
-            this.setState({ISBNError: true})
+        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13) && (this.state.isbn !== "")){
+            this.setState({isbnError: true})
         } else{
-            this.setState({ISBNError: false})
+            this.setState({isbnError: false})
         }
     }
 
@@ -72,10 +114,10 @@ export default class BookCataloguing extends Component{
         if (!cancelled) {
             this.setState({initImage: uri});
             //add this image to imageArray
-            this.imageID = this.imageID + 1;
+            this.imageId = this.imageId + 1;
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
-                id: this.imageID,
+                id: this.imageId,
                 image: this.state.initImage
             })
             this.setState({
@@ -83,11 +125,18 @@ export default class BookCataloguing extends Component{
             })
         }
     };
-
+    //TODO: All fields regex check
     render() {
         return (
-            <SafeAreaView style={styles.container}>
-                <KeyboardAwareScrollView behavior="padding">
+            <SafeAreaView style={{flex:1}}>
+                <Header>
+                    <Left>
+                        <Icon onPress={() => this.props.navigation.goBack()} name='arrow-back' style={{marginHorizontal:'5%'}}/>
+                    </Left>
+                    <Body style={{marginRight:'30%'}}><Text style={styles.listingTitle}>
+                        {this.state.edit ? 'Edit book':'List a book'} </Text></Body>
+                </Header>
+                <KeyboardAwareScrollView behavior="padding" style={[styles.container,{marginTop:'5%'}]}>
                 {/*Create an Image Carousel*/}
                 <View>
                     <ScrollView horizontal={true} style={{flexDirection: "row"}}>
@@ -102,13 +151,16 @@ export default class BookCataloguing extends Component{
                                 )
                             })
                         }
-                        <TouchableOpacity
-                            activityOpacity={0.5}
-                            style={styles.imageContainer}
-                            onPress={this.takePicture.bind(this)}>
-                            <Text style={styles.loginText}>+</Text>
-                        </TouchableOpacity>
+                        {this.state.imageArray.length < 10 ?
+                            <TouchableOpacity
+                                activityOpacity={0.5}
+                                style={styles.imageContainer}
+                                onPress={this.takePicture.bind(this)}>
+                                <Text style={styles.loginText}>+</Text>
+                            </TouchableOpacity> : null
+                        }
                     </ScrollView>
+                    <Text style={[styles.requiredText, {fontSize: 14, marginBottom:"2%"}]}>* Max number of images: 10</Text>
                 </View>
 
                 {/*Create other information View*/}
@@ -120,7 +172,8 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    onChangeText={(Title) => this.setState({Title})}
+                    value={this.state.title}
+                    onChangeText={(title) => this.setState({title})}
                 />
 
                 <Text style={styles.listingTitle}>ISBN: </Text>
@@ -131,9 +184,9 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     maxLength={13}
                     onBlur={this.validISBN.bind(this)}
-                    onChangeText={(ISBN) => this.setState({ISBN})}
+                    onChangeText={(isbn) => this.setState({isbn})}
                 />
-                    {this.state.ISBNError?
+                    {this.state.isbnError?
                         <Text style={{color:'red'}}>Please enter 10 or 13 digits</Text>
                         : null
                     }
@@ -143,7 +196,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    onChangeText={(Genre) => this.setState({Genre})}
+                    onChangeText={(genre) => this.setState({genre})}
                 />
 
                 <Text style={styles.listingTitle}>Author: </Text>
@@ -151,7 +204,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    onChangeText={(Author) => this.setState({Author})}
+                    onChangeText={(author) => this.setState({author})}
                 />
 
                 <Text style={styles.listingTitle}>Page: </Text>
@@ -160,7 +213,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    onChangeText={(Page) => this.setState({Page})}
+                    onChangeText={(page) => this.setState({page})}
                 />
 
                 <Text style={styles.listingTitle}>Publisher: </Text>
@@ -168,7 +221,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     clearButtonMode={"while-editing"}
                     style={styles.textInput}
-                    onChangeText={(Publisher) => this.setState({Publisher})}
+                    onChangeText={(publisher) => this.setState({publisher})}
                 />
 
                 <View style={{flex: 1, flexDirection: "row"}}>
@@ -180,7 +233,8 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    onChangeText={(Price) => this.setState({Price})}
+                    value={this.state.price.toString()}
+                    onChangeText={(price) => this.setState({price})}
                 />
 
 
@@ -189,7 +243,7 @@ export default class BookCataloguing extends Component{
                     <Text style={styles.requiredText}>*</Text>
                 </View>
                 <RNPickerSelect
-                    onValueChange={(Condition) => this.setState({Condition})}
+                    onValueChange={(condition) => this.setState({condition})}
                     style={{
                         ...pickerSelectStyles,
                         // iconContainer: {
@@ -217,16 +271,65 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     multiline={true}
-                    onChangeText={(Other_details) => this.setState({Other_details})}
+                    onChangeText={(otherDetails) => this.setState({otherDetails})}
                 />
-                </KeyboardAwareScrollView>
 
+                <View style={styles.buttonView}>
                 <TouchableOpacity
                     activityOpacity={0.5}
-                    style={styles.loginButton}
+                    style={styles.removeButton}
                     onPress={this.onButtonPress.bind(this)}>
-                    <Text style={styles.loginText}>List on eBay</Text>
+                    <Text style={styles.loginText}>{
+                       this.state.edit ? 'Update' : 'List on eBay'
+                    }</Text>
                 </TouchableOpacity>
+                {
+                    this.state.edit ?
+                        <TouchableOpacity
+                            activityOpacity={0.5}
+                            style={styles.removeButton}
+                            onPress={this.onRemoveButtonPress.bind(this)}>
+                            <Text style={styles.loginText}>Remove Item</Text>
+                        </TouchableOpacity> : null
+                }
+                </View>
+
+                <Modal
+                    transparent={true}
+                    visible={this.state.modalVisible}
+                >
+                    <View style={styles.modalView}>
+                        <View style={styles.noIsbnPopup}>
+                            <View style={{alignItems:"center", justifyItems:"center"}}>
+                                <Text style={[styles.warningText, {paddingHorizontal: "5%",}]}>
+                                    Warning: You will remove this item from eBay and delete it from database.
+                                </Text>
+                                <Text style={[styles.warningText, {
+                                    fontSize: 20,
+                                    fontWeight:"bold",
+                                    padding: "2%",
+                                    color: "black"}]}>
+                                    Do you confirm removal?
+                                </Text>
+                                <View style={styles.buttonView}>
+                                    <TouchableOpacity
+                                        activityOpacity={0.5}
+                                        style={[styles.removeButton, {width:"30%"}]}
+                                        onPress={this.onConfirmRemovePress}>
+                                        <Text style={styles.loginText}>Yes</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        activityOpacity={0.5}
+                                        style={[styles.removeButton, {width:"30%", backgroundColor: "lightgrey"}]}
+                                        onPress={()=>this.setState({modalVisible: false})}>
+                                        <Text style={styles.loginText}>No</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
+                </KeyboardAwareScrollView>
             </SafeAreaView>
         )
     }

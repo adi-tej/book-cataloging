@@ -1,10 +1,13 @@
 import {StyleSheet} from "react-native";
 import colors from "./colors";
 
+
 import { Dimensions } from 'react-native';
+import React from "react";
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
+
 
 const styles = StyleSheet.create({
     /**
@@ -21,7 +24,9 @@ const styles = StyleSheet.create({
     image:{
         marginTop : '30%',
         marginBottom : '40%',
-        alignSelf : 'center'
+        alignSelf : 'center',
+        height:width*0.5,
+        width:width*0.5,
     },
     textInput : {
         width : '100%',
@@ -92,6 +97,16 @@ const styles = StyleSheet.create({
     /**
      * Camera tab navigator
      */
+    cameraComponent:{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+    },
+    barcodeCameraComponent:{
+        flex: 1,
+        backgroundColor: 'transparent',
+        flexDirection:'row'
+    },
     cameraScanTab:{
         justifyContent:'center'
     },
@@ -111,6 +126,7 @@ const styles = StyleSheet.create({
     },
     /**
      * Book Cataloging
+     * Edit Listing
      * Image carousal
      */
     imageContainer:{
@@ -214,7 +230,7 @@ const styles = StyleSheet.create({
         flexDirection:"column",
         width: width/2.2,
         marginVertical : '5%',
-        marginHorizontal: "3%"
+        marginHorizontal: "3%",
     },
     itemTitle : {
         fontSize : 16,
@@ -274,5 +290,69 @@ const styles = StyleSheet.create({
         backgroundColor: colors.loginButton,
         alignItems : 'center'
     },
+
+    //checkout popup
+    checkoutPopup: {
+        width: "100%",
+        height: "35%",
+        borderTopLeftRadius:10,
+        borderTopRightRadius:10,
+        position:"absolute",
+        bottom:0,
+        // shadowOffset:{width:10, height:10},
+        // shadowColor:'lightgrey',
+        backgroundColor:'rgba(255,255,255, 1)',
+    },
+    itemInfo:{
+        flexDirection: "row",
+        marginHorizontal: "5%",
+        backgroundColor:"lightgrey",
+        height: width/4,
+        borderRadius: 10,
+    },
+    buttonView:{
+        flexDirection: "row",
+        marginHorizontal: "5%",
+        justifyContent:"space-around",
+    },
+    removeButton : {
+        width: "45%",
+        marginVertical : '4%',
+        marginHorizontal:"2%",
+        paddingVertical : '3%',
+        color: 'grey',
+        fontSize:30,
+        backgroundColor: colors.loginButton,
+        alignItems : 'center'
+    },
+    modalView:{
+        backgroundColor:"#000000aa",
+        flex: 1,
+        alignItems:"center",
+        justifyContent:"center"
+    },
+    noIsbnPopup: {
+        width: "90%",
+        height: "30%",
+        borderRadius:10,
+        justifyContent:"center",
+        backgroundColor:'rgba(255,255,255, 1)',
+    },
+
+    //orderItemDetails
+    scrollContainer : {
+        flexDirection: 'column',
+        paddingHorizontal:"5%",
+        width:"100%",
+        height:"80%",
+    },
+
+    //warning popup
+    warningText:{
+        fontSize:16,
+        color:"red",
+        // marginBottom:"2%",
+    }
+
 })
 export default styles
