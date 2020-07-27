@@ -14,13 +14,13 @@ class Auth:
         user_info = data
         user_email, user_name, password = '', '', ''
         user = User()
-        if user_info['register_email']:
+        if user_info['email']:
             user_email, password = \
-                user_info['register_email'].strip(), user_info['password'].strip()
+                user_info['email'].strip(), user_info['password'].strip()
             user = User.query.filter_by(register_email=user_email).first()
-        elif user_info['user_name']:
+        elif user_info['username']:
             user_name, password = \
-                user_info['user_name'].strip(), user_info['password'].strip()
+                user_info['username'].strip(), user_info['password'].strip()
             user = User.query.filter_by(user_name=user_name).first()
 
         if not user:
@@ -36,8 +36,8 @@ class Auth:
         resp_data = {
             'user_info':{
                 'user_id':user.user_id,
-                'user_name':user.user_name,
-                'register_email':user.register_email
+                'username':user.user_name,
+                'email':user.register_email
             },
             'token':token,
         }

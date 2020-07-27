@@ -2,7 +2,7 @@ from flask import request, make_response, jsonify
 from flask_restplus import Resource, marshal
 import json
 
-from ..util.dto import UserDto, resource_fileds
+from ..util.dto import UserDto
 from ..service.user_service import get_a_user, get_all_users
 from ..util.decorator import token_required
 from ..http_status import *

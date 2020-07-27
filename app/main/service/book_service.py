@@ -16,8 +16,10 @@ from ..util.decorator import TOKEN
 def find_book_info(ISBN):  # function to search book in both api
     book_info = extract_data_google_api(ISBN)
     if book_info == 0:
+        #print("didnt get in google books")
         book_info = extract_isbndb_api(ISBN)
     if book_info == 0:
+        #print("didnt get in isbndb")
         return {}  # book info not found in both api,return empty dictionary
 
     return book_info
@@ -33,6 +35,8 @@ def extract_data_google_api(ISBN):
 
     book_data = {}  # empty dictionary
 
+
+
     if parsed['totalItems'] == 0:
         print("item not found in google api ")
         return 0  # return 0 when item not found
@@ -40,44 +44,51 @@ def extract_data_google_api(ISBN):
     book_info = parsed['items'][0]
     try:
         book_data['title'] = book_info['volumeInfo']['title']
-    except KeyError:
+    except :
         book_data['title'] = "NA"
     try:
         book_data['author'] = book_info['volumeInfo']['authors'][0]
-    except KeyError:
+    except :
         book_data['author'] = "NA"
     try:
         book_data['genre'] = book_info['volumeInfo']['categories'][0]
-    except KeyError:
+    except :
         book_data['genre'] = "NA"
     try:
         book_data["publisher"] = book_info['volumeInfo']['publisher']
-    except KeyError:
+    except :
         book_data["publisher"] = "NA"
     try:
         book_data["publish_date"] = book_info['volumeInfo']['publishedDate']
-    except KeyError:
+    except :
         book_data["publish_date"] = "NA"
     try:
         book_data["pages_number"] = book_info['volumeInfo']['pageCount']
-    except KeyError:
+    except :
         book_data["pages_number"] = "NA"
     try:
         book_data["description"] = book_info['volumeInfo']['description']
-    except KeyError:
+    except :
         book_data["description"] = "NA"
     try:
         book_data['cover'] = book_info['volumeInfo']['imageLinks']['thumbnail']
-    except KeyError:
-        book_data['cover'] = "NA"
+    except :
+        pass
     try:
         book_data["ISBN_10"] = book_info['volumeInfo']['industryIdentifiers'][0]['identifier']
-    except KeyError:
+    except :
         book_data['ISBN_10'] = "NA"
+
     try:
         book_data["ISBN_13"] = book_info['volumeInfo']["industryIdentifiers"][1]['identifier']
-    except KeyError:
+    except :
         book_data["ISBN_13"] = "NA"
+
+
+
+
+
+
 
     return book_data  # return book object
 
@@ -88,7 +99,7 @@ def extract_isbndb_api(ISBN):
     response = requests.get(isbn_url_book, headers=h)
     data = response.text
     parsed = json.loads(data)
-    print("parsed in function ", parsed)
+    print("parsed in function ISBNDB ", parsed)
     book_info = parsed.get("book")
 
     book_data = {}  # empty dictionary
@@ -96,35 +107,33 @@ def extract_isbndb_api(ISBN):
 
         try:
             book_data['title'] = book_info['title']
-        except KeyError:
+        except :
             book_data["title"] = "NA"
         try:
             book_data['author'] = book_info['authors'][0]
-        except KeyError:
+        except :
             book_data["author"] = "NA"
         try:
             book_data["publisher"] = book_info['publisher']
-        except KeyError:
+        except :
             book_data['publisher'] = "NA"
-        try:
-            book_data["publish_date"] = book_info["publish_date"]
-        except KeyError:
-            book_data["publish_date"] = "NA"
+
         try:
             book_data["pages_number"] = book_info['pages']
-        except KeyError:
+        except :
             book_data["pages_number"] = "NA"
         try:
             book_data['cover'] = book_info['image']
-        except KeyError:
-            book_data['cover'] = "NA"
+        except :
+            pass
+
         try:
             book_data["ISBN_10"] = book_info["isbn"]
-        except KeyError:
+        except :
             book_data["ISBN_10"] = 'NA'
         try:
             book_data["ISBN_13"] = book_info["isbn13"]
-        except KeyError:
+        except :
             book_data['ISBN_13'] = "NA"
 
         return book_data
@@ -152,18 +161,20 @@ def upload_to_s3(body,name):
     return
 
 def retrive_book(data):
-    book = Book()
 
-    book_data = find_book_info(data["ISBN"])
+    #print(data["ISBN"],type(data['ISBN']))
+
+    book_data = find_book_info(data)
 
     book_data['book_id_local'] = book_id_local = uuid5(NAMESPACE_OID, 'v5app')
     book_data['book_id_ebay'] = ''
     book_data['item_type_id'] = 1
-    book_data['create_date'] = datetime.now()
-    book_data['update_date'] = datetime.now()
+    book_data['create_date'] = datetime.today()
+    book_data['update_date'] = datetime.today()
     book_data['status'] = 'unlisted'
 
     try:  ##here we can get a key error while accesing book_data['cover'] if no info was recoverd from api's.
+
 
         image_r = requests.get(book_data['cover'], stream=True)
 
@@ -189,19 +200,25 @@ def retrive_book(data):
             # print("Attachment Successfully save in S3 Bucket url %s " % (file_url))
 
     except KeyError:
-        pass
+        book_data['cover'] = 'NA'
+
+    book = Book()
+
+    book.__dict__ = book_data
 
     return book
 
 def update_book(data,images, book_id):
-    book = Book.query.filter_by(book_id_loacl=book_id).first()  # fetching saved book info from table
+    book = Book.query.filter_by(book_id_local=book_id).first()  # fetching saved book info from table
+
     if book:
 
         book_data = book.__dict__
 
+        for key, value in data.items():
+            setattr(book, key, value)
 
-        for key in data:
-            book_data[key] = data[key]  # updating new info
+
 
         image_number = 0
         for x in images:
@@ -209,25 +226,28 @@ def update_book(data,images, book_id):
             image = images[x]
             image.save(str(image_number) + '.png')
             body = open(str(image_number) + '.png', 'rb')
-            key = str(book_data['book_id_local']) + '/' + str(image_number) + '.png'
+            key = str(book_id) + '/' + str(image_number) + '.png'
 
             upload_to_s3(body, key)
             body.close()
             file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
 
             image_dict = {}  # dictionary analogues to Image object
-            if image_number == 1:  # saving the 1st image as cover
-                book_data['cover'] = file_url
+            if image_number == 1:  # updating  the new  1st image as cover
+                book.cover=file_url
 
-            image_object = image()
+            image_object = Image()
             image_dict['item_id'] = book_data['book_id_local']
             image_dict['aws_link'] = file_url
+            temp = image_object.__dict__
+            image_dict['_sa_instance_state'] = temp['_sa_instance_state']
             image_object.__dict__ = image_dict
+
+
             db.session.add(image_object)
             db.session.commit()
 
-        book.__dict__ = book_data
-        db.session.add(book)
+
         db.session.commit()
 
     return book

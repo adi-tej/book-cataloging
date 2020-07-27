@@ -33,16 +33,17 @@ class Books(Resource):
         else:
             api.abort(404, 'nothing found')
 
-    @api.doc(description="receive book information from scanning")
-    @api.expect(isbn_model)
-    @api.response(201, 'success', book_model)
+@api.route('/autodescription/<isbn>/')
+class AutoDescription(Resource):
+    @api.doc(description="book autodescription")
+    @api.param('isbn', description="take isbn in the parameter if you have")
+    @api.response(200, 'success', book_model)
     @api.response(404, 'not found')
     @api.response(401, 'unauthorized')
     @token_required
-    def post(self):
-        data = json.loads(request.get_data())
-        book = retrive_book(data)
-        return marshal(book, book_model), POST_SUCCESS
+    def get(self, isbn):
+        book = retrive_book(isbn)
+        return marshal(book, book_model), GET_SUCCESS
 
 @api.route('/confirm/')
 class BookConfirmation(Resource):

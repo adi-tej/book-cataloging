@@ -26,13 +26,13 @@ with app.app_context():
     db.session.commit()
 
     # ---> user information <---
-    user1 = User(opshop_id=1, role_id=1, register_email='weisong301@gmail.com', user_name='Wei')
+    user1 = User(opshop_id=1, role_id=1, email='weisong301@gmail.com', username='Wei')
     user1.password('123456')
-    user2 = User(opshop_id=1, role_id=2, register_email='kombasseril@gmail.com', user_name='Allen')
+    user2 = User(opshop_id=1, role_id=2, email='kombasseril@gmail.com', username='Allen')
     user2.password('123456')
-    user3 = User(opshop_id=1, role_id=2, register_email='admin@circex.com', user_name='Adi')
+    user3 = User(opshop_id=1, role_id=2, email='admin@circex.com', username='Adi')
     user3.password('123456')
-    user4 = User(opshop_id=1, role_id=2, register_email='nataliezhong08@gmail.com', user_name='Natalie')
+    user4 = User(opshop_id=1, role_id=2, email='nataliezhong08@gmail.com', username='Natalie')
     user4.password('123456')
 
     db.session.add_all([user1, user2, user3, user4])

@@ -6,14 +6,14 @@ class UserDto:
         'user_id':fields.Integer,
         'opshop_id':fields.Integer,
         'role_id':fields.Integer,
-        'register_email':fields.String,
-        'user_name':fields.String,
+        'email':fields.String,
+        'username':fields.String,
     })
 
 class AuthDto:
     api = Namespace('auth', description='user authentication operations')
     user_auth = api.model('auth_info',{
-        'register_email': fields.String,
+        'email': fields.String,
         'password': fields.String
     })
 
@@ -35,6 +35,15 @@ class OrderDto:
         'item_id': fields.String,
         'price': fields.Float,
         'item_status': fields.String,
+    })
+
+    order_items_model = api.model('order_items', {
+        'order_id': fields.String,
+        'items': fields.List(fields.Nested(ordered_item_model))
+    })
+
+    order_items_array_model = api.model('order_items_array', {
+        'order_items': fields.List(fields.Nested(order_items_model))
     })
 
     new_order_model = api.model('new_order', {
@@ -75,6 +84,3 @@ class BookDto:
     book_array_model = api.model('book_array', {
         'books': fields.List(fields.Nested(book_model)),
     })
-
-resource_fileds = {}
-resource_fileds['message'] = fields.String
