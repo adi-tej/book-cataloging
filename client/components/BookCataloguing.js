@@ -17,7 +17,7 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import ShowCarousel from "./ShowCarousel";
 import styles from "../config/styles";
-
+import api ,{setClientToken} from "../config/axios";
 
 export default class BookCataloguing extends Component{
     constructor(props) {
@@ -50,12 +50,16 @@ export default class BookCataloguing extends Component{
                 price:params.price.toString()
             })
         }
-        //this.setState({title:this.props.route.params.title})
-        // axios.get(`http://localhost/book`)
+        // api.get(`/user/home`)
         //     .then(res => {
+        //         console.warn(res)
         //         const data = res.data;
         //         this.setState({ title: data.title });
-        //     })
+        //     }).catch((error)=>{
+        //         console.log("Api call error");
+        //         console.warn(error.message);
+        // });
+
     }
 
     onButtonPress() {
