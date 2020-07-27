@@ -22,9 +22,11 @@ Below graph is showing the whole tech tools used in this application.<br>
 ```
 pip3 install -r requirements.txt
 ```
-* step2: run the application from project root folder<br>
+* step2: run the application from project backend folder<br>
 ```
-export FLASK_APP=backend
-export FLASK_ENV=development
-flask run
+python3 manage.py run
+```
+* step3: setup the database config with another terminal window<br>
+```
+python3 initdata.py
 ```
