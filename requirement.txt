@@ -21,3 +21,4 @@ Werkzeug==0.16.0
 uuid
 shutil
 boto3
+requests

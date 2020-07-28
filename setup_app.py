@@ -7,7 +7,7 @@ from flask_migrate import Migrate, MigrateCommand
 from app.main import create_app, db
 
 from app.main.model import user
-from app import blueprint
+from app.app import blueprint
 
 app = create_app('dev')
 app.register_blueprint(blueprint)
