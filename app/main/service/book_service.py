@@ -15,8 +15,7 @@ from app.main.model.user import User
 from app.main.http_status import *
 from ..util.decorator import TOKEN
 from .. import db
-
-path = os.path.abspath("./main/ebay_config.yaml")
+from app.main.config import EbayConfig
 
 def find_book_info(ISBN):  # function to search book in both api
     book_info = extract_data_google_api(ISBN)
@@ -276,7 +275,7 @@ def list_book(book_id):
         # build connection with ebay
         # make request body to ebay
         # execute request to ebay and get response
-        ebay_conn = Connection(config_file=path, domain="api.sandbox.ebay.com", debug=True)
+        ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
         request_info = {
             "Item": {
                 "Title": book.title + " " + book.book_id_local,
