@@ -5,6 +5,8 @@ mysql_aws_db = 'mysql+pymysql://root:ShermanLemon0301@127.0.0.1/shops'
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+ebay_config_file_path = os.path.abspath("./ebay_config.yaml")
+
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_secret_key')
     DEBUG = False
@@ -35,3 +37,8 @@ config_by_name = dict(
 )
 
 key = Config.SECRET_KEY
+
+class EbayConfig:
+    config_file = ebay_config_file_path
+    domain = "api.sandbox.ebay.com"
+    debug = True
