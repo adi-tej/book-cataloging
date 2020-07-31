@@ -6,15 +6,15 @@ from ..config import key
 
 class User(db.Model):
     """ User Model for storing user information """
-    __tablename__ = 'users'
-    user_id = db.Column(db.Integer, primary_key=True)
-    opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.opshop_id'), nullable=False)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.role_id'), nullable=False)
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.id'), nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(100))
+    name = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(100))
 
-    def password(self, password):
+    def encrypt_password(self, password):
         self.password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):

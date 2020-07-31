@@ -9,37 +9,33 @@ from app.manage import app
 
 # ---> opshops information <---
 with app.app_context():
-    opshop_1 = Opshop()
-    opshop_1.opshop_ebay_email = "weisong301@gmail.com"
-    opshop_1.opshop_name = "opshop1"
-    opshop_1.opshop_address = "Sydney, UNSW"
-    opshop_1.staff_number = 4
-    opshop_1.opshop_status = "running"
+    opshop = Opshop()
+    opshop.email = "opshop-ebay@gmail.com"
+    opshop.name = "opshop1"
+    opshop.address = "Sydney, UNSW"
+    opshop.staff_count = 4
+    opshop.status = "active"
 
-    db.session.add(opshop_1)
+    db.session.add(opshop)
     db.session.commit()
 
     # ---> role information <---
-    admin = Role(role_id=1, role_name='admin')
-    user = Role(role_id=2, role_name='user')
+    admin = Role(id=1, name='admin')
+    user = Role(id=2, name='user')
     db.session.add_all([admin, user])
     db.session.commit()
 
     # ---> user information <---
-    user1 = User(opshop_id=1, role_id=1, email='weisong301@gmail.com', username='Wei')
-    user1.password('123456')
-    user2 = User(opshop_id=1, role_id=2, email='kombasseril@gmail.com', username='Allen')
-    user2.password('123456')
-    user3 = User(opshop_id=1, role_id=2, email='admin@circex.com', username='Adi')
-    user3.password('123456')
-    user4 = User(opshop_id=1, role_id=2, email='nataliezhong08@gmail.com', username='Natalie')
-    user4.password('123456')
+    user1 = User(opshop_id=1, role_id=2, email='admin@circex.com', name='Admin')
+    user1.encrypt_password('123456')
+    user2 = User(opshop_id=1, role_id=2, email='user@circex.com', name='Staff')
+    user2.encrypt_password('123456')
 
-    db.session.add_all([user1, user2, user3, user4])
+    db.session.add_all([user1, user2])
     db.session.commit()
 
     # ---> item types <---
-    itemtype1 = ItemType(item_type_id=1, item_type_name='book')
+    itemtype1 = ItemType(id=1, name='book')
 
     db.session.add(itemtype1)
     db.session.commit()
