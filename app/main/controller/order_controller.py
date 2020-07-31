@@ -7,8 +7,8 @@ from ..util.dto import OrderDto
 from ..util.decorator import token_required
 
 api = OrderDto.api
-order_items_model = OrderDto.order_items_model
-order_items_array_model = OrderDto.order_items_array_model
+order_items_model = OrderDto.order_model
+order_items_array_model = OrderDto.order_array_model
 new_order_model = OrderDto.new_order_model
 
 @api.route('/')

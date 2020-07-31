@@ -2,7 +2,7 @@ from flask import make_response, jsonify
 
 from app.main import db
 from app.main.model.blacklist import BlacklistToken
-from ..http_status import *
+
 
 def save_token(token):
     blacklist_token = BlacklistToken(token=token)

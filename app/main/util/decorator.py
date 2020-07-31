@@ -7,7 +7,7 @@ from ..http_status import *
 def token_required(f):
     @wraps(f)
     def decorate(*args, **kargs):
-        token = request.headers.get('token')
+        token = request.headers.get('Authorization')
         if not token:
             resp = make_response(jsonify({'error': 'Authentication token is missing'}))
             resp.status_code = UNAUTHORIZED

@@ -6,15 +6,19 @@ from app.main import db
 from app.main.model.user import User
 from app.main.config import key
 
+
 def get_all_users():
     return User.query.all()
 
-def get_a_user(user_id):
-    return User.query.filter_by(user_id=user_id).first()
+
+def get_a_user(id):
+    return User.query.filter_by(id=id).first()
+
 
 def save_changes(data):
     db.session.add(data)
     db.session.commit()
+
 
 class AuthenticationToken:
     def __init__(self, secret_key, expires_in):
@@ -22,15 +26,15 @@ class AuthenticationToken:
         self.expires_in = expires_in
         self.serializer = JSONWebSignatureSerializer(secret_key)
 
-    def generate_token(self, user_id, user_email, user_name):
+    def generate_token(self, id, email, name):
         serializer = JWTSerializer(
             secret_key=key,
             expires_in=self.expires_in
         )
         payload = {
-            'user_id': user_id,
-            'user_email': user_email,
-            'user_name': user_name,
+            'user_id': id,
+            'user_email': email,
+            'user_name': name,
             'generate_time': time()
         }
 
@@ -46,6 +50,7 @@ class AuthenticationToken:
             return 'invalid token'
 
         return payload
+
 
 EXPIRE = 6000
 TOKEN = AuthenticationToken(key, EXPIRE)

@@ -14,20 +14,20 @@ from app.main.config import EbayConfig
 
 def create_order(data, token):
     payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(user_id=str(payload['user_id'])).first()
+    user = User.query.filter_by(id=str(payload['user_id'])).first()
     if user:
         order = Order(
-            order_id=str(uuid5(NAMESPACE_URL, 'v5_app')),
+            id=str(uuid5(NAMESPACE_URL, 'v5_app')),
             opshop_id=user.opshop.opshop_id,
-            order_date=datetime.now(),
-            order_status='confirmed'
+            date=datetime.now(),
+            status='confirmed'
         )
         db.session.add(order)
         db.session.commit()
 
         order_items = {
-            'order_id': order.order_id,
-            'order_status': order.order_status,
+            'order_id': order.id,
+            'order_status': order.status,
             'items': []
         }
 
@@ -35,7 +35,7 @@ def create_order(data, token):
 
         for item in items:
             order_item = OrderItems(
-                order_id=order.order_id,
+                order_id=order.id,
                 item_id=item['item_id'],
                 quantity=item['quantity'],
                 single_price=item['total_price'],
@@ -50,7 +50,7 @@ def create_order(data, token):
             })
 
             try:
-                item_obj = Book.query.filter_by(book_id=item['item_id']).first()
+                item_obj = Book.query.filter_by(id=item['item_id']).first()
                 conn = Connection(config_file="../ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
                 request = {
                     "EndingReason":"LostOrBroken",
@@ -70,13 +70,13 @@ def create_order(data, token):
         return fake_data
 
 def get_order(order_id):
-    order = Order.query.filter_by(order_id=order_id).first()
+    order = Order.query.filter_by(id=order_id).first()
     order_items = {
-        'order_id': order.order_id,
-        'order_status': order.order_status,
+        'order_id': order.id,
+        'order_status': order.status,
         'items': []
     }
-    order_items_list = OrderItems.query.filter_by(order_id=order_id).all()
+    order_items_list = OrderItems.query.filter_by(id=order_id).all()
     for item in order_items_list:
         order_items['items'].append({
             'item_id': item.item_id,
@@ -86,28 +86,28 @@ def get_order(order_id):
     return order_items
 
 def update_order(data, order_id):
-    order = Order.query.filter_by(order_id=order_id).first()
-    data['order_id'] = order.order_id
+    order = Order.query.filter_by(id=order_id).first()
+    data['order_id'] = order.id
     if data:
         if data['order_status'] == "pending":
-            order.order_status = "pending"
+            order.status = "pending"
         elif data['order_status'] == "confirmed":
-            order.order_status = "pending"
+            order.status = "pending"
         elif data['order_status'] == "deleted":
-            order.order_status = "deleted"
+            order.status = "deleted"
 
         db.session.commit()
     return data
 
 def delete_order(order_id):
-    order = Order.query.filter_by(order_id=order_id).first()
-    order.order_status = "deleted"
+    order = Order.query.filter_by(id=order_id).first()
+    order.status = "deleted"
     order_items = {
-        'order_id': order.order_id,
-        'order_status': order.order_status,
+        'order_id': order.id,
+        'order_status': order.status,
         'items': []
     }
-    order_items_list = OrderItems.query.filter_by(order_id=order_id).all()
+    order_items_list = OrderItems.query.filter_by(id=order_id).all()
     for item in order_items_list:
         order_items['items'].append({
             'item_id': item.item_id,
@@ -121,24 +121,24 @@ def delete_order(order_id):
 
 def retrive_order(order_status, token):
     payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(user_id=payload['user_id']).first()
+    user = User.query.filter_by(id=payload['user_id']).first()
     if user:
         order_items_array = {
             'order_items':[],
         }
         order_list = []
         if order_status:
-            order_list = Order.query.filter_by(order_status=order_status, opshop_id=user.opshop.opshop_id)
+            order_list = Order.query.filter_by(status=order_status, opshop_id=user.opshop.opshop_id)
         else:
             order_list = Order.query.filter_by(opshop_id=user.opshop.opshop_id)
 
         for order in order_list:
             order_items = {
-                'order_id': order.order_id,
-                'order_status': order.order_status,
+                'order_id': order.id,
+                'order_status': order.status,
                 'items': []
             }
-            item_list = OrderItems.query.filter_by(order_id=order.order_id).all()
+            item_list = OrderItems.query.filter_by(id=order.id).all()
             for item in item_list:
                 order_items['items'].append({
                     'item_id': item.item_id,
@@ -155,15 +155,15 @@ def retrive_order(order_status, token):
         return fake_data
 
 def confirm_order(data):
-    order = Order.query.filter_by(order_id=data['order_id']).first()
+    order = Order.query.filter_by(id=data['order_id']).first()
     if order:
-        order.order_status = "confirmed"
+        order.status = "confirmed"
         data['order_status'] = "confirmed"
         db.session.commit()
         return data
     else:
         fake_data = {
-            'order_id':order.order_id,
+            'order_id':order.id,
         }
         return fake_data
 
@@ -195,10 +195,10 @@ def cancel_order_ebay(order_id):
     return cancelled
 
 def cancel_order(data):
-    order = Order.query.filter_by(order_id=data['order_id']).first()
+    order = Order.query.filter_by(id=data['order_id']).first()
     if order:
-        if cancel_order_ebay(order.order_id):
-            order.order_status = "cancelled"
+        if cancel_order_ebay(order.id):
+            order.status = "cancelled"
             data['order_status'] = "cancelled"
             db.session.commit()
             return data
@@ -209,7 +209,7 @@ def cancel_order(data):
             }
     else:
         fake_data = {
-            'order_id':order.order_id,
+            'order_id':order.id,
             'message': 'not found'
         }
         return fake_data
@@ -239,19 +239,19 @@ def retrive_order_ebay():
 
         for ebay_order in all_orders:
             order = Order()
-            order.order_id = ebay_order['OrderID']
+            order.id = ebay_order['OrderID']
             order.customer_address = ebay_order['ShippingAddress']['CityName'] + " " \
                                      + ebay_order['ShippingAddress']['Street1'] + " " \
                                      + ebay_order['ShippingAddress']['PostalCode']
             order.customer_name = ebay_order['ShippingAddress']['Name']
             order.customer_contact = ebay_order['TranscationArray']['Transaction']['Buyer']['Email']
             seller_email = ebay_order['SellerEmail']
-            order.order_date = ebay_order['TranscationArray']['Transaction']['CreateDate']
-            order.order_status = 'pending'
+            order.date = ebay_order['TranscationArray']['Transaction']['CreateDate']
+            order.status = 'pending'
 
             order_items = {
-                'order_id': order.order_id,
-                'order_status': order.order_status,
+                'order_id': order.id,
+                'order_status': order.status,
                 'items': []
             }
 
@@ -261,8 +261,8 @@ def retrive_order_ebay():
                 item_id = transaction['Item']['ItemID']
                 cur_item = Book.query.filter_by(book_id_ebay=item_id).first()
                 orderitem = OrderItems()
-                orderitem.order_id = order.order_id
-                orderitem.item_id = cur_item.book_id_local
+                orderitem.order_id = order.id
+                orderitem.item_id = cur_item.id
                 orderitem.quantity = transaction['QuantityPurchased']
                 orderitem.total_price = transaction['TransactionPrice']['value']
                 orderitem.single_price = transaction['TransactionPrice']['value'] / \
