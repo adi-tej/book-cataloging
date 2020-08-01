@@ -15,10 +15,10 @@ class User(db.Model):
     password = db.Column(db.String(100))
 
     def encrypt_password(self, password):
-        self.password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password = flask_bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
         return flask_bcrypt.check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return "<User '{}'>".format(self.user_name)
+        return "<User '{}'>".format(self.name)
