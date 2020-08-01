@@ -18,7 +18,7 @@ def create_order(data, token):
     if user:
         order = Order(
             id=str(uuid5(NAMESPACE_URL, 'v5_app')),
-            opshop_id=user.opshop.opshop_id,
+            opshop_id=user.opshop.id,
             date=datetime.now(),
             status='confirmed'
         )
@@ -128,9 +128,9 @@ def retrive_order(order_status, token):
         }
         order_list = []
         if order_status:
-            order_list = Order.query.filter_by(status=order_status, opshop_id=user.opshop.opshop_id)
+            order_list = Order.query.filter_by(status=order_status, opshop_id=user.opshop.id)
         else:
-            order_list = Order.query.filter_by(opshop_id=user.opshop.opshop_id)
+            order_list = Order.query.filter_by(opshop_id=user.opshop.id)
 
         for order in order_list:
             order_items = {
@@ -138,7 +138,7 @@ def retrive_order(order_status, token):
                 'order_status': order.status,
                 'items': []
             }
-            item_list = OrderItems.query.filter_by(id=order.id).all()
+            item_list = OrderItems.query.filter_by(order_id=order.id).all()
             for item in item_list:
                 order_items['items'].append({
                     'item_id': item.item_id,
