@@ -18,7 +18,7 @@ class User(db.Model):
         self.password = flask_bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        return flask_bcrypt.check_password_hash(self.password_hash, password)
+        return flask_bcrypt.check_password_hash(self.password, password)
 
     def __repr__(self):
         return "<User '{}'>".format(self.name)
