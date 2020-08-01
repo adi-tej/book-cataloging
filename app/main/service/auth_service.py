@@ -33,7 +33,7 @@ class Auth:
             resp.status_code = UNAUTHORIZED
             return resp
 
-        token = TOKEN.generate_token(user.user_id, user.email, user.username)
+        token = TOKEN.generate_token(user.id, user.email, user.name)
         resp_data = {
             'user_info': {
                 'user_id': user.id,
