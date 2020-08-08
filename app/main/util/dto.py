@@ -4,11 +4,11 @@ from flask_restplus import Namespace, fields
 class UserDto:
     api = Namespace('user', description='user related operations')
     user = api.model('user', {
-        'user_id': fields.Integer,
+        'id': fields.Integer,
         'opshop_id': fields.Integer,
         'role_id': fields.Integer,
         'email': fields.String,
-        'username': fields.String,
+        'name': fields.String,
     })
 
 
@@ -49,7 +49,7 @@ class BookDto:
     isbn_model = api.model('ISBN_10', {'ISBN': fields.Integer})
 
     book_model = api.model('book', {
-        'book_id_local': fields.String,
+        'id': fields.String,
         'book_id_ebay': fields.String,
         'opshop_id': fields.Integer,
         'title': fields.String,
