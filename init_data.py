@@ -19,13 +19,13 @@ with app.app_context():
     db.session.commit()
 
     # ---> role information <---
-    admin = Role(id=1, name='admin')
-    user = Role(id=2, name='user')
+    admin = Role(id=1, name=RoleType.ADMIN)
+    user = Role(id=2, name=RoleType.USER)
     db.session.add_all([admin, user])
     db.session.commit()
 
     # ---> user information <---
-    user1 = User(opshop_id=1, role_id=2, email='admin@circex.com', name='Admin')
+    user1 = User(opshop_id=1, role_id=1, email='admin@circex.com', name='Admin')
     user1.encrypt_password('123456')
     user2 = User(opshop_id=1, role_id=2, email='user@circex.com', name='Staff')
     user2.encrypt_password('123456')

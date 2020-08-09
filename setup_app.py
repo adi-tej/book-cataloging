@@ -1,15 +1,10 @@
-import os
-import unittest
-
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from flask_cors import CORS
 from app.main import create_app, db
-
-from app.main.model import user
 from app.app import blueprint
 
-app = create_app('dev')
+app = create_app('development')
 CORS(app)
 app.register_blueprint(blueprint)
 
@@ -21,11 +16,13 @@ migrate = Migrate(app, db)
 
 manager.add_command('db', MigrateCommand)
 
+
 @manager.command
 def run():
     # db.drop_all()
     # db.create_all()
     app.run()
+
 
 if __name__ == '__main__':
     manager.run()
