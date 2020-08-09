@@ -15,11 +15,11 @@ def token_required(f):
             return resp
 
         result = TOKEN.validate_token(token)
-        if result is 'token expired':
+        if result == 'token expired':
             resp = make_response(jsonify({'message': 'token expired'}))
             resp.status_code = UNAUTHORIZED
             return resp
-        elif result is 'invalid token':
+        elif result == 'invalid token':
             resp = make_response(jsonify({'message': 'invalid token'}))
             resp.status_code = UNAUTHORIZED
             return resp
