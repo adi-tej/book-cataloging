@@ -5,7 +5,9 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from flask_cors import CORS
 from app.main import create_app, db
-from app import blueprint
+
+from app.main.model import user
+from app.app import blueprint
 
 app = create_app('dev')
 CORS(app)
