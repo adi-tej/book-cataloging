@@ -17,9 +17,9 @@ Note: make sure that your stack is created completedly.
 	You can check your connect steps by clicking “Connect” on the top of your instance page. <br>
 
 2. change permission for key pair file
-	
-		chmod 400 [yourKeyPairName.pem]
-
+```
+chmod 400 [yourKeyPairName.pem]
+```
 3. run following in your terminal
 
 		ssh -i [key pair file name] ec2-user@[ec2 public DNS name]
