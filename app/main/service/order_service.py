@@ -11,6 +11,8 @@ from ..model.models import *
 from ..model.user import User
 from ..util.decorator import TOKEN
 from app.main.config import EbayConfig
+from time import time, localtime, strftime
+
 
 def create_order(data, token):
     payload = TOKEN.serializer.loads(token.encode())
@@ -18,9 +20,9 @@ def create_order(data, token):
     if user:
         order = Order(
             id=str(uuid5(NAMESPACE_URL, 'v5_app')),
-            opshop_id=user.opshop.opshop_id,
+            opshop_id=user.opshop.id,
             date=datetime.now(),
-            status='confirmed'
+            status=OrderStatus.CONFIRMED
         )
         db.session.add(order)
         db.session.commit()
@@ -34,27 +36,30 @@ def create_order(data, token):
         items = data['items']
 
         for item in items:
+
+            item_obj = Book.query.filter_by(id=item['item_id']).first()
+
             order_item = OrderItems(
                 order_id=order.id,
                 item_id=item['item_id'],
-                quantity=item['quantity'],
-                single_price=item['total_price'],
-                total_price=item['total_price']
+                quantity=item['quantity']
             )
             db.session.add(order_item)
-
+            isbn = item_obj.ISBN_10 if item_obj.ISBN_10 else item_obj.ISBN_13
             order_items['items'].append({
                 'item_id': order_item.item_id,
+                'title': item_obj.title,
+                'isbn': isbn,
+                'cover': item_obj.cover,
                 'quantity': order_item.quantity,
-                'total_price': order_item.total_price
+                'price': item_obj.price
             })
 
             try:
-                item_obj = Book.query.filter_by(id=item['item_id']).first()
                 conn = Connection(config_file="../ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
                 request = {
-                    "EndingReason":"LostOrBroken",
-                    "ItemID":item_obj.book_id_ebay
+                    "EndingReason": "LostOrBroken",
+                    "ItemID": item_obj.book_id_ebay
                 }
                 conn.execute("EndItem", request)
             except Exception:
@@ -65,9 +70,10 @@ def create_order(data, token):
         return order_items
     else:
         fake_data = {
-            'order_id':'',
+            'order_id': '',
         }
         return fake_data
+
 
 def get_order(order_id):
     order = Order.query.filter_by(id=order_id).first()
@@ -85,23 +91,25 @@ def get_order(order_id):
         })
     return order_items
 
+
 def update_order(data, order_id):
     order = Order.query.filter_by(id=order_id).first()
     data['order_id'] = order.id
     if data:
         if data['order_status'] == "pending":
-            order.status = "pending"
+            order.status = OrderStatus.PENDING
         elif data['order_status'] == "confirmed":
-            order.status = "pending"
+            order.status = OrderStatus.CONFIRMED
         elif data['order_status'] == "deleted":
-            order.status = "deleted"
+            order.status = OrderStatus.DELETED
 
         db.session.commit()
     return data
 
+
 def delete_order(order_id):
     order = Order.query.filter_by(id=order_id).first()
-    order.status = "deleted"
+    order.status = OrderStatus.DELETED
     order_items = {
         'order_id': order.id,
         'order_status': order.status,
@@ -119,12 +127,12 @@ def delete_order(order_id):
     return order_items
 
 
-def retrive_order(order_status, token):
+def retrieve_order(order_status, token):
     payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(id=payload['user_id']).first()
     if user:
         order_items_array = {
-            'order_items':[],
+            'order_items': [],
         }
         order_list = []
         if order_status:
@@ -140,9 +148,15 @@ def retrive_order(order_status, token):
             }
             item_list = OrderItems.query.filter_by(order_id=order.id).all()
             for item in item_list:
+                book = Book.query.filter_by(id=item.item_id).first()
+                isbn = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
                 order_items['items'].append({
                     'item_id': item.item_id,
+                    'title': book.title,
+                    'isbn': isbn,
+                    'cover': book.cover,
                     'quantity': item.quantity,
+                    'price': book.price,
                     'total_price': item.total_price
                 })
             order_items_array['order_items'].append(order_items)
@@ -150,22 +164,23 @@ def retrive_order(order_status, token):
         return order_items_array
     else:
         fake_data = {
-            'order_items':[],
+            'order_items': [],
         }
         return fake_data
+
 
 def confirm_order(data):
     order = Order.query.filter_by(id=data['order_id']).first()
     if order:
-        order.status = "confirmed"
-        data['order_status'] = "confirmed"
+        order.status = OrderStatus.CONFIRMED
         db.session.commit()
         return data
     else:
         fake_data = {
-            'order_id':order.id,
+            'order_id': order.id,
         }
         return fake_data
+
 
 def cancel_order_ebay(order_id):
     url_1 = "https://api.sandbox.ebay.com/post-order/v2/cancellation/check_eligibility"
@@ -174,10 +189,10 @@ def cancel_order_ebay(order_id):
     }
 
     headers = {
-          "Authorization": "AgAAAA**AQAAAA**aAAAAA**MIT1Xg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4aiC5WHogidj6x9nY+seQ**Ik0FAA**AAMAAA**Lm7FJsJKP/K5EffRdvx2QkLncSwRUXOcP1FZ+hgML466n1okjDBA1EyFa5wtHtBj1Oj3HThyw7qiPgzRmZTCqDaxzrOM9nzZHe2bDVj0Q3T2O+Cr73t7pn+UnoGTwWfQ1PqBizXT1hPGJlq3nfCiwKk9mG7vU1CPfnWbbe6cSwu6d/LvWs2dpvs7/tTydcZfhSvhGxmJ0avs7B2FLtyOyjycW/e3BKdW7ALJAQHzpJS+KIoGjrqmWkwWO0Zgez5A1jLZjJ74SMzcbuKMUDaNRufcWbUOVmaHqllo8FI9fssydiY43sX3nUW/JJksstgr92Ytqpjbcf1JnirdZz8XEeI70gxCc58vdSvgLxlL2avC3d4BimIN71X6iG0gaa/Le35i/YopsgWBWWx7J99JcLd6FDIVLIdxU6Z/iTAzsIL28Q0/tFGmt7yQxA+lv9uJyFtodcSoxuFJb4DjgIjHAaf70GCkzZMKM2+tZ4FEsPd9datfgAQjp1tC8YTaGmk9dCqnQ6Io9V3Vo50ZnIQU+H7EFYc1lqfwQL2SzYktV9wyqUf/zubzQU97N9mwkQchMjIjoIuAn+PdslO9OwQcy0/RBViBmYqqxn30v/c4m8vPYTYEV7C83sijbDmzujv+Ro+SGxtkohEfGXo7yhH8NIF0+zF23+UL/1pl2T0oYg+aw0jJg5rE6VA0Y+RY0aODnlEv+jH9J+moIQJLrkdON6jAORVrxfCaAriI32E+CJMSyThqHRR71XqE4USgBcFy",
-          "Content-Type": "application/json",
-          "X-EBAY-C-MARKETPLACE-ID": "EBAY_AU",
-          "Accept": "application/json"
+        "Authorization": "AgAAAA**AQAAAA**aAAAAA**MIT1Xg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4aiC5WHogidj6x9nY+seQ**Ik0FAA**AAMAAA**Lm7FJsJKP/K5EffRdvx2QkLncSwRUXOcP1FZ+hgML466n1okjDBA1EyFa5wtHtBj1Oj3HThyw7qiPgzRmZTCqDaxzrOM9nzZHe2bDVj0Q3T2O+Cr73t7pn+UnoGTwWfQ1PqBizXT1hPGJlq3nfCiwKk9mG7vU1CPfnWbbe6cSwu6d/LvWs2dpvs7/tTydcZfhSvhGxmJ0avs7B2FLtyOyjycW/e3BKdW7ALJAQHzpJS+KIoGjrqmWkwWO0Zgez5A1jLZjJ74SMzcbuKMUDaNRufcWbUOVmaHqllo8FI9fssydiY43sX3nUW/JJksstgr92Ytqpjbcf1JnirdZz8XEeI70gxCc58vdSvgLxlL2avC3d4BimIN71X6iG0gaa/Le35i/YopsgWBWWx7J99JcLd6FDIVLIdxU6Z/iTAzsIL28Q0/tFGmt7yQxA+lv9uJyFtodcSoxuFJb4DjgIjHAaf70GCkzZMKM2+tZ4FEsPd9datfgAQjp1tC8YTaGmk9dCqnQ6Io9V3Vo50ZnIQU+H7EFYc1lqfwQL2SzYktV9wyqUf/zubzQU97N9mwkQchMjIjoIuAn+PdslO9OwQcy0/RBViBmYqqxn30v/c4m8vPYTYEV7C83sijbDmzujv+Ro+SGxtkohEfGXo7yhH8NIF0+zF23+UL/1pl2T0oYg+aw0jJg5rE6VA0Y+RY0aODnlEv+jH9J+moIQJLrkdON6jAORVrxfCaAriI32E+CJMSyThqHRR71XqE4USgBcFy",
+        "Content-Type": "application/json",
+        "X-EBAY-C-MARKETPLACE-ID": "EBAY_AU",
+        "Accept": "application/json"
     }
 
     resp = requests.post(url_1, data=json.dumps(payload), headers=headers)
@@ -194,12 +209,13 @@ def cancel_order_ebay(order_id):
 
     return cancelled
 
+
 def cancel_order(data):
     order = Order.query.filter_by(id=data['order_id']).first()
     if order:
         if cancel_order_ebay(order.id):
-            order.status = "cancelled"
-            data['order_status'] = "cancelled"
+            order.status = OrderStatus.CANCELLED
+            data['order_status'] = OrderStatus.CANCELLED
             db.session.commit()
             return data
         else:
@@ -209,10 +225,11 @@ def cancel_order(data):
             }
     else:
         fake_data = {
-            'order_id':order.id,
+            'order_id': order.id,
             'message': 'not found'
         }
         return fake_data
+
 
 def retrive_order_ebay():
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
@@ -225,7 +242,7 @@ def retrive_order_ebay():
         "CreateTimeTo": cur_time,
         "IncludeFinalValueFee": True,
         "OrderRole": "Seller",
-        "OrderStatus": "Completed"
+        "OrderStatus": OrderStatus.COMPLETED
     }
 
     resp = ebay_conn.execute("GetOrders", request_info)
@@ -247,7 +264,7 @@ def retrive_order_ebay():
             order.customer_contact = ebay_order['TranscationArray']['Transaction']['Buyer']['Email']
             seller_email = ebay_order['SellerEmail']
             order.date = ebay_order['TranscationArray']['Transaction']['CreateDate']
-            order.status = 'pending'
+            order.status = OrderStatus.PENDING
 
             order_items = {
                 'order_id': order.id,

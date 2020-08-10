@@ -159,41 +159,41 @@ def retrive_book(data):
     # print(data["ISBN"],type(data['ISBN']))
 
     book_data = find_book_info(data)
+    if book_data:
+        book_data['id'] = book_id_local = uuid5(NAMESPACE_OID, 'v5app')
+        # book_data['book_id_ebay'] = ''
+        # book_data['item_type_id'] = 1
+        # book_data['created_date'] = datetime.today()
+        # book_data['updated_date'] = datetime.today()
+        # book_data['status'] = 'unlisted'
 
-    book_data['id'] = book_id_local = uuid5(NAMESPACE_OID, 'v5app')
-    book_data['book_id_ebay'] = ''
-    book_data['item_type_id'] = 1
-    book_data['created_date'] = datetime.today()
-    book_data['updated_date'] = datetime.today()
-    book_data['status'] = 'unlisted'
+        try:  ##here we can get a key error while accesing book_data['cover'] if no info was recoverd from api's.
 
-    try:  ##here we can get a key error while accesing book_data['cover'] if no info was recoverd from api's.
+            image_r = requests.get(book_data['cover'], stream=True)
 
-        image_r = requests.get(book_data['cover'], stream=True)
+            if image_r.status_code == 200:  # if image retrieved succesfully
+                # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+                image_r.raw.decode_content = True
+                # print(image_r.raw.read())
 
-        if image_r.status_code == 200:  # if image retrieved succesfully
-            # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
-            image_r.raw.decode_content = True
-            # print(image_r.raw.read())
+                file_name = 'example.png'
 
-            file_name = 'example.png'
+                # Open a local file with wb ( write binary ) permission.
+                with open(file_name, 'wb') as new_file:
+                    shutil.copyfileobj(image_r.raw, new_file)
 
-            # Open a local file with wb ( write binary ) permission.
-            with open(file_name, 'wb') as new_file:
-                shutil.copyfileobj(image_r.raw, new_file)
+                bookcover = open(file_name, 'rb')  # opening the saved image
+                key = str(book_data['id']) + '/cover.png'
+                upload_to_s3(bookcover, key)  # image saved to amazon s3
+                bookcover.close()
+                file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
+                book_data['cover'] = file_url  ## amazon url of file overwritten in Book['cover']
+                new_file.close()
+                # os.remove(file_name)
+                # print("Attachment Successfully save in S3 Bucket url %s " % (file_url))
 
-            bookcover = open(file_name, 'rb')  # opening the saved image
-            key = str(book_data['id']) + '/cover.png'
-            upload_to_s3(bookcover, key)  # image saved to amazon s3
-            bookcover.close()
-            file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
-            book_data['cover'] = file_url  ## amazon url of file overwritten in Book['cover']
-            new_file.close()
-            # os.remove(file_name)
-            # print("Attachment Successfully save in S3 Bucket url %s " % (file_url))
-
-    except KeyError:
-        book_data['cover'] = 'NA'
+        except KeyError:
+            book_data['cover'] = None
 
     book = Book()
 
@@ -258,64 +258,70 @@ def delete_book(book_id):
     return book
 
 
-def list_book(book_id):
-    book = Book.query.filter_by(id=book_id).first()
+def list_book(book, images):
+    # book = Book.query.filter_by(id=book_id).first()
     if book:
         # build connection with ebay
         # make request body to ebay
         # execute request to ebay and get response
-        ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
-        request_info = {
-            "Item": {
-                "Title": book.title + " " + book.id,
-                # "PictureDetails": {
-                #     # This URL shold be replaced by Allen after finishing S3 storage
-                #     "PictureURL": book.cover,
-                # },
-                "Country": "AU",
-                "Location": book.opshop.address,
-                "Site": "Australia",
-                "SiteID": 15,
-                "ConditionID": book.condition,
-                "PaymentMethods": "PayPal",
-                "PayPalEmailAddress": book.opshop.email,
-                "Description": book.description,
-                "ListingDuration": "Days_30",
-                "ListingType": "FixedPriceItem",
-                "Currency": "AUD",
-                "ReturnPolicy": {
-                    "ReturnsAcceptedOption": "ReturnsAccepted",
-                    "RefundOption": "MoneyBack",
-                    "ReturnsWithinOption": "Days_30",
-                    "ShippingCostPaidByOption": "Buyer"
+        try:
+            ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
+            request_info = {
+                "Item": {
+                    "Title": book.title, # + " " + book.id,
+                    # "PictureDetails": {
+                    #     # This URL shold be replaced by Allen after finishing S3 storage
+                    #     "PictureURL": book.cover,
+                    # },
+                    "Country": "AU",
+                    "Location": book.opshop.address,
+                    "Site": "Australia",
+                    "SiteID": 15,
+                    "ConditionID": book.condition,
+                    "PaymentMethods": "PayPal",
+                    "PayPalEmailAddress": book.opshop.email,
+                    "Description": book.description,
+                    "ListingDuration": "Days_30",
+                    "ListingType": "FixedPriceItem",
+                    "Currency": "AUD",
+                    "ReturnPolicy": {
+                        "ReturnsAcceptedOption": "ReturnsAccepted",
+                        "RefundOption": "MoneyBack",
+                        "ReturnsWithinOption": "Days_30",
+                        "ShippingCostPaidByOption": "Buyer"
+                    },
+                    "ShippingDetails": {
+                        "ShippingServiceOptions": {
+                            "FreeShipping": "True",
+                            "ShippingService": "ShippingMethodStandard"
+                        }
+                    },
+                    "DispatchTimeMax": "3"
                 },
-                "ShippingDetails": {
-                    "ShippingServiceOptions": {
-                        "FreeShipping": "True",
-                        "ShippingService": "ShippingMethodStandard"
-                    }
-                },
-                "DispatchTimeMax": "3"
-            },
-        }
-        ebay_conn.execute("AddItem", request_info)
-        book.status = 'listed'
-        db.session.add(book)
-        db.session.commit()
+            }
+            ebay_conn.execute("AddItem", request_info)
+            # update ebay id
+        except Exception:
+            # should give 500
+            return 'error'
 
+        book.status = 'listed'
+        book = confirm_book(book, images)
+
+    # when book null
     return book
 
 
 def unlist_book(book_id):
     book = Book.query.filter_by(id=book_id).first()
     if book:
-        ebay_conn = Connection(config_file=path, domain="api.sandbox.ebay.com", debug=True)
+        ebay_conn = Connection(config_file=EbayConfig.config_file, domain="api.sandbox.ebay.com", debug=True)
         request_info = {
             "EndingReason": "LostOrBroken",
             "ItemID": book.book_id_ebay
         }
         ebay_conn.execute("EndItem", request_info)
-
+    book = delete_book(book_id)
     return book
 
 
@@ -324,28 +330,32 @@ def get_book_by_params(params, token):
     user = User.query.filter_by(id=payload['user_id']).first()
     book_list = []
 
-    if params['isbn'] or params['title']:
+    if 'isbn' in params or 'title' in params:
         if params['isbn'] and params['title']:
             book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'],
-                                             opshop_id=user.opshop.opshop_id)
+                                             opshop_id=user.opshop.id)
         elif params['isbn'] and not params['title']:
-            book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.opshop_id)
+            book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id)
         elif not params['isbn'] and params['title']:
-            book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.opshop_id)
+            book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.id)
     else:
-        book_list = Book.query.filter_by(opshop_id=user.opshop.opshop_id)
+        book_list = Book.query.filter_by(opshop_id=user.opshop.id)
 
     return book_list
 
 
 def confirm_book(data, images):
+    data['id'] = id = uuid5(NAMESPACE_OID, 'v5app')
+    data['item_type_id'] = 1
+    data['created_date'] = datetime.today()
+    data['updated_date'] = datetime.today()
     image_number = 0
     for x in images:  # getting images
         image_number = image_number + 1
         image = images[x]
         image.save(str(image_number) + '.png')
         body = open(str(image_number) + '.png', 'rb')
-        key = str(data['book_id_local']) + '/' + str(image_number) + '.png'
+        key = str(data['id']) + '/' + str(image_number) + '.png'
 
         upload_to_s3(body, key)
         body.close()
@@ -356,7 +366,7 @@ def confirm_book(data, images):
             data['cover'] = file_url
 
         image_object = Image()
-        image_dict['item_id'] = data['book_id_local']
+        image_dict['item_id'] = data['id']
         image_dict['aws_link'] = file_url
         image_object.__dict__ = image_dict
         db.session.add(image_object)

@@ -1,8 +1,6 @@
 from flask import jsonify, make_response
-
 from app.main.model.user import User
 from app.main.service.user_service import TOKEN
-from ..service.blacklist_service import save_token
 from ..http_status import *
 from ..model.blacklist import BlacklistToken
 from .. import db
