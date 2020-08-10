@@ -1,4 +1,3 @@
-from sqlalchemy import PrimaryKeyConstraint
 import enum
 from .. import db
 
@@ -58,15 +57,19 @@ class Order(db.Model):
 
 
 class ItemStatus(enum.Enum):
-    LISTED = 'listed'
-    INACTIVE = 'inactive'
-    SOLD = 'sold'
+    LISTED = 'listed'  # listed on ebay
+    INACTIVE = 'inactive'  # remove item
+    SOLD_INSHOP = 'sold_inshop'
+    SOLD_ONLINE = 'sold_online'  # from ebay order confirmed
 
 
 class ItemCondition(enum.Enum):
-    OLD = 0
-    NEW = 1
-    USED = 2
+    NEW = 1000
+    LIKE_NEW = 2750
+    USED = 3000
+    VERY_GOOD = 4000
+    GOOD = 5000
+    ACCEPTABLE = 6000
 
 
 class Book(db.Model):
