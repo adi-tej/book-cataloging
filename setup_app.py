@@ -22,7 +22,7 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def run():
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
     app.run()
 

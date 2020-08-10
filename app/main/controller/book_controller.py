@@ -43,7 +43,7 @@ class AutoDescription(Resource):
     @token_required
     def get(self, isbn):
         book = retrive_book(isbn)
-        return marshal(book, book_model), GET_SUCCESS
+        return marshal(book, book_model), 200
 
 @api.route('/confirm/')
 class BookConfirmation(Resource):
@@ -57,7 +57,7 @@ class BookConfirmation(Resource):
         data = request.form
         images = request.files
         book = confirm_book(data, images)
-        return marshal(book, book_model), POST_SUCCESS
+        return marshal(book, book_model), 201
 
 @api.route('/<string:book_id>/')
 @api.param('book_id', 'book_id is required parameter if lookup books by id')
@@ -113,7 +113,7 @@ class BookList(Resource):
     def get(self, book_id):
         book = list_book(str(book_id))
         if book:
-            return marshal(book, book_model), GET_SUCCESS
+            return marshal(book, book_model), 200
         else:
             api.abort(404, 'not found, book id not exist')
 

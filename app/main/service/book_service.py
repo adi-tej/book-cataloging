@@ -283,6 +283,12 @@ def list_book(book_id):
                 #     # This URL shold be replaced by Allen after finishing S3 storage
                 #     "PictureURL": book.cover,
                 # },
+
+
+                "PrimaryCategory":{
+                    "CategoryID": "2228",
+                },
+
                 "Country": "AU",
                 "Location": book.opshop.opshop_address,
                 "Site": "Australia",
@@ -292,6 +298,7 @@ def list_book(book_id):
                 "PayPalEmailAddress": book.opshop.opshop_ebay_email,
                 "Description": book.description,
                 "ListingDuration": "Days_30",
+                "StartPrice": book.price,
                 "ListingType": "FixedPriceItem",
                 "Currency": "AUD",
                 "ReturnPolicy": {
