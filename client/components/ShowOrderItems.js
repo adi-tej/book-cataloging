@@ -29,6 +29,9 @@ export default class ShowOrderItems extends Component {
                         <Text style={styles.itemTitle} numberOfLines={2}>{this.title}</Text>
                         <Text style={{color:"grey"}}>ISBN: {this.isbn}</Text>
                     </View>
+                    <View style={styles.priceView}>
+                        <Text style={{fontSize: 16}}>$ {this.props.price}</Text>
+                    </View>
                 </View>
             </View>
         );

@@ -1,7 +1,7 @@
 import os
 
 # circex:CircEx2020@opshops.ch3sf71im1th.ap-southeast-2.rds.amazonaws.com:3306/opshopdb
-mysql_aws_db = 'mysql+pymysql://root:ShermanLemon0301@127.0.0.1/shops'
+mysql_aws_db = 'mysql+pymysql://root:Asdfghjkl834966827@127.0.0.1/circex-dev'
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

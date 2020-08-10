@@ -11,7 +11,7 @@ order_items_model = OrderDto.order_model
 order_items_array_model = OrderDto.order_array_model
 new_order_model = OrderDto.new_order_model
 
-@api.route('/')
+@api.route('')
 class Order(Resource):
     @api.doc(description="retrive orders according to order status (not required)")
     @api.param('order_status', 'take the order status in the parameter')
@@ -21,7 +21,7 @@ class Order(Resource):
     @token_required
     def get(self):
         order_status = request.args.get('order_status')
-        token = request.headers.get('token')
+        token = request.headers.get('Authorization')
 
         order_items_array = retrive_order(order_status, token)
 
@@ -30,7 +30,7 @@ class Order(Resource):
         else:
             api.abort(404, 'order not found')
 
-@api.route('/<string:order_id>/')
+@api.route('/<string:order_id>')
 @api.param('order_id', description='retrive orders according to order_id (required parameter)')
 class OrderList(Resource):
     @api.doc(description="retrive order information")
@@ -71,7 +71,7 @@ class OrderList(Resource):
         else:
             api.abort(404, 'orders not found')
 
-@api.route('/checkout/')
+@api.route('/checkout')
 class OrderCheckout(Resource):
     @api.doc(description="order from the in shop customer")
     @api.expect(new_order_model, validate=True)
@@ -84,7 +84,7 @@ class OrderCheckout(Resource):
         order_items = create_order(data, token)
         return marshal(order_items, order_items_model), POST_SUCCESS
 
-@api.route('/ebayorders/')
+@api.route('/ebayorders')
 class EbayOrders(Resource):
     @api.doc(description="get all orders from ebay")
     @api.response(200, 'success', model=order_items_array_model)
@@ -99,7 +99,7 @@ class EbayOrders(Resource):
         else:
             api.abort(404, 'order not found')
 
-@api.route('/confirmation/')
+@api.route('/confirmation')
 class OrderConfirmation(Resource):
     @api.doc(description="confirm the orders from ebay")
     @api.expect(order_items_model, validate=True)
@@ -116,7 +116,7 @@ class OrderConfirmation(Resource):
         else:
             api.abort(404, 'orders not found')
 
-@api.route('/cancellation/')
+@api.route('/cancellation')
 class OrderCancellation(Resource):
     @api.doc(description="cancel the orders from ebay")
     @api.expect(order_items_model, validate=True)
