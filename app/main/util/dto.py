@@ -1,5 +1,7 @@
 from flask_restplus import Namespace, fields
 
+from app.main.model.models import ItemCondition, ItemStatus, OrderStatus
+
 
 class UserDto:
     api = Namespace('user', description='user related operations')
@@ -39,7 +41,7 @@ class OrderDto:
 
     order_model = api.model('order_items', {
         'order_id': fields.String,
-        'order_status': fields.String,
+        'order_status': fields.String(enum=[x.value for x in OrderStatus], attribute='order_status.value'),
         'items': fields.List(fields.Nested(item_model))
     })
 
@@ -77,11 +79,11 @@ class BookDto:
         'description': fields.String,
         'create_date': fields.DateTime,
         'update_date': fields.DateTime,
-        'status': fields.String,
+        'status': fields.String(enum=[x.value for x in ItemStatus], attribute='status.value'),
         'ISBN_10': fields.String,
         'ISBN_13': fields.String,
         'notes': fields.String,
-        'condition': fields.Integer
+        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value')
     })
 
     book_array_model = api.model('book_array', {
