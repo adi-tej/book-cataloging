@@ -331,10 +331,13 @@ def get_book_by_params(params, token):
     book_list = []
 
     if 'isbn' in params and 'title' in params:
-        book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'],
-                                         opshop_id=user.opshop.id).all()
+
+        book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'], opshop_id=user.opshop.id).all() \
+            if (len(params['isbn']) == 10) else Book.query.filter_by(ISBN_13=params['isbn'], title=params['title'],
+                                                                     opshop_id=user.opshop.id).all()
     elif 'isbn' in params:
-        book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id).all()
+        book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id).all() \
+            if (len(params['isbn']) == 10) else Book.query.filter_by(ISBN_13=params['isbn'], opshop_id=user.opshop.id).all()
     elif 'title' in params:
         book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.id).all()
     else:
