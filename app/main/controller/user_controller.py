@@ -1,7 +1,7 @@
 from flask import request
 from flask_restplus import Resource, marshal
 from ..util.dto import UserDto
-from ..service.user_service import get_a_user
+from ..service.user_service import get_user
 from ..util.decorator import token_required
 from ..http_status import *
 
@@ -21,7 +21,7 @@ class User(Resource):
         """ get a user given its identifier"""
         user_id = request.args.get('user_id')
         if user_id:
-            user = get_a_user(user_id)
+            user = get_user(user_id)
             if not user:
                 api.abort(404, 'user not exist')
             else:

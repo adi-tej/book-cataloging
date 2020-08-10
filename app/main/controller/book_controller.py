@@ -13,16 +13,16 @@ book_array_model = BookDto.book_array_model
 
 @api.route('')
 class Books(Resource):
-    @api.doc(description="get all books according to parameters'")
+    @api.doc(description="Get all the listed books of the op-shop with optional parameters")
     @api.response(200, 'success', model=book_array_model)
     @api.response(401, 'unauthorized')
-    @api.param('isbn', description="take isbn in the parameter if you have")
-    @api.param('title', description="take title in the parameter if you have")
+    @api.param('isbn', description="ISBN of the book - 10 or 13 digits")
+    @api.param('title', description="Title of the book")
+    @api.param('search', description="Search query to filter the books")
     @token_required
-    def get(self):
+    def get(self, user):
         params = request.args
-        token = request.headers.get('Authorization')
-        book_list = get_book_by_params(params, token)
+        book_list = get_all_books(params, user)
         book_array = {
             'books': book_list
         }
@@ -31,12 +31,12 @@ class Books(Resource):
 
 @api.route('/autodescription/<isbn>')
 class AutoDescription(Resource):
-    @api.doc(description="book autodescription")
-    @api.param('isbn', description="take isbn in the parameter if you have")
+    @api.doc(description="Get book details using ISBN from google API or ISBN DB")
+    @api.param('isbn', description="ISBN of the book - 10 0r 13 digits")
     @api.response(200, 'success', book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def get(self, isbn):
+    def get(self, user, isbn):
         book = retrive_book(isbn)
         return marshal(book, book_model), SUCCESS
 

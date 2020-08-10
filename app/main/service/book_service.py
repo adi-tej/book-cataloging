@@ -3,7 +3,7 @@ from datetime import datetime
 from ebaysdk.trading import Connection
 import json
 import requests
-from uuid import uuid5, NAMESPACE_OID
+from uuid import uuid1
 import shutil
 import boto3
 from botocore.client import Config
@@ -160,7 +160,7 @@ def retrive_book(data):
 
     book_data = find_book_info(data)
     if book_data:
-        book_data['id'] = book_id_local = uuid5(NAMESPACE_OID, 'v5app')
+        book_data['id'] = book_id_local = uuid1()
         # book_data['book_id_ebay'] = ''
         # book_data['item_type_id'] = 1
         # book_data['created_date'] = datetime.today()
@@ -325,29 +325,31 @@ def unlist_book(book_id):
     return book
 
 
-def get_book_by_params(params, token):
-    payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(id=payload['user_id']).first()
-    book_list = []
+def get_all_books(params, user):
+    res = Book.query
+    d = {'opshop_id': user['opshop_id'], 'status': ItemStatus.LISTED}
+    if 'search' not in params:
+        for name in params:
 
-    if 'isbn' in params and 'title' in params:
-
-        book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'], opshop_id=user.opshop.id).all() \
-            if (len(params['isbn']) == 10) else Book.query.filter_by(ISBN_13=params['isbn'], title=params['title'],
-                                                                     opshop_id=user.opshop.id).all()
-    elif 'isbn' in params:
-        book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id).all() \
-            if (len(params['isbn']) == 10) else Book.query.filter_by(ISBN_13=params['isbn'], opshop_id=user.opshop.id).all()
-    elif 'title' in params:
-        book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.id).all()
+            if name == 'isbn':
+                if len(params[name]) == 10:
+                    d['ISBN_10'] = params['isbn']
+                else:
+                    d['ISBN_13'] = params['isbn']
+            if name == 'title':
+                d[name] = params[name]
+        res = res.filter_by(**d)
     else:
-        book_list = Book.query.filter_by(opshop_id=user.opshop.id).all()
-
-    return book_list
+        query = '{}%'.format(params['search'])
+        query1 = res.filter_by(**d).filter(Book.ISBN_10.like(query))
+        query2 = res.filter_by(**d).filter(Book.ISBN_13.like(query))
+        query3 = res.filter_by(**d).filter(Book.title.like(query))
+        res = query1.union(query2, query3)
+    return res.all()
 
 
 def confirm_book(data, images):
-    data['id'] = id = uuid5(NAMESPACE_OID, 'v5app')
+    data['id'] = uuid1()
     data['item_type_id'] = 1
     data['created_date'] = datetime.today()
     data['updated_date'] = datetime.today()
