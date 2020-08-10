@@ -85,7 +85,7 @@ class Book(db.Model):
     edition = db.Column(db.Integer)
     page_count = db.Column(db.Integer)
     genre = db.Column(db.String(20))
-    cover = db.Column(db.String(100))  # AMZON S3 --> https://applicationurl/cover/1.jpg
+    cover = db.Column(db.String(100))  # AMAZON S3 --> https://applicationurl/cover/1.jpg
     price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
     description = db.Column(db.String(300))

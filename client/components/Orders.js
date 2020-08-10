@@ -30,12 +30,12 @@ export default class Orders extends Component {
     componentDidMount() {
         api.get('/order', {
                 params: {
-                    order_status: this.mode
+                    status: this.mode
                 }
             })
                 .then((response) => {
                     if (response.status === 200) {
-                        console.warn(response.data.order_items)
+                        // console.warn(response.data)
                         this.setState({orderArray: response.data.order_items})
                     }
 

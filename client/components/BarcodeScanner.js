@@ -12,17 +12,18 @@ export default function Barcode({navigation,mode}) {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [type, setType] = useState(Camera.Constants.Type.back);
-    // const [flashMode,setFlashMode] = useState(Camera.Constants.FlashMode.auto);
     const [modalVisible, setModalVisible] = useState(false);
 
     const [barcode, setBarcode] = useState("");
-    // const [title, setTitle] = useState("");
+    const [title, setTitle] = useState("");
     // const [genre, setGenre] = useState("");
-    // const [author, setAuthor] = useState("");
+    const [author, setAuthor] = useState("");
     // const [pages, setPages] = useState(0);
     // const [publisher, setPublisher] = useState("");
-    // const [price, setPrice] = useState(0);
-    // const [initImage, setInitImage] = useState(null);
+    const [price, setPrice] = useState(0);
+    const [initImage, setInitImage] = useState(null);
+
+    const [book, setBook] = useState(null);
 
 
     useEffect(() => {
@@ -39,11 +40,29 @@ export default function Barcode({navigation,mode}) {
         if (mode === "add") {
             alert(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
         } else if (mode === "checkout"){
-            setModalVisible(true);
+
+            api.get('/book', {
+                    params: {
+                        isbn: data
+                    }
+            })
+                .then(response => {
+                        if(response.status === 200) {
+                            const info = response.data.books[0]
+                            if (info !== undefined) {
+                                setBook(info)
+                                setModalVisible(true)
+                            } else {
+                                Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                            }
+                        }
+                    }).catch((error) => {
+                        Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                })
         }
     };
 
-    // -----------------modal setting
+    // -----------------modal setting ---------------------
     //TODO: API call to pass the item item_id to backend and request removal of this item
     const onCheckoutPress = (() => {
         Alert.alert("Successfully remove item from eBay!")
@@ -57,7 +76,6 @@ export default function Barcode({navigation,mode}) {
         //     {
         //       "item_id": "string",
         //       "quantity": 0,
-        //       "total_price": 0
         //     }
         //   ]
         // })
@@ -72,7 +90,6 @@ export default function Barcode({navigation,mode}) {
         //     console.warn(error);
         //     Alert.alert("Oops! You can't remove this item now! Please try it later.")
         //   });
-
     });
     // -----------------modal setting
 
@@ -90,7 +107,6 @@ export default function Barcode({navigation,mode}) {
                 onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
                 style={StyleSheet.absoluteFillObject}
                 type={type}
-                // flashMode={flashMode}
             >
                 <View
                     style={styles.barcodeCameraComponent}>
@@ -102,22 +118,7 @@ export default function Barcode({navigation,mode}) {
                         onPress={() => navigation.navigate('RootNavigator')}>
                         <Text style={{ fontSize: 18, color: 'white'}}> X </Text>
                     </TouchableOpacity>
-                    {/*<TouchableOpacity*/}
-                    {/*    style={[styles.cameraOption,{*/}
-                    {/*        width:'22%',*/}
-                    {/*        marginLeft : '3%'*/}
-                    {/*    }]}*/}
-                    {/*    onPress={() => {*/}
-                    {/*        setFlashMode(*/}
-                    {/*            flashMode === Camera.Constants.FlashMode.auto*/}
-                    {/*                ? Camera.Constants.FlashMode.on*/}
-                    {/*                : flashMode === Camera.Constants.FlashMode.on*/}
-                    {/*                ? Camera.Constants.FlashMode.off*/}
-                    {/*                : Camera.Constants.FlashMode.auto*/}
-                    {/*        );*/}
-                    {/*    }}>*/}
-                    {/*    <Text style={{ fontSize: 18, color: 'white' }}> Flash </Text>*/}
-                    {/*</TouchableOpacity>*/}
+
                     <TouchableOpacity
                         style={[styles.cameraOption,{
                             width:'35%',
@@ -145,7 +146,7 @@ export default function Barcode({navigation,mode}) {
                     <View style={styles.checkoutPopup}>
                         <View style={{paddingVertical:"10%",}}>
                             {/*TODO: pass bookCover, title, author and price to it*/}
-                            <Checkout />
+                            <Checkout book={book}/>
                             <View style={styles.buttonView}>
                                 <TouchableOpacity
                                     activityOpacity={0.5}

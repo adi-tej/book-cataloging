@@ -18,36 +18,27 @@ export default class OrderItemDetails extends Component {
         super(props);
         this.orderNumber = this.props.route.params.order.order_id;
         this.itemsArray = this.props.route.params.order.items;
-        console.warn("===order is:====", this.itemsArray);
-        this.state = {
-            itemArray:[
-                {id:1, isbn: 1234567890123, bookCover: "https://picsum.photos/id/237/200/300", title: "Just Testing Books"},
-                {id:2, isbn: 9781925538830, bookCover: "https://picsum.photos/seed/picsum/200/300", title: "Beyond Lemuria"},
-                {id:3, isbn: "", bookCover: "https://picsum.photos/200/300/?blur", title: "Abstract Art, Artists, Ancient Egypt"},
-                {id:4, isbn: 9781234567890, bookCover: "https://picsum.photos/id/870/200/300?grayscale&blur=2", title: "The Australian Native Bee Book"},
-                {id:5, isbn: 9781234567890, bookCover: "https://picsum.photos/id/870/200/300?grayscale&blur=2", title: "The Australian Native Bee Book"},
-                {id:6, isbn: "", bookCover: "https://picsum.photos/seed/picsum/200/300", title: "Beyond Lemuria"},
-                {id:7, isbn: 9789460098123, bookCover: "https://picsum.photos/200/300/?blur", title: "Abstract Art, Artists, Ancient Egypt"},
-            ]}
+        this.totalPrice = this.props.route.params.totalPrice;
     }
 
     //TODO: call API to send confirm order to backend
     onConfirmPress = ()=> {
-        Alert.alert("Successfully Confirm Order " + this.orderNumber)
-        // api.post('/order/confirmation', {
-        //      TODO: update the payload content
-        //     firstName: 'Fred',
-        //     lastName: 'Flintstone'
-        //   })
-        //   .then((response) => {
-        //     if (response.status === 201) {
-        //          Alert.alert("Successfully Confirm Order " + this.orderNumber)
-        //     }
-        //   })
-        //   .catch(function (error) {
-        //     console.warn(error);
-        //     Alert.alert("Oops! This order can't be confirmed now. Please try it later.")
-        //   });
+        api.post('/order/confirm', {
+            order_id: this.orderNumber
+          })
+          .then((response) => {
+            if (response.status === 200) {
+                 Alert.alert("Successfully Confirm Order " + this.orderNumber)
+                setTimeout(() => {
+                    this.props.route.params.navigation.navigate("RootNavigator")},
+                    1500
+                )
+            }
+          })
+          .catch(function (error) {
+            console.warn(error);
+            Alert.alert("Oops! This order can't be confirmed now. Please try it later.")
+          });
     }
 
 
@@ -71,17 +62,26 @@ export default class OrderItemDetails extends Component {
                     <ScrollView style={styles.scrollContainer}>
                         {
                             //TODO: update it to itemsArray and update the related info
-                            this.state.itemArray.map((info)=> {
+                            this.itemsArray.map((info)=> {
                             return(
                                 <ShowOrderItems
-                                    key={info.id}
-                                    isbn={info.isbn}
-                                    bookCover={info.bookCover}
-                                    title={info.title}
+                                    key={info.item_id}
+                                    item={info}
                                 />
                             )
                         })}
+
+                        <Text style={[styles.summaryText,{color: "lightgrey"}]}>
+                            ----------------------------------</Text>
+                        <View style={styles.summaryContainer}>
+                            <Text style={styles.summaryText}>
+                            Item quantity: {this.itemsArray.length}</Text>
+                            <Text style={styles.summaryText}>
+                                Total Price: ${this.totalPrice}</Text>
+                        </View>
+
                     </ScrollView>
+
                     <TouchableOpacity
                         activityOpacity={0.5}
                         style={[styles.searchButton,{marginVertical:"2%"}]}

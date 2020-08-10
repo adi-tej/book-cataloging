@@ -352,6 +352,20 @@ const styles = StyleSheet.create({
         fontSize:16,
         color:"red",
         // marginBottom:"2%",
+    },
+
+    //orderItemDetails
+    summaryContainer: {
+        width: "40%",
+        marginBottom:"3%",
+        position:"relative",
+        left: "60%",
+    },
+
+    summaryText: {
+        textAlign: "right",
+        marginVertical: "3%",
+        fontSize: 18
     }
 
 })

@@ -75,6 +75,7 @@ class BookDto:
         'pages_number': fields.Integer,
         'genre': fields.String,
         'cover': fields.String,
+        'price': fields.Float,
         'quantity': fields.Integer,
         'description': fields.String,
         'create_date': fields.DateTime,
