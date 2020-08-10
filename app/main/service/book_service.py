@@ -7,7 +7,7 @@ from uuid import uuid5, NAMESPACE_OID
 import shutil
 import boto3
 from botocore.client import Config
-from app.main.model.models import Image, Book
+from app.main.model.models import Image, Book, ItemStatus
 from app.main.model.user import User
 from ..util.decorator import TOKEN
 from .. import db
@@ -165,7 +165,7 @@ def retrive_book(data):
         # book_data['item_type_id'] = 1
         # book_data['created_date'] = datetime.today()
         # book_data['updated_date'] = datetime.today()
-        # book_data['status'] = 'unlisted'
+        # book_data['status'] = ItemStatus.INACTIVE
 
         try:  ##here we can get a key error while accesing book_data['cover'] if no info was recoverd from api's.
 
@@ -268,7 +268,7 @@ def list_book(book, images):
             ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
             request_info = {
                 "Item": {
-                    "Title": book.title, # + " " + book.id,
+                    "Title": book.title,  # + " " + book.id,
                     # "PictureDetails": {
                     #     # This URL shold be replaced by Allen after finishing S3 storage
                     #     "PictureURL": book.cover,
@@ -305,7 +305,7 @@ def list_book(book, images):
             # should give 500
             return 'error'
 
-        book.status = 'listed'
+        book.status = ItemStatus.LISTED
         book = confirm_book(book, images)
 
     # when book null
@@ -330,16 +330,15 @@ def get_book_by_params(params, token):
     user = User.query.filter_by(id=payload['user_id']).first()
     book_list = []
 
-    if 'isbn' in params or 'title' in params:
-        if params['isbn'] and params['title']:
-            book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'],
-                                             opshop_id=user.opshop.id)
-        elif params['isbn'] and not params['title']:
-            book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id)
-        elif not params['isbn'] and params['title']:
-            book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.id)
+    if 'isbn' in params and 'title' in params:
+        book_list = Book.query.filter_by(ISBN_10=params['isbn'], title=params['title'],
+                                         opshop_id=user.opshop.id).all()
+    elif 'isbn' in params:
+        book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id).all()
+    elif 'title' in params:
+        book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.id).all()
     else:
-        book_list = Book.query.filter_by(opshop_id=user.opshop.id)
+        book_list = Book.query.filter_by(opshop_id=user.opshop.id).all()
 
     return book_list
 
