@@ -5,7 +5,10 @@ import styles from "../config/styles";
 import {Camera} from "expo-camera";
 import Checkout from "./Checkout";
 
+import api  from "../config/axios";
+
 export default function Barcode({navigation,mode}) {
+
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
     const [type, setType] = useState(Camera.Constants.Type.back);
@@ -41,11 +44,35 @@ export default function Barcode({navigation,mode}) {
     };
 
     // -----------------modal setting
-    //TODO: API call to pass the item ISBN to backend and request removal of this item
+    //TODO: API call to pass the item item_id to backend and request removal of this item
     const onCheckoutPress = (() => {
         Alert.alert("Successfully remove item from eBay!")
         setTimeout(()=>{setModalVisible(false)},1000)
         setScanned(false)
+
+        // api.post('/order/checkout', {
+        //TODO:update the item details
+
+        //   "items": [
+        //     {
+        //       "item_id": "string",
+        //       "quantity": 0,
+        //       "total_price": 0
+        //     }
+        //   ]
+        // })
+        //   .then((response) => {
+        //     if (response.status === 201) {
+        //         Alert.alert("Successfully remove item from eBay!")
+        //         setTimeout(()=>{setModalVisible(false)},1000)
+        //         setScanned(false)
+        //     }
+        //   })
+        //   .catch(function (error) {
+        //     console.warn(error);
+        //     Alert.alert("Oops! You can't remove this item now! Please try it later.")
+        //   });
+
     });
     // -----------------modal setting
 
@@ -55,7 +82,6 @@ export default function Barcode({navigation,mode}) {
     if (hasPermission === false) {
         return <Text>No access to camera</Text>;
     }
-
 
     return (
         <View

@@ -12,10 +12,10 @@ There are altogether four services:
 
 ## Tech Stack
 Below graph is showing the whole tech tools used in this application.<br>
-![image](https://github.com/CircEx/book-cataloging/blob/develop/app/images/tech.jpg)
+![image](https://github.com/CircEx/book-cataloging/blob/WeiSong/app/images/tech.jpg)
 
 ## The detailed tech process
-![image](https://github.com/CircEx/book-cataloging/blob/develop/app/images/detailed.jpg)
+![image](https://github.com/CircEx/book-cataloging/blob/WeiSong/app/images/detailed.jpg)
 
 ## Setup backend
 * step1: install the dependency of Python<br>
@@ -24,9 +24,9 @@ pip3 install -r requirements.txt
 ```
 * step2: run the application from project backend folder<br>
 ```
-python3 manage.py run
+python3 setup_app.py run
 ```
 * step3: setup the database config with another terminal window<br>
 ```
-python3 initdata.py
+python3 init_data.py
 ```

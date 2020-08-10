@@ -1,8 +1,5 @@
-from flask import make_response, jsonify
-
 from .. import db, flask_bcrypt
-from app.main.model.blacklist import BlacklistToken
-from ..config import key
+
 
 class User(db.Model):
     """ User Model for storing user information """
