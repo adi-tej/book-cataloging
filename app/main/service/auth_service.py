@@ -40,7 +40,7 @@ class Auth:
             },
             'token': token,
         }
-        return make_response(resp_data, POST_SUCCESS)
+        return make_response(resp_data, SUCCESS)
         # resp.status_code = POST_SUCCESS
         # return resp
 
