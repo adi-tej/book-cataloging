@@ -15,6 +15,10 @@ from time import time, localtime, strftime
 
 
 def create_order(data, token):
+    """ When there are new orders from opshop or ebay, this function
+        will help to create new orders at the backend the add them
+        to database, finally return the order information to user
+    """
     payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(id=str(payload['user_id'])).first()
     if user:
@@ -76,6 +80,8 @@ def create_order(data, token):
 
 
 def get_order(order_id):
+    """ retrive order by its id """
+
     order = Order.query.filter_by(id=order_id).first()
     order_items = {
         'order_id': order.id,
@@ -93,6 +99,8 @@ def get_order(order_id):
 
 
 def update_order(data, order_id):
+    """ update order information by id """
+
     order = Order.query.filter_by(id=order_id).first()
     data['order_id'] = order.id
     if data:
@@ -108,6 +116,8 @@ def update_order(data, order_id):
 
 
 def delete_order(order_id):
+    """ delete order by id """
+
     order = Order.query.filter_by(id=order_id).first()
     order.status = OrderStatus.DELETED
     order_items = {
@@ -128,6 +138,8 @@ def delete_order(order_id):
 
 
 def retrieve_order(order_status, token):
+    """ retrive orders by order status """
+
     payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(id=payload['user_id']).first()
     if user:
@@ -170,6 +182,8 @@ def retrieve_order(order_status, token):
 
 
 def confirm_order(data):
+    """ confirm order from ebay """
+
     order = Order.query.filter_by(id=data['order_id']).first()
     if order:
         order.status = OrderStatus.CONFIRMED
@@ -183,6 +197,8 @@ def confirm_order(data):
 
 
 def cancel_order_ebay(order_id):
+    """ seller initially cancel the order from ebay """
+
     url_1 = "https://api.sandbox.ebay.com/post-order/v2/cancellation/check_eligibility"
     payload = {
         "legacyOrderId": order_id,
@@ -211,6 +227,8 @@ def cancel_order_ebay(order_id):
 
 
 def cancel_order(data):
+    """ seller cancel the order from in shop buyers """
+
     order = Order.query.filter_by(id=data['order_id']).first()
     if order:
         if cancel_order_ebay(order.id):
@@ -232,6 +250,8 @@ def cancel_order(data):
 
 
 def retrive_order_ebay():
+    """ periodically retrive new orders from ebay """
+
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     past_time = time() - 10 * 60 * 60 - 5 * 60
     past_time = strftime('%Y-%m-%d %H:%M:%S', localtime(past_time))
