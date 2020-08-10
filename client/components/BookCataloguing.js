@@ -61,6 +61,7 @@ export default class BookCataloguing extends Component{
                             const data = res.data
                             const copyImageArray = Object.assign([], this.state.imageArray);
                             copyImageArray.push({
+                                id: this.state.imageId,
                                 image: data.cover
                             })
                             this.setState({
