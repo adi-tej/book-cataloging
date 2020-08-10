@@ -1,8 +1,10 @@
 import React, { useState }  from 'react';
-import { Text, View, Image, TextInput, TouchableOpacity} from 'react-native';
+import { Text, View, Image, TextInput, TouchableOpacity,Alert} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import images from "../config/images";
 import styles from "../config/styles";
+
+import api ,{setClientToken} from "../config/axios";
 
 export default function Login({navigation}){
     const [data, setData] = useState({
@@ -20,6 +22,7 @@ export default function Login({navigation}){
             loginError:false
         })
     }
+
     const handlePasswordChange = (val) => {
         setData({
             ...data,
@@ -27,6 +30,7 @@ export default function Login({navigation}){
             loginError:false
         })
     }
+
     const validateEmail = () => {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if(data.email.length>0 && !re.test(String(data.email).toLowerCase())){
@@ -39,14 +43,30 @@ export default function Login({navigation}){
     }
     const handleLogin = () => {
         //TODO: API call to login
-        if(data.email === 'adi@gmail.com' && data.password === '123'){
-            navigation.navigate('RootNavigator')
-        }else{
-            setData({
-                ...data,
-                loginError: true
-            })
-        }
+
+        api.post('/login', {
+            email: data.email,
+            password: data.password
+          })
+          .then(function (response) {
+            // console.warn(response.data.token);
+            //if response status is 200 - navigate
+              //else set state loginerror true
+              if (response.status === 200) {
+                  setClientToken(response.data.token);
+                  navigation.navigate('RootNavigator')
+              } else {
+                  setData({
+                      ...data,
+                      loginError: true
+                  })
+              }
+          })
+          .catch(function (error) {
+            // console.warn("error is: "+ error);
+            Alert.alert("Invalid email or password. Please try it again.")
+          })
+
     }
     return(
         <KeyboardAwareScrollView>
@@ -59,7 +79,7 @@ export default function Login({navigation}){
                     onBlur={() => validateEmail()}
                     keyboardType='email-address'
                     autoCorrect={false}
-                    onSubmitEditing={()=>this.password.focus()}
+                    // onSubmitEditing={()=>this.password.focus()}
                     blurOnSubmit={false}
                 />
                 {data.emailError?
@@ -71,7 +91,7 @@ export default function Login({navigation}){
                     style={styles.textInput}
                     onChangeText={val => handlePasswordChange(val)}
                     secureTextEntry={true}
-                    ref={(input)=>this.password=input}
+                    // ref={(input)=>data.password=input}
                     blurOnSubmit={false}
                 />
                 <TouchableOpacity activeOpacity={0.7} onPress={() => handleLogin()} title="Login" style={styles.loginButton}>

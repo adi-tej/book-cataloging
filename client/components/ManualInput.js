@@ -13,6 +13,8 @@ import images from "../config/images";
 import BookCataloguing from "./BookCataloguing";
 import Checkout from "./Checkout";
 
+import api  from "../config/axios";
+
 export default class ManualInput extends Component {
     constructor(props) {
         super(props);
@@ -75,7 +77,31 @@ export default class ManualInput extends Component {
     onCheckoutPress = () => {
         Alert.alert("Successfully remove item from eBay!")
         setTimeout(()=>{this.setState({modalVisible: false})},1500)
+
+        // api.post('/order/checkout', {
+        //TODO:update the item details
+
+        //   "items": [
+        //     {
+        //       "item_id": "string",
+        //       "quantity": 0,
+        //       "total_price": 0
+        //     }
+        //   ]
+        // })
+        //   .then((response) => {
+        //     if (response.status === 201) {
+        //         Alert.alert("Successfully remove item from eBay!")
+        //         setTimeout(()=>{setModalVisible(false)},1000)
+        //         setScanned(false)
+        //     }
+        //   })
+        //   .catch(function (error) {
+        //     console.warn(error);
+        //     Alert.alert("Oops! You can't remove this item now! Please try it later.")
+        //   });
     }
+
     // -----------------noIsbnModal setting
     onSearchPress = () =>{
         //TODO: After get  information, don't forget to change the returnInfo state

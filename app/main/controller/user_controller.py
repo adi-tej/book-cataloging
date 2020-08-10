@@ -1,18 +1,17 @@
-from flask import request, make_response, jsonify
+from flask import request
 from flask_restplus import Resource, marshal
-import json
-
 from ..util.dto import UserDto
-from ..service.user_service import get_a_user, get_all_users
+from ..service.user_service import get_a_user
 from ..util.decorator import token_required
 from ..http_status import *
 
 api = UserDto.api
 user_model = UserDto.user
 
+
 @api.route('/')
 class User(Resource):
-    @api.doc('retrive a user')
+    @api.doc('retrieve a user')
     @api.response(200, 'success', model=user_model)
     @api.response(404, 'not found')
     @api.response(401, 'unauthorized')
@@ -26,6 +25,6 @@ class User(Resource):
             if not user:
                 api.abort(404, 'user not exist')
             else:
-                return marshal(user, user_model), GET_SUCCESS
+                return marshal(user, user_model), SUCCESS
         else:
             api.abort(404, 'user not exist')

@@ -1,8 +1,6 @@
 from flask import jsonify, make_response
-
 from app.main.model.user import User
 from app.main.service.user_service import TOKEN
-from ..service.blacklist_service import save_token
 from ..http_status import *
 from ..model.blacklist import BlacklistToken
 from .. import db
@@ -42,7 +40,7 @@ class Auth:
             },
             'token': token,
         }
-        return make_response(resp_data, POST_SUCCESS)
+        return make_response(resp_data, SUCCESS)
         # resp.status_code = POST_SUCCESS
         # return resp
 

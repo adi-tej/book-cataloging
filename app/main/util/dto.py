@@ -25,8 +25,16 @@ class OrderDto:
 
     item_model = api.model('ordered_item', {
         'item_id': fields.String,
+        'title': fields.String,
+        'isbn': fields.String,
+        'cover': fields.String,
         'quantity': fields.Integer,
+        'price': fields.Float,
         'total_price': fields.Float,
+    })
+    item_checkout = api.model('checkout_item', {
+        'item_id': fields.String,
+        'quantity': fields.Integer
     })
 
     order_model = api.model('order_items', {
@@ -39,6 +47,12 @@ class OrderDto:
         'order_items': fields.List(fields.Nested(order_model))
     })
 
+    order_checkout_model = api.model('checkout_order_array', {
+        'items': fields.List(fields.Nested(item_checkout))
+    })
+    order_confirm_model = api.model('confirm order', {
+        'order_id': fields.String
+    })
     new_order_model = api.model('new_order', {
         'items': fields.List(fields.Nested(item_model)),
     })

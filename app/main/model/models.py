@@ -1,11 +1,19 @@
+from sqlalchemy import PrimaryKeyConstraint
+import enum
 from .. import db
+
+
+class RoleType(enum.Enum):
+    ADMIN = 'admin'
+    USER = 'user'
 
 
 class Role(db.Model):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
+    name = db.Column(db.Enum(RoleType), default=RoleType.USER)
     users = db.relationship('User', backref='role', lazy='dynamic')
+
 
 class Opshop(db.Model):
     __tablename__ = 'opshop'
@@ -18,11 +26,25 @@ class Opshop(db.Model):
     users = db.relationship('User', backref='opshop', lazy='dynamic')
     books = db.relationship('Book', backref='opshop', lazy='dynamic')
 
+
+class ItemTypeEnum(enum.Enum):
+    BOOK = 'book'
+
+
 class ItemType(db.Model):
     __tablename__ = 'itemtype'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20))
+    name = db.Column(db.Enum(ItemTypeEnum))
     items = db.relationship('Book', backref='item_type', lazy='dynamic')
+
+
+class OrderStatus(enum.Enum):
+    PENDING = 'pending'
+    CONFIRMED = 'confirmed'
+    DELETED = 'deleted'
+    CANCELLED = 'cancelled'
+    COMPLETED = 'completed'
+
 
 class Order(db.Model):
     __tablename__ = 'order'
@@ -32,7 +54,20 @@ class Order(db.Model):
     customer_name = db.Column(db.String(100))
     customer_contact = db.Column(db.String(100))
     date = db.Column(db.DateTime)
-    status = db.Column(db.String(20))
+    status = db.Column(db.Enum(OrderStatus), default=OrderStatus.PENDING)
+
+
+class ItemStatus(enum.Enum):
+    LISTED = 'listed'
+    INACTIVE = 'inactive'
+    SOLD = 'sold'
+
+
+class ItemCondition(enum.Enum):
+    OLD = 0
+    NEW = 1
+    USED = 2
+
 
 class Book(db.Model):
     __tablename__ = 'book'
@@ -47,17 +82,18 @@ class Book(db.Model):
     edition = db.Column(db.Integer)
     page_count = db.Column(db.Integer)
     genre = db.Column(db.String(20))
-    cover = db.Column(db.String(100)) # AMZON S3 --> https://applicationurl/cover/1.jpg
+    cover = db.Column(db.String(100))  # AMZON S3 --> https://applicationurl/cover/1.jpg
     price = db.Column(db.Float)
     quantity = db.Column(db.Integer)
     description = db.Column(db.String(300))
     created_date = db.Column(db.DateTime)
     updated_date = db.Column(db.DateTime)
-    status = db.Column(db.String(20))
+    status = db.Column(db.Enum(ItemStatus), default=ItemStatus.INACTIVE)
     ISBN_10 = db.Column(db.String(100))
     ISBN_13 = db.Column(db.String(100))
     notes = db.Column(db.String(300))
-    condition = db.Column(db.Integer)
+    condition = db.Column(db.Enum(ItemCondition), default=ItemCondition.NEW)
+
 
 class OrderItems(db.Model):
     __tablename__ = 'orderitem'
@@ -67,8 +103,9 @@ class OrderItems(db.Model):
     single_price = db.Column(db.Float)
     total_price = db.Column(db.Float)
 
+
 class Image(db.Model):
-    __tablename__='image'
+    __tablename__ = 'image'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     aws_link = db.Column(db.String(100))
     item_id = db.Column(db.String(100), db.ForeignKey('book.id'))

@@ -11,10 +11,14 @@ import {Header, Left, Body, Icon} from "native-base";
 import styles from "../config/styles";
 import ShowOrderItems from "./ShowOrderItems";
 
+import api  from "../config/axios";
+
 export default class OrderItemDetails extends Component {
     constructor(props) {
         super(props);
-        this.orderNumber = this.props.route.params.orderNumber;
+        this.orderNumber = this.props.route.params.order.order_id;
+        this.itemsArray = this.props.route.params.order.items;
+        console.warn("===order is:====", this.itemsArray);
         this.state = {
             itemArray:[
                 {id:1, isbn: 1234567890123, bookCover: "https://picsum.photos/id/237/200/300", title: "Just Testing Books"},
@@ -30,9 +34,22 @@ export default class OrderItemDetails extends Component {
     //TODO: call API to send confirm order to backend
     onConfirmPress = ()=> {
         Alert.alert("Successfully Confirm Order " + this.orderNumber)
+        // api.post('/order/confirmation', {
+        //      TODO: update the payload content
+        //     firstName: 'Fred',
+        //     lastName: 'Flintstone'
+        //   })
+        //   .then((response) => {
+        //     if (response.status === 201) {
+        //          Alert.alert("Successfully Confirm Order " + this.orderNumber)
+        //     }
+        //   })
+        //   .catch(function (error) {
+        //     console.warn(error);
+        //     Alert.alert("Oops! This order can't be confirmed now. Please try it later.")
+        //   });
     }
 
-    //TODO: get item details from backend
 
     render() {
         return (
@@ -53,6 +70,7 @@ export default class OrderItemDetails extends Component {
                 <View style={{marginTop:'2%'}}>
                     <ScrollView style={styles.scrollContainer}>
                         {
+                            //TODO: update it to itemsArray and update the related info
                             this.state.itemArray.map((info)=> {
                             return(
                                 <ShowOrderItems

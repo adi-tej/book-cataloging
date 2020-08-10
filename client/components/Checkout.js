@@ -22,7 +22,6 @@ export default class Checkout extends Component {
     }
 
 
-
     render() {
         return (
             // <View style={styles.checkoutPopup}>

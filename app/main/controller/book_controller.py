@@ -1,11 +1,8 @@
 from flask import request
 from flask_restplus import Resource, marshal
-import json
-
 from app.main.service.book_service import *
 from ..util.dto import BookDto
 from ..util.decorator import token_required
-from app.main.service.user_service import TOKEN
 from ..http_status import *
 
 api = BookDto.api
@@ -16,7 +13,7 @@ book_array_model = BookDto.book_array_model
 
 @api.route('')
 class Books(Resource):
-    @api.doc(description="get all books accoring to parameters'")
+    @api.doc(description="get all books according to parameters'")
     @api.response(200, 'success', model=book_array_model)
     @api.response(401, 'unauthorized')
     @api.param('isbn', description="take isbn in the parameter if you have")
@@ -29,7 +26,7 @@ class Books(Resource):
         book_array = {
             'books': book_list
         }
-        return marshal(book_array, book_array_model), GET_SUCCESS
+        return marshal(book_array, book_array_model), SUCCESS
 
 
 @api.route('/autodescription/<isbn>')
@@ -41,7 +38,7 @@ class AutoDescription(Resource):
     @token_required
     def get(self, isbn):
         book = retrive_book(isbn)
-        return marshal(book, book_model), GET_SUCCESS
+        return marshal(book, book_model), SUCCESS
 
 
 # @api.route('/confirm')
@@ -69,7 +66,7 @@ class BookActivities(Resource):
         data = request.form.to_dict()
         images = request.files
         book = update_book(data, images, book_id)
-        return marshal(book, book_model), POST_SUCCESS
+        return marshal(book, book_model), SUCCESS
 
     @api.doc(description="retrieve book by book id")
     @api.response(200, 'success', model=book_model)
@@ -77,7 +74,7 @@ class BookActivities(Resource):
     @token_required
     def get(self, book_id):
         book = get_book(book_id)
-        return marshal(book, book_model), GET_SUCCESS
+        return marshal(book, book_model), SUCCESS
 
     @api.doc(description="delete some book by book id")
     @api.response(200, 'success', model=book_model)
@@ -85,7 +82,7 @@ class BookActivities(Resource):
     @token_required
     def delete(self, book_id):
         book = unlist_book(book_id)
-        return marshal(book, book_model), GET_SUCCESS
+        return marshal(book, book_model), SUCCESS
 
 
 @api.route('/list')
@@ -100,7 +97,7 @@ class BookList(Resource):
         data = request.form.to_dict()
         images = request.files
         book = list_book(data, images)
-        return marshal(book, book_model), GET_SUCCESS
+        return marshal(book, book_model), SUCCESS
 
 # @api.route('/unlist/<book_id>')
 # class BookUnlist(Resource):
