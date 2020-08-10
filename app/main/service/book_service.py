@@ -7,7 +7,7 @@ from uuid import uuid5, NAMESPACE_OID
 import shutil
 import boto3
 from botocore.client import Config
-from app.main.model.models import Image, Book, ItemStatus
+from app.main.model.models import Image, Book, ItemStatus, ItemCondition
 from app.main.model.user import User
 from ..util.decorator import TOKEN
 from .. import db
@@ -75,12 +75,12 @@ def extract_data_google_api(isbn):
     except:
         pass
     try:
-        book_data["ISBN_10"] = book_info['volumeInfo']['industryIdentifiers'][0]['identifier']
+        book_data["ISBN_10"] = book_info['volumeInfo']['industryIdentifiers'][1]['identifier']
     except:
         book_data['ISBN_10'] = "NA"
 
     try:
-        book_data["ISBN_13"] = book_info['volumeInfo']["industryIdentifiers"][1]['identifier']
+        book_data["ISBN_13"] = book_info['volumeInfo']["industryIdentifiers"][0]['identifier']
     except:
         book_data["ISBN_13"] = "NA"
 
@@ -160,11 +160,11 @@ def retrive_book(data):
 
     book_data = find_book_info(data)
     if book_data:
-        book_data['id']  = uuid5(NAMESPACE_OID, 'v5app')
+        book_data['id'] = uuid5(NAMESPACE_OID, 'v5app')
         book_data['book_id_ebay'] = ''
         book_data['item_type_id'] = 1
-        book_data['created_date'] = datetime.today()
-        book_data['updated_date'] = datetime.today()
+        book_data['created_date'] = datetime.now()
+        book_data['updated_date'] = datetime.now()
         book_data['status'] = 'unlisted'
 
         try:  ##here we can get a key error while accesing book_data['cover'] if no info was recoverd from api's.
@@ -259,9 +259,6 @@ def delete_book(book_id):
 
 
 def list_book(book):
-
-
-
     if book:
         # build connection with ebay
         # make request body to ebay
@@ -312,16 +309,14 @@ def list_book(book):
 
         except Exception:
             print("error")
-            deletedbook=delete_book(book.id)
-            #"should give 500"
+            deletedbook = delete_book(book.id)
+            # "should give 500"
             return deletedbook
 
         book.status = 'listed'
         db.session.commit()
 
-
-
-        #print("BOok returned from confirm",bookobject.__dict__)
+        # print("BOok returned from confirm",bookobject.__dict__)
 
     return book
 
@@ -341,8 +336,7 @@ def list2_book(book_id):
                     "PictureURL": book.cover,
                 },
 
-
-                "PrimaryCategory":{
+                "PrimaryCategory": {
                     "CategoryID": "2228",
                 },
 
@@ -380,16 +374,14 @@ def list2_book(book_id):
     return book
 
 
-
-def list3_book(book):
-
+def list3_book(book, image_links, user):
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     request_info = {
         "Item": {
             "Title": book.title + " " + book.id,
             "PictureDetails": {
                 # This URL shold be replaced by Allen after finishing S3 storage
-                "PictureURL": book.cover,
+                "PictureURL": image_links[0],
             },
 
             "PrimaryCategory": {
@@ -397,11 +389,11 @@ def list3_book(book):
             },
 
             "Country": "AU",
-            "Location": book.opshop.address,
+            "Location": user.opshop.address,
             "Site": "Australia",
-            "ConditionID": book.condition,
+            "ConditionID": book.condition.value,
             "PaymentMethods": "PayPal",
-            "PayPalEmailAddress": book.opshop.email,
+            "PayPalEmailAddress": user.opshop.email,
             "Description": book.description,
             "ListingDuration": "Days_30",
             "StartPrice": book.price,
@@ -423,9 +415,9 @@ def list3_book(book):
         },
     }
     ebay_conn.execute("AddItem", request_info)
-    book.status = 'listed'
-    db.session.add(book)
-    db.session.commit()
+    book.status = ItemStatus.LISTED
+    # db.session.add(book)
+    # db.session.commit()
 
     # when book null
     return book
@@ -456,7 +448,8 @@ def get_book_by_params(params, token):
                                                                      opshop_id=user.opshop.id).all()
     elif 'isbn' in params:
         book_list = Book.query.filter_by(ISBN_10=params['isbn'], opshop_id=user.opshop.id).all() \
-            if (len(params['isbn']) == 10) else Book.query.filter_by(ISBN_13=params['isbn'], opshop_id=user.opshop.id).all()
+            if (len(params['isbn']) == 10) else Book.query.filter_by(ISBN_13=params['isbn'],
+                                                                     opshop_id=user.opshop.id).all()
     elif 'title' in params:
         book_list = Book.query.filter_by(title=params['title'], opshop_id=user.opshop.id).all()
     else:
@@ -465,17 +458,19 @@ def get_book_by_params(params, token):
     return book_list
 
 
-def confirm_book(data,images):
-
-    book_id=data['id']
-    book = Book()
-    temp = book.__dict__
-    data['_sa_instance_state'] = temp['_sa_instance_state']
-    book.__dict__ = data
-    db.session.add(book)
-    db.session.commit()
-
+def confirm_book(data, images, token):
+    payload = TOKEN.serializer.loads(token.encode())
+    user = User.query.filter_by(id=payload['user_id']).first()
+    data['opshop_id'] = user.opshop.id
+    # book_id = data['id']
+    # temp = book.__dict__
+    # data['_sa_instance_state'] = temp['_sa_instance_state']
+    # book.__dict__ = data
+    book = Book(**data)
+    book.condition = ItemCondition[book.condition]
+    book.price = float(book.price)
     image_number = 0
+    image_links = []
     for x in images:  # getting images
         image_number = image_number + 1
         image = images[x]
@@ -486,26 +481,25 @@ def confirm_book(data,images):
         upload_to_s3(body, key)
         body.close()
         file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
+        image_links.append(file_url)
 
-        image_dict = {} # dictionary analogues to Image object
-        if image_number == 1: # saving the 1st image returned as cover and updating that in the database
-            bookobject=Book.query.filter_by(id=book_id).first()
+    book = list3_book(book, image_links, user)
+    if book:
 
-            bookobject.cover=file_url
-            db.session.commit()
-
-        image_object = Image()
-        image_dict['item_id'] = data['id']
-        image_dict['aws_link'] = file_url
-        image_object.__dict__ = image_dict
-        db.session.add(image_object)
+        db.session.add(book)
         db.session.commit()
 
+        for i, x in enumerate(image_links):  # getting images
+            image_dict = {}  # dictionary analogues to Image object
+            if i == 0:  # saving the 1st image returned as cover and updating that in the database
+                bookobject = Book.query.filter_by(id=book.id).first()
+                bookobject.cover = x
+                db.session.commit()
 
+            image_dict['item_id'] = data['id']
+            image_dict['aws_link'] = x
+            image_object = Image(**image_dict)
+            db.session.add(image_object)
+            db.session.commit()
 
-
-    bookupdated=list3_book(book)
-
-
-    return bookupdated
-
+    return book

@@ -94,9 +94,10 @@ class BookList(Resource):
     @token_required
     def post(self):
         # data = json.loads(request.get_data())
+        token = request.headers.get('Authorization')
         data = request.form.to_dict()
         images = request.files
-        book = confirm_book(data, images)
+        book = confirm_book(data, images, token)
         return marshal(book, book_model), SUCCESS
 
 # @api.route('/unlist/<book_id>')
