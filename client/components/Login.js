@@ -22,6 +22,7 @@ export default function Login({navigation}){
             loginError:false
         })
     }
+
     const handlePasswordChange = (val) => {
         setData({
             ...data,
@@ -29,6 +30,7 @@ export default function Login({navigation}){
             loginError:false
         })
     }
+
     const validateEmail = () => {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         if(data.email.length>0 && !re.test(String(data.email).toLowerCase())){
@@ -48,9 +50,9 @@ export default function Login({navigation}){
           })
           .then(function (response) {
             // console.warn(response.data.token);
-            //if response status is 201 - navigate
+            //if response status is 200 - navigate
               //else set state loginerror true
-              if (response.status === 201) {
+              if (response.status === 200) {
                   setClientToken(response.data.token);
                   navigation.navigate('RootNavigator')
               } else {
