@@ -279,10 +279,10 @@ def list_book(book_id):
         request_info = {
             "Item": {
                 "Title": book.title + " " + book.book_id_local,
-                # "PictureDetails": {
-                #     # This URL shold be replaced by Allen after finishing S3 storage
-                #     "PictureURL": book.cover,
-                # },
+                "PictureDetails": {
+                    # This URL shold be replaced by Allen after finishing S3 storage
+                    "PictureURL": book.cover,
+                },
 
 
                 "PrimaryCategory":{
@@ -292,7 +292,6 @@ def list_book(book_id):
                 "Country": "AU",
                 "Location": book.opshop.opshop_address,
                 "Site": "Australia",
-                "SiteID": 15,
                 "ConditionID": book.condition,
                 "PaymentMethods": "PayPal",
                 "PayPalEmailAddress": book.opshop.opshop_ebay_email,
@@ -310,7 +309,7 @@ def list_book(book_id):
                 "ShippingDetails": {
                     "ShippingServiceOptions": {
                         "FreeShipping": "True",
-                        "ShippingService": "ShippingMethodStandard"
+                        "ShippingService": "AU_Express"
                     }
                 },
                 "DispatchTimeMax": "3"
