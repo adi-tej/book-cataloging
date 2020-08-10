@@ -9,7 +9,7 @@ from setup_app import app
 # ---> opshops information <---
 with app.app_context():
     opshop_1 = Opshop()
-    opshop_1.opshop_ebay_email = "weisong301@gmail.com"
+    opshop_1.opshop_ebay_email = "283301817@qq.com"
     opshop_1.opshop_name = "opshop1"
     opshop_1.opshop_address = "Sydney, UNSW"
     opshop_1.staff_number = 4
