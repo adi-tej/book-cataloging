@@ -17,38 +17,63 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import ShowCarousel from "./ShowCarousel";
 import styles from "../config/styles";
-import api ,{setClientToken} from "../config/axios";
+import api from "../config/axios";
 
 export default class BookCataloguing extends Component{
     constructor(props) {
         super(props);
         this.imageId = 0;
         this.state = {
-            modalVisible:false,
-            title:"",
-            isbn: "",
-            isbnError:false,
-            genre: "",
-            author: "",
-            pages: 0,
-            publisher:"",
-            price: 0,
-            condition:"",
-            otherDetails: "",
+            book:{
+                id:"",
+                title:"",
+                isbn: "",
+                genre: "",
+                author: "",
+                pages: 0,
+                publisher:"",
+                price: 0,
+                condition:"",
+                otherDetails: ""
+            },
             imageArray:[],
+            modalVisible:false,
+            isbnError:false,
             initImage: null,
             edit:false
         }
     }
 //TODO: API call to get book data before rendering and set to state
     componentDidMount() {
-        if(this.props.route && this.props.route.params && this.props.route.params.edit){
-            const params = this.props.route.params
-            this.setState({
-                edit:true,
-                title:params.title,
-                price:params.price.toString()
-            })
+        if(this.props.route && this.props.route.params){
+            if(this.props.route.params.edit) {
+                const book = this.props.route.params.book
+                this.setState({
+                    edit: true,
+                    book: book
+                })
+            }
+            if(this.props.route.params.isbn) {
+                const isbn = this.props.route.params.isbn
+                api.get('/book/autodescription/'+isbn)
+                    .then(res => {
+                        if(res.status === 200) {
+                            const data = res.data
+                            const copyImageArray = Object.assign([], this.state.imageArray);
+                            copyImageArray.push({
+                                image: data.cover
+                            })
+                            this.setState({
+                                book:data,
+                                imageArray: copyImageArray
+                            })
+                        }else{
+                            console.warn('Failed to fetch book auto description')
+                        }
+                    }).catch((error) => {
+                        console.warn('Failed to fetch book auto description')
+                })
+            }
         }
         // api.get(`/user/home`)
         //     .then(res => {
@@ -71,8 +96,26 @@ export default class BookCataloguing extends Component{
             Alert.alert("BookCataloguing book: " + this.state.title)
             if(this.state.edit){
                 //TODO: API call to edit the listing
+                api.put(`/book/`+this.state.book.id)
+                    .then(res => {
+                        console.warn(res)
+                        const data = res.data;
+                        // this.setState({ title: data.title });
+                        this.props.navigation.navigate('RootNavigator')
+                    }).catch((error)=>{
+                        console.warn(error.message);
+                });
             }else{
                 //TODO: API call to create the listing
+                api.put(`/book/list`,this.state.book)
+                    .then(res => {
+                        console.warn(res)
+                        const data = res.data;
+                        // this.setState({ title: data.title });
+                        this.props.navigation.navigate('RootNavigator')
+                    }).catch((error)=>{
+                    console.warn(error.message);
+                });
             }
         }
     }
@@ -83,9 +126,17 @@ export default class BookCataloguing extends Component{
     }
 
     onConfirmRemovePress = () =>{
-        //TODO: API call to remove listing
-
         this.setState({modalVisible:false})
+        //TODO: API call to remove listing
+        api.delete(`/book/`+this.state.book.id)
+            .then(res => {
+                console.warn(res)
+                const data = res.data;
+                // this.setState({ title: data.title });
+                this.props.navigation.navigate('RootNavigator')
+            }).catch((error)=>{
+            console.warn(error.message);
+        });
     }
 
     deleteImage = (index) =>{
@@ -172,7 +223,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    value={this.state.title}
+                    value={this.state.book.title}
                     onChangeText={(title) => this.setState({title})}
                 />
 
@@ -184,6 +235,7 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     maxLength={13}
                     onBlur={this.validISBN.bind(this)}
+                    value={this.state.book.isbn}
                     onChangeText={(isbn) => this.setState({isbn})}
                 />
                     {this.state.isbnError?
@@ -196,6 +248,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
+                    value={this.state.book.genre}
                     onChangeText={(genre) => this.setState({genre})}
                 />
 
@@ -204,6 +257,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
+                    value={this.state.book.author}
                     onChangeText={(author) => this.setState({author})}
                 />
 
@@ -213,6 +267,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
+                    value={this.state.book.pages?this.state.book.pages.toString():0}
                     onChangeText={(page) => this.setState({page})}
                 />
 
@@ -221,6 +276,7 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     clearButtonMode={"while-editing"}
                     style={styles.textInput}
+                    value={this.state.book.publisher}
                     onChangeText={(publisher) => this.setState({publisher})}
                 />
 
@@ -233,7 +289,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.price.toString()}
+                    value={this.state.book.price?this.state.book.price.toString():0}
                     onChangeText={(price) => this.setState({price})}
                 />
 

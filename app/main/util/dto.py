@@ -60,6 +60,7 @@ class BookDto:
         'genre': fields.String,
         'cover': fields.String,
         'quantity': fields.Integer,
+        'price': fields.Integer,
         'description': fields.String,
         'create_date': fields.DateTime,
         'update_date': fields.DateTime,

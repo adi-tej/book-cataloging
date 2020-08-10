@@ -34,7 +34,8 @@ export default function Barcode({navigation,mode}) {
         setBarcode(data);
         //TODO: redirect to book cataloging page with barcode/isbn as prop
         if (mode === "add") {
-            alert(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
+            console.warn(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
+            navigation.navigate('BookCataloguing', {isbn: data})
         } else if (mode === "checkout"){
             setModalVisible(true);
         }
