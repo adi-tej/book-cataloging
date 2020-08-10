@@ -96,7 +96,7 @@ class BookList(Resource):
         # data = json.loads(request.get_data())
         data = request.form.to_dict()
         images = request.files
-        book = list_book(data, images)
+        book = confirm_book(data, images)
         return marshal(book, book_model), SUCCESS
 
 # @api.route('/unlist/<book_id>')

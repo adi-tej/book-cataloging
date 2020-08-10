@@ -9,11 +9,11 @@ from setup_app import app
 # ---> opshops information <---
 with app.app_context():
     opshop = Opshop()
-    opshop.email = "opshop-ebay@gmail.com"
+    opshop.email = "weisong301@gmail.com"
     opshop.name = "opshop1"
     opshop.address = "Sydney, UNSW"
     opshop.staff_count = 4
-    opshop.status = "active"
+    opshop.status = "running"
 
     db.session.add(opshop)
     db.session.commit()
