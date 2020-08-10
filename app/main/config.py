@@ -46,5 +46,5 @@ key = Config.SECRET_KEY
 
 class EbayConfig:
     config_file = ebay_config_file_path
-    domain = "api.sandbox.ebay.com"
+    domain = "api.ebay.com"
     debug = True
