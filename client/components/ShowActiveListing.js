@@ -20,7 +20,7 @@ export default class ShowActiveListing extends Component {
             })}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
-                        <Image style={styles.itemCover} source={!this.props.book.cover?images.bookCover:{uri:this.props.book.cover}}/>
+                        <Image style={styles.itemCover} source={!this.props.book.cover?images.noImage:{uri:this.props.book.cover}}/>
                     </View>
                     <View style={styles.itemTitleView}>
                         <Text style={styles.itemTitle} numberOfLines={2}>{this.props.book.title}</Text>

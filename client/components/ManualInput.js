@@ -122,7 +122,7 @@ export default class ManualInput extends Component {
         return (
             <SafeAreaView>
             <KeyboardAwareScrollView>
-                <Image style={styles.manualBackground} source={images.bookCover}/>
+                <Image style={styles.manualBackground} source={images.background}/>
                 <View style={styles.manualPopup}>
 
                     {/*closeButton*/}
