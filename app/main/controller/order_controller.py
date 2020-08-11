@@ -22,12 +22,12 @@ class Order(Resource):
     @api.response(200, 'success', order_array_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def get(self):
-        order_status = request.args.get('status')
-        token = request.headers.get('Authorization')
+    def get(self, user):
+        status = request.args.get('status')
+        # token = request.headers.get('Authorization')
 
-        order_items_array = retrieve_order(order_status, token)
-        return marshal(order_items_array, order_array_model), SUCCESS
+        orders = retrieve_order(status, user)
+        return marshal(orders, order_array_model), SUCCESS
 
 
 @api.route('/checkout')
@@ -37,10 +37,10 @@ class OrderCheckout(Resource):
     @api.response(201, 'Success', model=order_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def post(self):
-        token = request.headers.get('Authorization')
+    def post(self, user):
+        # token = request.headers.get('Authorization')
         data = json.loads(request.get_data())
-        order = create_order(data, token)
+        order = create_order(data, user)
         return marshal(order, order_model), SUCCESS
 
 
@@ -50,7 +50,7 @@ class OrderConfirmation(Resource):
     @api.expect(order_confirm_model, validate=True)
     @api.response(401, 'unauthorized')
     @token_required
-    def post(self):
+    def post(self, user):
         data = json.loads(request.get_data())
         order_array = confirm_order(data)
 

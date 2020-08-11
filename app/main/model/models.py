@@ -55,7 +55,7 @@ class Order(db.Model):
     customer_contact = db.Column(db.String(100))
     created_date = db.Column(db.DateTime, default=func.now())
     status = db.Column(db.Enum(OrderStatus), default=OrderStatus.PENDING, nullable=False)
-    orderitems = db.relationship('OrderItem', backref='order', lazy='dynamic')
+    # orderitems = db.relationship('OrderItem', backref='order', lazy='dynamic')
 
 
 class ItemStatus(enum.Enum):
@@ -99,7 +99,7 @@ class Book(db.Model):
     notes = db.Column(db.String(300))
     condition = db.Column(db.Enum(ItemCondition), default=ItemCondition.NEW, nullable=False)
     images = db.relationship('Image', backref='item', lazy='dynamic')
-    orderitems = db.relationship('OrderItem', backref='item', lazy='dynamic')
+    # orderitems = db.relationship('OrderItem', backref='item', lazy='dynamic')
 
 
 class OrderItem(db.Model):

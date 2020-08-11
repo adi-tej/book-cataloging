@@ -17,7 +17,7 @@ class User(Resource):
     @api.response(401, 'unauthorized')
     @api.param('user_id', description='take user id as parameter')
     @token_required
-    def get(self):
+    def get(self, user):
         """ get a user given its identifier"""
         user_id = request.args.get('user_id')
         if user_id:

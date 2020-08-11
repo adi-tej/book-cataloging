@@ -6,169 +6,94 @@ import requests
 from uuid import uuid1
 import shutil
 import boto3
-from botocore.client import Config
+from botocore.client import Config as BotoConfig
 from app.main.model.models import Image, Book, ItemStatus, ItemCondition
 from app.main.model.user import User
 from ..util.decorator import TOKEN
 from .. import db
 from app.main.config import EbayConfig
+from ..config import Config
 
 
 def find_book_info(isbn):  # function to search book in both api
     book_info = extract_data_google_api(isbn)
-    if book_info == 0:
-        # print("didnt get in google books")
+    if not book_info:
         book_info = extract_isbndb_api(isbn)
     if book_info == 0:
-        # print("didnt get in isbndb")
         return {}  # book info not found in both api,return empty dictionary
 
     return book_info
 
 
 def extract_data_google_api(isbn):
-    API_KEY = "AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o"  # google api key
-    google_url_book = "https://www.googleapis.com/books/v1/volumes?q=isbn:{}&key={}".format(isbn,
-                                                                                            API_KEY)  # 9781925483598
+    google_url_book = Config.GOOGLE_API_BOOK_URL + "?q=isbn:{}&key={}".format(isbn,
+                                                                              Config.GOOGLE_API_KEY)  # 9781925483598
     response = requests.get(google_url_book)
-    data = response.text
-
-    parsed = json.loads(data)
-
+    data = response.json()
     book_data = {}  # empty dictionary
 
-    if parsed['totalItems'] == 0:
-        print("item not found in google api ")
-        return 0  # return 0 when item not found
+    if data['totalItems'] == 0:
+        return None  # return None when item not found
 
-    book_info = parsed['items'][0]
-    try:
-        book_data['title'] = book_info['volumeInfo']['title']
-    except:
-        book_data['title'] = "NA"
-    try:
-        book_data['author'] = book_info['volumeInfo']['authors'][0]
-    except:
-        book_data['author'] = "NA"
-    try:
-        book_data['genre'] = book_info['volumeInfo']['categories'][0]
-    except:
-        book_data['genre'] = "NA"
-    try:
-        book_data["publisher"] = book_info['volumeInfo']['publisher']
-    except:
-        book_data["publisher"] = "NA"
-    try:
-        book_data["publish_date"] = book_info['volumeInfo']['publishedDate']
-    except:
-        book_data["publish_date"] = "NA"
-    try:
-        book_data["page_count"] = book_info['volumeInfo']['pageCount']
-    except:
-        book_data["page_count"] = "NA"
-    try:
-        book_data["description"] = book_info['volumeInfo']['description']
-    except:
-        book_data["description"] = "NA"
-    try:
-        book_data['cover'] = book_info['volumeInfo']['imageLinks']['thumbnail']
-    except:
-        pass
-    try:
-        book_data["ISBN_10"] = book_info['volumeInfo']['industryIdentifiers'][1]['identifier']
-    except:
-        book_data['ISBN_10'] = "NA"
-
-    try:
-        book_data["ISBN_13"] = book_info['volumeInfo']["industryIdentifiers"][0]['identifier']
-    except:
-        book_data["ISBN_13"] = "NA"
-
+    book = data['items'][0].get('volumeInfo', None)
+    if book:
+        book_data['title'] = book.get('title', None)
+        book_data['author'] = book.get('authors', [None])[0]
+        book_data['genre'] = book.get('categories', [None])[0]
+        book_data["publisher"] = book.get('publisher', None)
+        # book_data["publish_date"] = book.get('publishedDate', None)
+        book_data["page_count"] = book.get('pageCount', None)
+        book_data["description"] = book.get('description', None)
+        book_data['cover'] = book.get('imageLinks', {}).get('thumbnail', None)
+        book_data["isbn"] = book.get('industryIdentifiers', [0, {}])[1].get('identifier', None)
+        if not book_data["isbn"]:
+            book_data["isbn"] = book.get('industryIdentifiers', [{}])[0].get('identifier', None)
     return book_data  # return book object
 
 
-def extract_isbndb_api(ISBN):
-    isbn_url_book = "https://api2.isbndb.com/book/{}".format(ISBN)
-    h = {'Authorization': '44245_0eebc755e9df899dbcdd5121c6cca21f'}
-    response = requests.get(isbn_url_book, headers=h)
-    data = response.text
-    parsed = json.loads(data)
-    print("parsed in function ISBNDB ", parsed)
-    book_info = parsed.get("book")
+def extract_isbndb_api(isbn):
+    isbn_url_book = Config.ISBN_BOOK_URL + "/{}".format(isbn)
+    response = requests.get(isbn_url_book, headers={'Authorization': Config.ISBN_AUTH_KEY})
+    data = response.json()
+    # parsed = json.loads(data)
+    # print("parsed in function ISBNDB ", parsed)
+    book = data.get("book")
 
     book_data = {}  # empty dictionary
-    if book_info:
+    if book:
+        book_data['title'] = book.get('title', None)
+        book_data['author'] = book.get('authors', [None])[0]
+        book_data['publisher'] = book.get('publisher', None)
+        book_data['page_count'] = book.get('pages', None)
+        book_data['cover'] = book.get('image', None)
+        book_data['isbn'] = book.get('isbn', book.get('isbn13', None))
 
-        try:
-            book_data['title'] = book_info['title']
-        except:
-            book_data["title"] = "NA"
-        try:
-            book_data['author'] = book_info['authors'][0]
-        except:
-            book_data["author"] = "NA"
-        try:
-            book_data["publisher"] = book_info['publisher']
-        except:
-            book_data['publisher'] = "NA"
-
-        try:
-            book_data["page_count"] = book_info['pages']
-        except:
-            book_data["page_count"] = "NA"
-        try:
-            book_data['cover'] = book_info['image']
-        except:
-            pass
-
-        try:
-            book_data["ISBN_10"] = book_info["isbn"]
-        except:
-            book_data["ISBN_10"] = 'NA'
-        try:
-            book_data["ISBN_13"] = book_info["isbn13"]
-        except:
-            book_data['ISBN_13'] = "NA"
-
-        return book_data
-
-    else:
-
-        return 0  # return 0 when item not found
+    return book_data
 
 
 def upload_to_s3(body, name):
-    ACCESS_KEY_ID = 'AKIA5WMHZHLO4GDCKDO6'
-    ACCESS_SECRET_KEY = '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'
-    BUCKET_NAME = 'circexunsw'
-
+    # ACCESS_KEY_ID = 'AKIA5WMHZHLO4GDCKDO6'
+    # ACCESS_SECRET_KEY = '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'
+    # BUCKET_NAME = 'circexunsw'
     s3 = boto3.resource(
         's3',
-        aws_access_key_id=ACCESS_KEY_ID,
-        aws_secret_access_key=ACCESS_SECRET_KEY,
-        config=Config(signature_version='s3v4')
+        aws_access_key_id=Config.S3_KEY,
+        aws_secret_access_key=Config.S3_SECRET,
+        config=BotoConfig(signature_version='s3v4')
     )
-
     # image upload
-    s3.Bucket(BUCKET_NAME).put_object(Key=name, Body=body)
-
-    return
+    s3.Bucket(Config.S3_BUCKET).put_object(Key=name, Body=body)
 
 
-def retrive_book(data):
-    # print(data["ISBN"],type(data['ISBN']))
+def retrieve_book(data):
 
     book_data = find_book_info(data)
+
     if book_data:
-        book_data['id'] = uuid1()
-        book_data['book_id_ebay'] = ''
-        book_data['item_type_id'] = 1
-        book_data['created_date'] = datetime.now()
-        book_data['updated_date'] = datetime.now()
-        book_data['status'] = 'unlisted'
+        book_data['id'] = uuid1()  # use user id to save image temporarily
+        # book_data['book_id_ebay'] = ''
 
-        try:  ##here we can get a key error while accesing book_data['cover'] if no info was recoverd from api's.
-
+        if book_data['cover']:
             image_r = requests.get(book_data['cover'], stream=True)
 
             if image_r.status_code == 200:  # if image retrieved succesfully
@@ -186,25 +111,22 @@ def retrive_book(data):
                 key = str(book_data['id']) + '/cover.png'
                 upload_to_s3(bookcover, key)  # image saved to amazon s3
                 bookcover.close()
-                file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
+                file_url = Config.S3_LOCATION+'/%s' % (key)
                 book_data['cover'] = file_url  ## amazon url of file overwritten in Book['cover']
                 new_file.close()
                 # os.remove(file_name)
                 # print("Attachment Successfully save in S3 Bucket url %s " % (file_url))
 
-        except KeyError:
-            book_data['cover'] = None
+    # book = Book()
+    #
+    # book.__dict__ = book_data
 
-    book = Book()
-
-    book.__dict__ = book_data
-
-    return book
+    return book_data
 
 
 def update_book(data, images, book_id):
-    book = Book.query.filter_by(id=book_id).first()  # fetching saved book info from table
 
+    book = Book.query.filter_by(id=book_id).first()  # fetching saved book info from table
     if book:
 
         book_data = book.__dict__
@@ -232,7 +154,7 @@ def update_book(data, images, book_id):
             image_dict['item_id'] = book_data['id']
             image_dict['aws_link'] = file_url
             temp = image_object.__dict__
-            image_dict['_sa_instance_state'] = temp['_sa_instance_state']
+            # image_dict['_sa_instance_state'] = temp['_sa_instance_state']
             image_object.__dict__ = image_dict
 
             db.session.add(image_object)
@@ -424,15 +346,16 @@ def list3_book(book, image_links, user):
 
 
 def unlist_book(book_id):
+
     book = Book.query.filter_by(id=book_id).first()
     if book:
-        ebay_conn = Connection(config_file=EbayConfig.config_file, domain="api.sandbox.ebay.com", debug=True)
+        ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
         request_info = {
             "EndingReason": "LostOrBroken",
             "ItemID": book.book_id_ebay
         }
         ebay_conn.execute("EndItem", request_info)
-    book = delete_book(book_id)
+        book = delete_book(book_id)
     return book
 
 
@@ -459,9 +382,9 @@ def get_all_books(params, user):
     return res.all()
 
 
-def confirm_book(data, images, token):
-    payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(id=payload['user_id']).first()
+def confirm_book(data, images, user):
+    # payload = TOKEN.serializer.loads(token.encode())
+    user = User.query.filter_by(id=user['id']).first()
     data['opshop_id'] = user.opshop.id
     # book_id = data['id']
     # temp = book.__dict__
@@ -485,11 +408,10 @@ def confirm_book(data, images, token):
         image_links.append(file_url)
 
     book = list3_book(book, image_links, user)
-    if book:
 
+    if book:
         db.session.add(book)
         db.session.commit()
-
         for i, x in enumerate(image_links):  # getting images
             image_dict = {}  # dictionary analogues to Image object
             if i == 0:  # saving the 1st image returned as cover and updating that in the database

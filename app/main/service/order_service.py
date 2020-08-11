@@ -1,77 +1,67 @@
 from uuid import uuid1
-from datetime import datetime
 from ebaysdk.trading import Connection
 from ..model.models import *
-from ..model.user import User
-from ..util.decorator import TOKEN
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
 
 
-def create_order(data, token):
+def create_order(data, user):
     """ When there are new orders from opshop or ebay, this function
         will help to create new orders at the backend the add them
         to database, finally return the order information to user
     """
-    payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(id=str(payload['user_id'])).first()
-    if user:
-        order = Order(
-            id=uuid1(),
-            opshop_id=user.opshop.id,
-            status=OrderStatus.CONFIRMED
+    db.session.rollback()
+    db.session.flush()
+    order = Order(
+        id=str(uuid1()),
+        opshop_id=user['opshop_id'],
+        status=OrderStatus.CONFIRMED
+    )
+    db.session.add(order)
+    db.session.commit()
+
+    response = {
+        'order_id': order.id,
+        'order_status': order.status,
+        'items': []
+    }
+
+    items = data['items']
+
+    for item in items:
+
+        item_obj = Book.query.filter_by(id=item['item_id']).first()
+        order_item = OrderItem(
+            order_id=order.id,
+            item_id=item['item_id'],
+            quantity=item['quantity']
         )
-        db.session.add(order)
-        db.session.commit()
+        db.session.add(order_item)
+        # Book.query.filter(item['item_id']).update({'status': ItemStatus.SOLD_INSHOP}, synchronize_session=False)
+        # item_obj.status = ItemStatus.SOLD_INSHOP
+        # db.session.add(item_obj)
+        isbn = item_obj.ISBN_10 if item_obj.ISBN_10 else item_obj.ISBN_13
+        response['items'].append({
+            'item_id': order_item.item_id,
+            'title': item_obj.title,
+            'isbn': isbn,
+            'cover': item_obj.cover,
+            'quantity': order_item.quantity,
+            'price': item_obj.price
+        })
 
-        response = {
-            'order_id': order.id,
-            'order_status': order.status,
-            'items': []
-        }
+        try:
+            conn = Connection(config_file="../ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
+            request = {
+                "EndingReason": "LostOrBroken",
+                "ItemID": item_obj.book_id_ebay
+            }
+            conn.execute("EndItem", request)
+        except Exception:
+            pass
 
-        items = data['items']
-
-        for item in items:
-
-            item_obj = Book.query.filter_by(id=item['item_id']).first()
-            order_item = OrderItem(
-                order_id=order.id,
-                item_id=item['item_id'],
-                quantity=item['quantity']
-            )
-            db.session.add(order_item)
-
-            item_obj.status = ItemStatus.SOLD_INSHOP
-
-            isbn = item_obj.ISBN_10 if item_obj.ISBN_10 else item_obj.ISBN_13
-            response['items'].append({
-                'item_id': order_item.item_id,
-                'title': item_obj.title,
-                'isbn': isbn,
-                'cover': item_obj.cover,
-                'quantity': order_item.quantity,
-                'price': item_obj.price
-            })
-
-            try:
-                conn = Connection(config_file="../ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
-                request = {
-                    "EndingReason": "LostOrBroken",
-                    "ItemID": item_obj.book_id_ebay
-                }
-                conn.execute("EndItem", request)
-            except Exception:
-                pass
-
-        db.session.commit()
-
-        return response
-    else:
-        fake_data = {
-            'order_id': '',
-        }
-        return fake_data
+    db.session.commit()
+    return response
 
 
 def get_order(order_id):
@@ -93,50 +83,40 @@ def get_order(order_id):
     return order_items
 
 
-def retrieve_order(order_status, token):
+def retrieve_order(status, user):
     """ retrive orders by order status """
 
-    payload = TOKEN.serializer.loads(token.encode())
-    user = User.query.filter_by(id=payload['user_id']).first()
-    if user:
-        order_items_array = {
-            'order_items': [],
+    response = {
+        'orders': [],
+    }
+    retrieve_order_ebay()
+    d = {'opshop_id': user['opshop_id']}
+    if status:
+        d['status'] = status
+    order_list = Order.query.filter_by(**d).all()
+
+    for order in order_list:
+        order_obj = {
+            'order_id': order.id,
+            'status': order.status,
+            'items': []
         }
+        item_list = OrderItem.query.filter_by(order_id=order.id).all()
+        for item in item_list:
+            book = Book.query.filter_by(id=item.item_id).first()
+            isbn = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
+            order_obj['items'].append({
+                'item_id': item.item_id,
+                'title': book.title,
+                'isbn': isbn,
+                'cover': book.cover,
+                'quantity': item.quantity,
+                'price': book.price,
+                'total_price': item.total_price
+            })
+        response['orders'].append(order_obj)
 
-        retrieve_order_ebay()
-
-        if order_status:
-            order_list = Order.query.filter_by(status=order_status, opshop_id=user.opshop.id)
-        else:
-            order_list = Order.query.filter_by(opshop_id=user.opshop.id)
-
-        for order in order_list:
-            order_items = {
-                'order_id': order.id,
-                'order_status': order.status,
-                'items': []
-            }
-            item_list = OrderItem.query.filter_by(order_id=order.id).all()
-            for item in item_list:
-                book = Book.query.filter_by(id=item.item_id).first()
-                isbn = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
-                order_items['items'].append({
-                    'item_id': item.item_id,
-                    'title': book.title,
-                    'isbn': isbn,
-                    'cover': book.cover,
-                    'quantity': item.quantity,
-                    'price': book.price,
-                    'total_price': item.total_price
-                })
-            order_items_array['order_items'].append(order_items)
-
-        return order_items_array
-    else:
-        fake_data = {
-            'order_items': [],
-        }
-        return fake_data
+    return response
 
 
 def confirm_order(data):
@@ -144,10 +124,9 @@ def confirm_order(data):
 
     order = Order.query.filter_by(id=data['order_id']).first()
     if order:
-        order_items = OrderItem.query.filter_by(order_id=order.id).all()
-        for order_item in order_items:
-            item = Book.query.filter_by(id=order_item.item_id).first()
-            item.status = ItemStatus.SOLD_ONLINE
+        # order_items = OrderItem.query.filter_by(order_id=order.id).all()
+        # for order_item in order.orderitems:
+        #     order_item.item.status = ItemStatus.SOLD_ONLINE
 
         order.status = OrderStatus.CONFIRMED
         db.session.commit()
@@ -230,7 +209,6 @@ def retrieve_order_ebay():
     except Exception:
         pass
     # return order_items_array
-
 
 #
 # def update_order(data, order_id):
@@ -323,4 +301,3 @@ def retrieve_order_ebay():
 #         }
 #         return fake_data
 #
-

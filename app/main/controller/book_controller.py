@@ -9,7 +9,7 @@ api = BookDto.api
 isbn_model = BookDto.isbn_model
 book_model = BookDto.book_model
 book_array_model = BookDto.book_array_model
-
+book_response_model = BookDto.book_response_model
 
 @api.route('')
 class Books(Resource):
@@ -33,12 +33,12 @@ class Books(Resource):
 class AutoDescription(Resource):
     @api.doc(description="Get book details using ISBN from google API or ISBN DB")
     @api.param('isbn', description="ISBN of the book - 10 0r 13 digits")
-    @api.response(200, 'success', book_model)
+    @api.response(200, 'success', book_response_model)
     @api.response(401, 'unauthorized')
     @token_required
     def get(self, user, isbn):
-        book = retrive_book(isbn)
-        return marshal(book, book_model), SUCCESS
+        book = retrieve_book(isbn)
+        return marshal(book, book_response_model), SUCCESS
 
 
 # @api.route('/confirm')
@@ -61,7 +61,7 @@ class BookActivities(Resource):
     @api.response(201, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def put(self, book_id):
+    def put(self, user, book_id):
         # data = json.load(request.get_data())
         data = request.form.to_dict()
         images = request.files
@@ -72,7 +72,7 @@ class BookActivities(Resource):
     @api.response(200, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def get(self, book_id):
+    def get(self, user, book_id):
         book = get_book(book_id)
         return marshal(book, book_model), SUCCESS
 
@@ -80,24 +80,24 @@ class BookActivities(Resource):
     @api.response(200, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def delete(self, book_id):
+    def delete(self, user, book_id):
         book = unlist_book(book_id)
         return marshal(book, book_model), SUCCESS
 
 
 @api.route('/list')
 class BookList(Resource):
-    @api.doc(description="list some books to ebay.")
+    @api.doc(description="List the book to ebay.")
     # @api.expect(book_model)
     @api.response(200, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def post(self):
+    def post(self, user):
         # data = json.loads(request.get_data())
-        token = request.headers.get('Authorization')
+        # token = request.headers.get('Authorization')
         data = request.form.to_dict()
         images = request.files
-        book = confirm_book(data, images, token)
+        book = confirm_book(data, images, user)
         return marshal(book, book_model), SUCCESS
 
 # @api.route('/unlist/<book_id>')
