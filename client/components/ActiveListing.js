@@ -104,6 +104,7 @@ export default class ActiveListing extends Component {
                         return(
                             <ShowActiveListing
                                 book={info}
+                                images={[{id:'cover',image:info.cover}]}
                                 navigation={this.props.navigation}
                             />
                         )

@@ -16,7 +16,8 @@ export default class ShowActiveListing extends Component {
                 activityOpacity={0.5}
                 style={styles.itemContainer} onPress={() => this.props.navigation.navigate('BookCataloguing',{
                     edit:true,
-                    book:this.props.book
+                    book:this.props.book,
+                    images:this.props.images
             })}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>

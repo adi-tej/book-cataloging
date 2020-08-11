@@ -30,6 +30,7 @@ export default class BookCataloguing extends Component{
                 isbn: "",
                 genre: "",
                 author: "",
+                cover: "",
                 page_count: 0,
                 publisher:"",
                 price: 0,
@@ -48,9 +49,11 @@ export default class BookCataloguing extends Component{
         if(this.props.route && this.props.route.params){
             if(this.props.route.params.edit) {
                 const book = this.props.route.params.book
+                const images = this.props.route.params.images
                 this.setState({
                     edit: true,
-                    book: book
+                    book: book,
+                    imageArray: images
                 })
             }
             if(this.props.route.params.isbn) {
