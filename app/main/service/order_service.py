@@ -3,22 +3,13 @@ from ebaysdk.trading import Connection
 from ..model.models import *
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
-# from flask import _request_ctx_stack
-#
-#
-# def get_session():
-#     ctx = _request_ctx_stack.top
-#     if ctx is not None:
-#         return ctx.session
-#
 
 def create_order(data, user):
     """ When there are new orders from opshop or ebay, this function
         will help to create new orders at the backend the add them
         to database, finally return the order information to user
     """
-    # db.session.rollback()
-    # db.session.flush()
+
     order = Order(
         id=str(uuid1()),
         opshop_id=user['opshop_id'],
@@ -45,7 +36,7 @@ def create_order(data, user):
         )
         db.session.add(order_item)
         # Book.query.filter(item['item_id']).update({'status': ItemStatus.SOLD_INSHOP}, synchronize_session=False)
-        # item_obj.status = ItemStatus.SOLD_INSHOP
+        book.status = ItemStatus.SOLD_INSHOP
         # db.session.add(item_obj)
         isbn = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
         response['items'].append({
@@ -93,7 +84,9 @@ def retrieve_order(status, user):
     response = {
         'orders': [],
     }
-    retrieve_order_ebay()
+    if status == OrderStatus.PENDING:
+        retrieve_order_ebay()
+
     d = {'opshop_id': user['opshop_id']}
     if status:
         d['status'] = status
@@ -126,20 +119,14 @@ def retrieve_order(status, user):
 def confirm_order(data):
     """ confirm order from ebay """
 
-    order = Order.query.filter_by(id=data['order_id']).first()
-    if order:
+    order = Order.query.filter_by(id=data['order_id']).first() \
         # order_items = OrderItem.query.filter_by(order_id=order.id).all()
-        # for order_item in order.orderitems:
-        #     order_item.item.status = ItemStatus.SOLD_ONLINE
+    for order_item in order.orderitems:
+        order_item.item.status = ItemStatus.SOLD_ONLINE
 
-        order.status = OrderStatus.CONFIRMED
-        db.session.commit()
-        return data
-    else:
-        fake_data = {
-            'order_id': order.id,
-        }
-        return fake_data
+    order.status = OrderStatus.CONFIRMED
+    db.session.commit()
+    return data
 
 
 def retrieve_order_ebay():

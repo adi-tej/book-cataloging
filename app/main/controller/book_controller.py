@@ -58,7 +58,8 @@ class AutoDescription(Resource):
 class BookActivities(Resource):
     # this function is used to correct and update the information with the info returned by staff, you can add more images too.
     @api.doc(description="updating the database and ebay with updated book data by the staff ")
-    @api.response(200, 'success', model=book_model)
+    @api.expect(book_response_model)
+    @api.response(200, 'success', model=book_response_model)
     @api.response(401, 'unauthorized')
     @token_required
     def put(self, user, book_id):

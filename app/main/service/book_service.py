@@ -124,16 +124,27 @@ def retrieve_book(data):
     return book_data
 
 
+def revise_list_book(book):
+    ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
+    request_info = {
+        "Item": {
+            "ItemID":book.book_id_ebay,
+            "PictureDetails": {
+                "PictureURL": "URL-1",
+                "PictureURL": "URL-2",
+                # -- more PictureURL values are allowed here -- #
+            },
+        }
+    }
+    ebay_conn.execute("ReviseItem", request_info)
+
+
 def update_book(data, images, book_id):
 
     book = Book.query.filter_by(id=book_id).first()  # fetching saved book info from table
-    if book:
 
-        book_data = book.__dict__
-
-        for key, value in data.items():
-            setattr(book, key, value)
-
+    for key, value in data.items():
+        setattr(book, key, value)
         image_number = 0
         for x in images:
             image_number = image_number + 1
@@ -147,11 +158,10 @@ def update_book(data, images, book_id):
             file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
 
             image_dict = {}  # dictionary analogues to Image object
-            if image_number == 1:  # updating  the new  1st image as cover
-                book.cover = file_url
-
+            # if image_number == 1:  # updating  the new  1st image as cover
+            #     book.cover = file_url
             image_object = Image()
-            image_dict['item_id'] = book_data['id']
+            image_dict['item_id'] = book.id
             image_dict['aws_link'] = file_url
             temp = image_object.__dict__
             # image_dict['_sa_instance_state'] = temp['_sa_instance_state']
@@ -160,8 +170,7 @@ def update_book(data, images, book_id):
             db.session.add(image_object)
             db.session.commit()
 
-        db.session.commit()
-
+    db.session.commit()
     return book
 
 

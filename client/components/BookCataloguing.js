@@ -30,7 +30,7 @@ export default class BookCataloguing extends Component{
                 isbn: "",
                 genre: "",
                 author: "",
-                pages: 0,
+                page_count: 0,
                 publisher:"",
                 price: 0,
                 condition:"",
@@ -97,7 +97,15 @@ export default class BookCataloguing extends Component{
             Alert.alert("BookCataloguing book: " + this.state.title)
             if(this.state.edit){
                 //TODO: API call to edit the listing
-                api.put(`/book/`+this.state.book.id)
+                let reqData = new FormData();
+                for ( var key in this.state.book ) {
+                    reqData.append(key, JSON.stringify(this.state.book[key]));
+                }
+                api.put(`/book/`+this.state.book.id, reqData,{
+                    headers:{
+                        'Content-Type': null
+                    }
+                })
                     .then(res => {
                         console.warn(res)
                         const data = res.data;
@@ -268,8 +276,8 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.book.pages?this.state.book.pages.toString():0}
-                    onChangeText={(page) => this.setState({book:{...this.state.book,page:page}})}
+                    value={this.state.book.page_count?this.state.book.page_count:0}
+                    onChangeText={(page) => this.setState({book:{...this.state.book,page_count:page}})}
                 />
 
                 <Text style={styles.listingTitle}>Publisher: </Text>
