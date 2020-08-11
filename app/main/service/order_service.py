@@ -13,7 +13,8 @@ from time import time, localtime, strftime
 #
 
 def create_order(data, user):
-    """ When there are new orders from opshop or ebay, this function
+    """
+        When there are new orders from opshop or ebay, this function
         will help to create new orders at the backend the add them
         to database, finally return the order information to user
     """
