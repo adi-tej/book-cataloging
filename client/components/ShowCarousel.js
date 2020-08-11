@@ -9,6 +9,7 @@ import { Modal } from 'react-native';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import styles from "../config/styles";
 
+
 export default class ShowCarousel extends Component {
     constructor(props) {
         super(props);

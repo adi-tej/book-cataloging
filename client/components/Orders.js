@@ -51,7 +51,6 @@ export default class Orders extends Component {
                              this.setState({orderArray: response.data.orders})
                            }
                     }
-
                 })
                 .catch(function (error) {
                    console.warn(error)

@@ -23,14 +23,13 @@ export default class Checkout extends Component {
         }
     }
 
-
     render() {
         return (
             // <View style={styles.checkoutPopup}>
             //     <View style={{paddingVertical:"10%",}}>
             <View style={styles.itemInfo}>
                 <View style={styles.itemCoverView}>
-                    <Image style={styles.itemCover} source={!this.book.cover ? images.bookCover :
+                    <Image style={styles.itemCover} source={!this.book.cover ? images.noImage :
                             {uri:this.book.cover}}/>
                 </View>
                 <View style={styles.itemTitleView}>

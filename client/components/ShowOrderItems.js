@@ -33,7 +33,7 @@ export default class ShowOrderItems extends Component {
             <View style={styles.itemContainer}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
-                        <Image style={styles.itemCover} source={!this.bookcover ? images.bookCover :
+                        <Image style={styles.itemCover} source={!this.bookcover ? images.noImage :
                             {uri:this.bookcover}}/>
                     </View>
                     <View style={styles.itemTitleView}>
@@ -41,7 +41,7 @@ export default class ShowOrderItems extends Component {
                         <Text style={{color:"grey"}}>ISBN: {this.item.isbn}</Text>
                     </View>
                     <View style={styles.priceView}>
-                        <Text style={{fontSize: 16}}>$ {this.item.total_price}</Text>
+                        <Text style={{fontSize: 16}}>$ {this.item.price}</Text>
                     </View>
                 </View>
             </View>

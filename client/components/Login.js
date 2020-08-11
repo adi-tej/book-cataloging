@@ -49,7 +49,7 @@ export default function Login({navigation}){
             password: data.password
           })
           .then(function (response) {
-            // console.warn(response.data.token);
+            console.warn(response.data.token);
             //if response status is 200 - navigate
               //else set state loginerror true
               if (response.status === 200) {
