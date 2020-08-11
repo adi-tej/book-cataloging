@@ -1,6 +1,6 @@
 import enum
 from .. import db
-
+from sqlalchemy import func
 
 class RoleType(enum.Enum):
     ADMIN = 'admin'

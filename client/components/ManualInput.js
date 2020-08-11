@@ -108,11 +108,6 @@ export default class ManualInput extends Component {
     // -----------------modal setting
     //TODO: pass the item ISBN to backend and request removal of this item
     onCheckoutPress = () => {
-        // console.warn("========", this.state.book.id)
-        // Alert.alert("Successfully remove item from eBay!")
-        //
-        // setTimeout(()=>{this.setState({modalVisible: false})},1500)
-
         api.post('/order/checkout', {
             items: [
             {
@@ -122,13 +117,15 @@ export default class ManualInput extends Component {
           ]
         })
           .then((response) => {
-            if (response.status === 201) {
+            if (response.status === 200) {
                 Alert.alert("Successfully remove item from eBay!")
                 setTimeout(()=>{this.setState({modalVisible: false})},1500)
+            } else {
+                Alert.alert("Oops! You can't remove this item now! Please try it later.")
             }
           })
           .catch(function (error) {
-            console.warn(error);
+            // console.warn(error);
             Alert.alert("Oops! You can't remove this item now! Please try it later.")
           });
     }

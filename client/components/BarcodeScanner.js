@@ -65,31 +65,36 @@ export default function Barcode({navigation,mode}) {
     // -----------------modal setting ---------------------
     //TODO: API call to pass the item item_id to backend and request removal of this item
     const onCheckoutPress = (() => {
-        Alert.alert("Successfully remove item from eBay!")
-        setTimeout(()=>{setModalVisible(false)},1000)
-        setScanned(false)
+         console.warn("book info: ", book.id)
+        // Alert.alert("Successfully remove item from eBay!")
+        // setTimeout(()=>{setModalVisible(false)},1000)
+        // setScanned(false)
 
-        // api.post('/order/checkout', {
-        //TODO:update the item details
-
-        //   "items": [
-        //     {
-        //       "item_id": "string",
-        //       "quantity": 0,
-        //     }
-        //   ]
-        // })
-        //   .then((response) => {
-        //     if (response.status === 201) {
-        //         Alert.alert("Successfully remove item from eBay!")
-        //         setTimeout(()=>{setModalVisible(false)},1000)
-        //         setScanned(false)
-        //     }
-        //   })
-        //   .catch(function (error) {
-        //     console.warn(error);
-        //     Alert.alert("Oops! You can't remove this item now! Please try it later.")
-        //   });
+        api.post('/order/checkout', {
+          items: [
+            {
+              item_id: book.id,
+              quantity: 1,
+            }
+          ]
+        })
+          .then((response) => {
+            if (response.status === 200) {
+                Alert.alert("Successfully remove item from eBay!")
+                const info = response.data.items[0]
+                info.total_price = info.price
+                // console.warn(info)
+                setTimeout(()=>{setModalVisible(false)},1000)
+                setBook(info)
+                setScanned(false)
+            } else {
+                Alert.alert("Oops! You can't remove this item now! Please try it later.")
+            }
+          })
+          .catch(function (error) {
+            // console.warn(error);
+            Alert.alert("Oops! You can't remove this item now! Please try it later.")
+          });
     });
     // -----------------modal setting
 
