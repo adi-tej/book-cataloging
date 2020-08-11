@@ -3,15 +3,22 @@ from ebaysdk.trading import Connection
 from ..model.models import *
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
-
+# from flask import _request_ctx_stack
+#
+#
+# def get_session():
+#     ctx = _request_ctx_stack.top
+#     if ctx is not None:
+#         return ctx.session
+#
 
 def create_order(data, user):
     """ When there are new orders from opshop or ebay, this function
         will help to create new orders at the backend the add them
         to database, finally return the order information to user
     """
-    db.session.rollback()
-    db.session.flush()
+    # db.session.rollback()
+    # db.session.flush()
     order = Order(
         id=str(uuid1()),
         opshop_id=user['opshop_id'],
@@ -22,7 +29,7 @@ def create_order(data, user):
 
     response = {
         'order_id': order.id,
-        'order_status': order.status,
+        'status': order.status,
         'items': []
     }
 
@@ -30,7 +37,7 @@ def create_order(data, user):
 
     for item in items:
 
-        item_obj = Book.query.filter_by(id=item['item_id']).first()
+        book = Book.query.filter_by(id=item['item_id']).first()
         order_item = OrderItem(
             order_id=order.id,
             item_id=item['item_id'],
@@ -40,25 +47,22 @@ def create_order(data, user):
         # Book.query.filter(item['item_id']).update({'status': ItemStatus.SOLD_INSHOP}, synchronize_session=False)
         # item_obj.status = ItemStatus.SOLD_INSHOP
         # db.session.add(item_obj)
-        isbn = item_obj.ISBN_10 if item_obj.ISBN_10 else item_obj.ISBN_13
+        isbn = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
         response['items'].append({
-            'item_id': order_item.item_id,
-            'title': item_obj.title,
+            'item_id': book.id,
+            'title': book.title,
             'isbn': isbn,
-            'cover': item_obj.cover,
-            'quantity': order_item.quantity,
-            'price': item_obj.price
+            'cover': book.cover,
+            'quantity': item['quantity'],
+            'price': book.price
         })
 
-        try:
-            conn = Connection(config_file="../ebay_config.yaml", domain="api.sandbox.ebay.com", debug=True)
-            request = {
-                "EndingReason": "LostOrBroken",
-                "ItemID": item_obj.book_id_ebay
-            }
-            conn.execute("EndItem", request)
-        except Exception:
-            pass
+        conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
+        request = {
+            "EndingReason": "LostOrBroken",
+            "ItemID": book.book_id_ebay
+        }
+        conn.execute("EndItem", request)
 
     db.session.commit()
     return response

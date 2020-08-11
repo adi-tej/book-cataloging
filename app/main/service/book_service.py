@@ -173,8 +173,7 @@ def get_book(book_id):
 def delete_book(book_id):
     book = Book.query.filter_by(id=book_id).first()
     if book:
-        resp = make_response(jsonify(book.__dict__))
-        db.session.remove(book)
+        book.status = ItemStatus.INACTIVE
         db.session.commit()
 
     return book
@@ -336,26 +335,33 @@ def list3_book(book, image_links, user):
             "DispatchTimeMax": "3"
         },
     }
-    ebay_conn.execute("AddItem", request_info)
-    book.status = ItemStatus.LISTED
+    resp = ebay_conn.execute("AddItem", request_info)
+    return resp.dict()["ItemID"]
     # db.session.add(book)
     # db.session.commit()
 
     # when book null
-    return book
+    # return book
 
 
 def unlist_book(book_id):
 
     book = Book.query.filter_by(id=book_id).first()
     if book:
-        ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
-        request_info = {
-            "EndingReason": "LostOrBroken",
-            "ItemID": book.book_id_ebay
-        }
-        ebay_conn.execute("EndItem", request_info)
-        book = delete_book(book_id)
+        try:
+            ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
+            request_info = {
+                "EndingReason": "LostOrBroken",
+                "ItemID": book.book_id_ebay
+            }
+            ebay_conn.execute("EndItem", request_info)
+        except:
+            pass
+
+        book.status = ItemStatus.INACTIVE
+        db.session.add(book)
+        db.session.commit()
+        # book = delete_book(book_id)
     return book
 
 
@@ -407,22 +413,16 @@ def confirm_book(data, images, user):
         file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
         image_links.append(file_url)
 
-    book = list3_book(book, image_links, user)
-
-    if book:
-        db.session.add(book)
-        db.session.commit()
-        for i, x in enumerate(image_links):  # getting images
-            image_dict = {}  # dictionary analogues to Image object
-            if i == 0:  # saving the 1st image returned as cover and updating that in the database
-                bookobject = Book.query.filter_by(id=book.id).first()
-                bookobject.cover = x
-                db.session.commit()
-
-            image_dict['item_id'] = data['id']
-            image_dict['aws_link'] = x
-            image_object = Image(**image_dict)
-            db.session.add(image_object)
-            db.session.commit()
+    ebay_id = list3_book(book, image_links, user)
+    book.book_id_ebay = ebay_id
+    book.status = ItemStatus.LISTED
+    book.cover = image_links[0]
+    db.session.add(book)
+    db.session.commit()
+    for i, x in enumerate(image_links):  # getting images
+        image_dict = {'item_id': data['id'], 'aws_link': x}
+        image_object = Image(**image_dict)
+        db.session.add(image_object)
+    db.session.commit()
 
     return book
