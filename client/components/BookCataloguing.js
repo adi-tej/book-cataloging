@@ -30,7 +30,8 @@ export default class BookCataloguing extends Component{
                 isbn: "",
                 genre: "",
                 author: "",
-                pages: 0,
+                cover: "",
+                page_count: 0,
                 publisher:"",
                 price: 0,
                 condition:"",
@@ -48,9 +49,11 @@ export default class BookCataloguing extends Component{
         if(this.props.route && this.props.route.params){
             if(this.props.route.params.edit) {
                 const book = this.props.route.params.book
+                const images = this.props.route.params.images
                 this.setState({
                     edit: true,
-                    book: book
+                    book: book,
+                    imageArray: images
                 })
             }
             if(this.props.route.params.isbn) {
@@ -59,7 +62,6 @@ export default class BookCataloguing extends Component{
                     .then(res => {
                         if(res.status === 200) {
                             const data = res.data
-                            // console.warn("data: ", data)
                             const copyImageArray = Object.assign([], this.state.imageArray);
                             copyImageArray.push({
                                 id: this.state.imageId,
@@ -98,7 +100,15 @@ export default class BookCataloguing extends Component{
             Alert.alert("BookCataloguing book: " + this.state.title)
             if(this.state.edit){
                 //TODO: API call to edit the listing
-                api.put(`/book/`+this.state.book.id)
+                let reqData = new FormData();
+                for ( var key in this.state.book ) {
+                    reqData.append(key, JSON.stringify(this.state.book[key]));
+                }
+                api.put(`/book/`+this.state.book.id, reqData,{
+                    headers:{
+                        'Content-Type': null
+                    }
+                })
                     .then(res => {
                         console.warn(res)
                         const data = res.data;
@@ -150,7 +160,7 @@ export default class BookCataloguing extends Component{
     };
 
     validISBN = () => {
-        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13) && (this.state.isbn !== "")){
+        if ((this.state.book.isbn.length !== 10) && (this.state.book.isbn.length !== 13) && (this.state.book.isbn !== "")){
             this.setState({isbnError: true})
         } else{
             this.setState({isbnError: false})
@@ -226,7 +236,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.title}
-                    onChangeText={(title) => this.setState({title})}
+                    onChangeText={(title) => this.setState({book:{...this.state.book,title:title}})}
                 />
 
                 <Text style={styles.listingTitle}>ISBN: </Text>
@@ -238,7 +248,7 @@ export default class BookCataloguing extends Component{
                     maxLength={13}
                     onBlur={this.validISBN.bind(this)}
                     value={this.state.book.isbn}
-                    onChangeText={(isbn) => this.setState({isbn})}
+                    onChangeText={(isbn) => this.setState({book:{...this.state.book,isbn:isbn}})}
                 />
                     {this.state.isbnError?
                         <Text style={{color:'red'}}>Please enter 10 or 13 digits</Text>
@@ -251,7 +261,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.genre}
-                    onChangeText={(genre) => this.setState({genre})}
+                    onChangeText={(genre) => this.setState({book:{...this.state.book,genre:genre}})}
                 />
 
                 <Text style={styles.listingTitle}>Author: </Text>
@@ -260,7 +270,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.author}
-                    onChangeText={(author) => this.setState({author})}
+                    onChangeText={(author) => this.setState({book:{...this.state.book,author:author}})}
                 />
 
                 <Text style={styles.listingTitle}>Page: </Text>
@@ -269,8 +279,8 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.book.pages?this.state.book.pages:0}
-                    onChangeText={(page) => this.setState({page})}
+                    value={this.state.book.page_count?this.state.book.page_count:0}
+                    onChangeText={(page) => this.setState({book:{...this.state.book,page_count:page}})}
                 />
 
                 <Text style={styles.listingTitle}>Publisher: </Text>
@@ -279,7 +289,7 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     style={styles.textInput}
                     value={this.state.book.publisher}
-                    onChangeText={(publisher) => this.setState({publisher})}
+                    onChangeText={(publisher) => this.setState({book:{...this.state.book,publisher:publisher}})}
                 />
 
                 <View style={{flex: 1, flexDirection: "row"}}>
@@ -292,7 +302,7 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
                     value={this.state.book.price?this.state.book.price.toString():0}
-                    onChangeText={(price) => this.setState({price})}
+                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price}})}
                 />
 
 
@@ -301,7 +311,7 @@ export default class BookCataloguing extends Component{
                     <Text style={styles.requiredText}>*</Text>
                 </View>
                 <RNPickerSelect
-                    onValueChange={(condition) => this.setState({condition})}
+                    onValueChange={(condition) => this.setState({book:{...this.state.book,condition:condition}})}
                     style={{
                         ...pickerSelectStyles,
                         // iconContainer: {
@@ -329,7 +339,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     multiline={true}
-                    onChangeText={(otherDetails) => this.setState({otherDetails})}
+                    onChangeText={(otherDetails) => this.setState({book:{otherDetails:otherDetails}})}
                 />
 
                 <View style={styles.buttonView}>

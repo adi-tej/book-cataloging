@@ -90,7 +90,6 @@ class BookDto:
         'publisher': fields.String,
         'edition': fields.Integer,
         'page_count': fields.Integer,
-        'price': fields.Integer,
         'genre': fields.String,
         'cover': fields.String,
         'price': fields.Float,
