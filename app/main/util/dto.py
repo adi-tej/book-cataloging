@@ -95,6 +95,7 @@ class BookDto:
         'cover': fields.String,
         'price': fields.Float,
         'quantity': fields.Integer,
+        'price': fields.Integer,
         'description': fields.String,
         'created_date': fields.DateTime,
         'updated_date': fields.DateTime,
