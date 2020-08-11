@@ -61,7 +61,8 @@ export default class ManualInput extends Component {
             if (!this.state.isbnError && this.state.isbn !== "") {
                 //TODO: get all info form backend and send to BookCataloguing page
                 //TODO: should also check if we get the info
-                Alert.alert("Go to listing page, ISBN number is: " + this.state.isbn)
+                this.props.navigation.navigate('BookCataloguing', {isbn: this.state.isbn})
+                // Alert.alert("Go to listing page, ISBN number is: " + this.state.isbn)
             } else {
                 Alert.alert("Please enter a valid ISBN number with 10 or 13 digits")
             }
