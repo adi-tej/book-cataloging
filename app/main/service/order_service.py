@@ -3,14 +3,6 @@ from ebaysdk.trading import Connection
 from ..model.models import *
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
-# from flask import _request_ctx_stack
-#
-#
-# def get_session():
-#     ctx = _request_ctx_stack.top
-#     if ctx is not None:
-#         return ctx.session
-#
 
 def create_order(data, user):
     """
