@@ -4,6 +4,7 @@ from app.main.model.blacklist import BlacklistToken
 
 
 def save_token(token):
+    """ save the token into black list """
     blacklist_token = BlacklistToken(token=token)
     try:
         db.session.add(blacklist_token)

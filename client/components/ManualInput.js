@@ -20,18 +20,30 @@ export default class ManualInput extends Component {
         super(props);
         this.mode = this.props.mode
         this.state = {
-            returnInfo: false, //to check if backend return information
+            //returnInfo: false, //to check if backend return information
             modalVisible:false,
             noIsbnModalVisible:false,
             isbn: "",
             isbnError:false,
+            book:{
+                id:"",
+                title:"",
+                isbn: "",
+                genre: "",
+                author: "",
+                pages: 0,
+                publisher:"",
+                price: 0,
+                condition:"",
+                otherDetails: ""
+            },
             title:"",
-            genre: "",
-            author: "",
-            pages: 0,
-            publisher:"",
-            price: 0,
-            initImage: null,
+            // genre: "",
+            // author: "",
+            // pages: 0,
+            // publisher:"",
+            // price: 0,
+            // initImage: null,
         }
     }
 
@@ -56,7 +68,28 @@ export default class ManualInput extends Component {
         }
         else if (this.mode === "checkout") {
             if (!this.state.isbnError && this.state.isbn !== "") {
-                this.setState({modalVisible: true});
+                api.get('/book', {
+                        params: {
+                            isbn: this.state.isbn
+                        }
+                    })
+                        .then((response) => {
+                            if (response.status === 200) {
+                                // console.warn(response.data.books[0])
+                                const info = response.data.books[0]
+                                if (info !== undefined) {
+                                    this.setState({
+                                        book: info,
+                                        modalVisible: true
+                                    })
+                                } else {
+                                    Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                           Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                        })
             } else {
                 Alert.alert("Please enter a valid ISBN number with 10 or 13 digits")
             }
@@ -75,43 +108,57 @@ export default class ManualInput extends Component {
     // -----------------modal setting
     //TODO: pass the item ISBN to backend and request removal of this item
     onCheckoutPress = () => {
-        Alert.alert("Successfully remove item from eBay!")
-        setTimeout(()=>{this.setState({modalVisible: false})},1500)
-
-        // api.post('/order/checkout', {
-        //TODO:update the item details
-
-        //   "items": [
-        //     {
-        //       "item_id": "string",
-        //       "quantity": 0,
-        //       "total_price": 0
-        //     }
-        //   ]
-        // })
-        //   .then((response) => {
-        //     if (response.status === 201) {
-        //         Alert.alert("Successfully remove item from eBay!")
-        //         setTimeout(()=>{setModalVisible(false)},1000)
-        //         setScanned(false)
-        //     }
-        //   })
-        //   .catch(function (error) {
-        //     console.warn(error);
-        //     Alert.alert("Oops! You can't remove this item now! Please try it later.")
-        //   });
+        api.post('/order/checkout', {
+            items: [
+            {
+              item_id: this.state.book.id,
+              quantity: 1
+            }
+          ]
+        })
+          .then((response) => {
+            if (response.status === 200) {
+                Alert.alert("Successfully remove item from eBay!")
+                setTimeout(()=>{this.setState({modalVisible: false})},1500)
+            } else {
+                Alert.alert("Oops! You can't remove this item now! Please try it later.")
+            }
+          })
+          .catch(function (error) {
+            // console.warn(error);
+            Alert.alert("Oops! You can't remove this item now! Please try it later.")
+          });
     }
 
     // -----------------noIsbnModal setting
     onSearchPress = () =>{
-        //TODO: After get  information, don't forget to change the returnInfo state
-        //just for testing, should remove it later
-        // this.setState({returnInfo: true})
+
         if (this.state.title === ""){
             Alert.alert("Please enter a book title")
-        } else if (this.state.title !== "" && this.state.returnInfo){
-            this.setState({noIsbnModalVisible:false})
-            this.setState({modalVisible: true})
+        } else if (this.state.title !== "" ){
+             api.get('/book', {
+                        params: {
+                            title: this.state.title
+                        }
+                    })
+                        .then((response) => {
+                            if (response.status === 200) {
+                                // console.warn(response.data.books[0])
+                                const info = response.data.books[0]
+                                if (info !== undefined) {
+                                    this.setState({
+                                        book: info,
+                                        noIsbnModalVisible: false,
+                                        modalVisible: true
+                                    })
+                                } else {
+                                    Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                                }
+                            }
+                        })
+                        .catch((error) => {
+                           Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                        })
         } else{
             Alert.alert("Sorry, we don't have this book! You can't check it out.")
         }
@@ -172,7 +219,7 @@ export default class ManualInput extends Component {
                         <View style={styles.checkoutPopup}>
                             <View style={{paddingVertical:"10%",}}>
                                 {/*TODO: pass bookCover, title, author and price to it*/}
-                                <Checkout />
+                                <Checkout book={this.state.book}/>
                                 <View style={styles.buttonView}>
                                     <TouchableOpacity
                                         activityOpacity={0.5}

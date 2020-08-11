@@ -11,7 +11,7 @@ def get_all_users():
     return User.query.all()
 
 
-def get_a_user(id):
+def get_user(id):
     return User.query.filter_by(id=id).first()
 
 
@@ -26,15 +26,15 @@ class AuthenticationToken:
         self.expires_in = expires_in
         self.serializer = JSONWebSignatureSerializer(secret_key)
 
-    def generate_token(self, id, email, name):
+    def generate_token(self, id, email, opshop_id):
         serializer = JWTSerializer(
             secret_key=key,
             expires_in=self.expires_in
         )
         payload = {
-            'user_id': id,
-            'user_email': email,
-            'user_name': name,
+            'id': id,
+            'email': email,
+            'opshop_id': opshop_id,
             'generate_time': time()
         }
 
@@ -45,9 +45,9 @@ class AuthenticationToken:
         try:
             payload = self.serializer.loads(token.encode())
         except SignatureExpired:
-            return 'token expired'
+            return None
         except BadSignature:
-            return 'invalid token'
+            return None
 
         return payload
 

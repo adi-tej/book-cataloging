@@ -8,6 +8,21 @@ import styles from "../config/styles";
 
 //This class is to create a box of each order
 export default class ShowPendingOrders extends Component {
+    constructor(props) {
+        super(props);
+        this.price = 0;
+        this.state = {
+            totalPrice: 0,
+        }
+    }
+
+    componentDidMount() {
+        const itemArray = this.props.order.items;
+        itemArray.map((item) => {this.price = this.price + item.total_price })
+        this.setState({totalPrice: this.price});
+        // console.warn("price ", this.price)
+    }
+
     //TODO: on press redirect to online order details page
     render() {
         return (
@@ -15,11 +30,13 @@ export default class ShowPendingOrders extends Component {
                 activityOpacity={0.5}
                 style={styles.orderContainer}
                 onPress={!this.props.confirmed ? ()=>
-                    this.props.navigation.navigate('OrderDetails',
-                        {order: this.props.order}) : null}>
+                    this.props.navigation.navigate('OrderDetails', {
+                        order: this.props.order,
+                        totalPrice: this.state.totalPrice,
+                        navigation: this.props.navigation }) : null}>
                 <Text style={styles.orderNumberText}>Order #: {this.props.order.order_id}</Text>
                 <View style={{flex: 1, flexDirection: "row"}}>
-                    <Text style={styles.orderInfoText}>Total price: ${this.props.order.total_price}</Text>
+                    <Text style={styles.orderInfoText}>Total price: ${this.state.totalPrice}</Text>
                     <Text style={styles.orderInfoText}>Item quantity: {this.props.order.items.length}</Text>
                 </View>
             </TouchableOpacity>

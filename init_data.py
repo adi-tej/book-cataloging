@@ -6,14 +6,13 @@ from setup_app import app
 # for the database: there are three aspects: 1. opshops information 2.
 # user information. 3. roles, this script will be executed at the terminal.
 
-# ---> opshops information <---
 with app.app_context():
+    # ---> opshops information <---
     opshop = Opshop()
-    opshop.email = "opshop-ebay@gmail.com"
+    opshop.email = "weisong301@gmail.com"
     opshop.name = "opshop1"
     opshop.address = "Sydney, UNSW"
     opshop.staff_count = 4
-    opshop.status = "active"
 
     db.session.add(opshop)
     db.session.commit()
@@ -39,3 +38,15 @@ with app.app_context():
     db.session.add(itemtype1)
     db.session.commit()
 
+    '''
+    TESTING DATA
+    '''
+    # ---> books <---
+    book1 = Book(id=1, book_id_ebay=1, opshop_id=1, title='ABC', author='ABC', publisher='123', edition=1, price=100,
+                 status=ItemStatus.LISTED, ISBN_10='8273546373')
+    book2 = Book(id=2, book_id_ebay=2, opshop_id=1, title='DEF', author='DEF', publisher='456', edition=1, price=1000,
+                 status=ItemStatus.LISTED, ISBN_10='2355244373')
+    book3 = Book(id=3, book_id_ebay=3, opshop_id=1, title='GHI', author='GHI', publisher='789', edition=1, price=9000,
+                 status=ItemStatus.LISTED, ISBN_13='8273342373546')
+    db.session.add_all([book1, book2, book3])
+    db.session.commit()
