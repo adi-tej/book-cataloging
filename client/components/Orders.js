@@ -37,26 +37,26 @@ export default class Orders extends Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
 
-        prevState = this.state
-        setTimeout(
-         () => {api.get('/order', {
-                params: {
-                    status: this.mode
-                }
-            })
-                .then((response) => {
-                    if (response.status === 200) {
-                        // console.warn(response.data)
-                        if (prevState.orderArray !== response.data.orders) {
-                             this.setState({orderArray: response.data.orders})
-                           }
-                    }
-
-                })
-                .catch(function (error) {
-                   console.warn(error)
-                }) }
-        , 10000)
+        // prevState = this.state
+        // setTimeout(
+        //  () => {api.get('/order', {
+        //         params: {
+        //             status: this.mode
+        //         }
+        //     })
+        //         .then((response) => {
+        //             if (response.status === 200) {
+        //                 // console.warn(response.data)
+        //                 if (prevState.orderArray !== response.data.orders) {
+        //                      this.setState({orderArray: response.data.orders})
+        //                    }
+        //             }
+        //
+        //         })
+        //         .catch(function (error) {
+        //            console.warn(error)
+        //         }) }
+        // , 10000)
     }
 
     // // //This function is to remove a confirmed order

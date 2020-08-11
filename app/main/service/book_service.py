@@ -120,7 +120,8 @@ def retrieve_book(data):
     # book = Book()
     #
     # book.__dict__ = book_data
-
+    if book_data['cover']:
+        book_data['images'] = [{'id':0,'uri':book_data['cover']}]
     return book_data
 
 
@@ -399,6 +400,7 @@ def get_all_books(params, user):
         book.__dict__['isbn'] = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
     return books
 
+
 def confirm_book(data, images, user):
     # payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(id=user['id']).first()
@@ -431,7 +433,7 @@ def confirm_book(data, images, user):
     db.session.add(book)
     db.session.commit()
     for i, x in enumerate(image_links):  # getting images
-        image_dict = {'item_id': data['id'], 'aws_link': x}
+        image_dict = {'item_id': data['id'], 'uri': x}
         image_object = Image(**image_dict)
         db.session.add(image_object)
     db.session.commit()

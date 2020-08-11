@@ -41,7 +41,7 @@ export default class ShowOrderItems extends Component {
                         <Text style={{color:"grey"}}>ISBN: {this.item.isbn}</Text>
                     </View>
                     <View style={styles.priceView}>
-                        <Text style={{fontSize: 16}}>$ {this.item.total_price}</Text>
+                        <Text style={{fontSize: 16}}>$ {this.item.price}</Text>
                     </View>
                 </View>
             </View>

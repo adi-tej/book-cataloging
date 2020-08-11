@@ -49,11 +49,10 @@ export default class BookCataloguing extends Component{
         if(this.props.route && this.props.route.params){
             if(this.props.route.params.edit) {
                 const book = this.props.route.params.book
-                const images = this.props.route.params.images
                 this.setState({
                     edit: true,
                     book: book,
-                    imageArray: images
+                    imageArray: book.images
                 })
             }
             if(this.props.route.params.isbn) {
@@ -62,16 +61,12 @@ export default class BookCataloguing extends Component{
                     .then(res => {
                         if(res.status === 200) {
                             const data = res.data
-                            const copyImageArray = Object.assign([], this.state.imageArray);
-                            copyImageArray.push({
-                                id: this.state.imageId,
-                                image: data.cover
-                            })
                             this.setState({
                                 book:data,
-                                imageArray: copyImageArray
+                                imageArray: data.images
                             })
                         }else{
+                            alert('Failed to fetch book details from ISBN '+isbn)
                             console.warn('Failed to fetch book auto description')
                         }
                     }).catch((error) => {
@@ -79,15 +74,6 @@ export default class BookCataloguing extends Component{
                 })
             }
         }
-        // api.get(`/user/home`)
-        //     .then(res => {
-        //         console.warn(res)
-        //         const data = res.data;
-        //         this.setState({ title: data.title });
-        //     }).catch((error)=>{
-        //         console.log("Api call error");
-        //         console.warn(error.message);
-        // });
 
     }
 
@@ -110,21 +96,31 @@ export default class BookCataloguing extends Component{
                     }
                 })
                     .then(res => {
-                        console.warn(res)
-                        const data = res.data;
-                        // this.setState({ title: data.title });
-                        this.props.navigation.navigate('RootNavigator')
+                        if(res.status === 200) {
+                            console.warn(res)
+                            const data = res.data;
+                            this.props.navigation.navigate('RootNavigator')
+                        }else{
+                            alert("Failed to edit book")
+                        }
                     }).catch((error)=>{
                         console.warn(error.message);
                 });
             }else{
                 //TODO: API call to create the listing
+                let reqData = new FormData();
+                for ( var key in this.state.book ) {
+                    reqData.append(key, JSON.stringify(this.state.book[key]));
+                }
                 api.put(`/book/list`,this.state.book)
                     .then(res => {
-                        console.warn(res)
-                        const data = res.data;
-                        // this.setState({ title: data.title });
-                        this.props.navigation.navigate('RootNavigator')
+                        if(res.status === 200) {
+                            console.warn(res)
+                            const data = res.data;
+                            this.props.navigation.navigate('RootNavigator')
+                        }else{
+                            alert("Failed to list on ebay")
+                        }
                     }).catch((error)=>{
                     console.warn(error.message);
                 });
@@ -142,10 +138,14 @@ export default class BookCataloguing extends Component{
         //TODO: API call to remove listing
         api.delete(`/book/`+this.state.book.id)
             .then(res => {
-                console.warn(res)
-                const data = res.data;
-                // this.setState({ title: data.title });
-                this.props.navigation.navigate('RootNavigator')
+                if(res.status === 200) {
+                    console.warn(res)
+                    const data = res.data;
+                    // this.setState({ title: data.title });
+                    this.props.navigation.navigate('RootNavigator')
+                }else{
+                    alert('Failed to remove item')
+                }
             }).catch((error)=>{
             console.warn(error.message);
         });
@@ -181,7 +181,7 @@ export default class BookCataloguing extends Component{
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
                 id: this.imageId,
-                image: this.state.initImage
+                uri: this.state.initImage
             })
             this.setState({
                 imageArray: copyImageArray
@@ -207,7 +207,7 @@ export default class BookCataloguing extends Component{
                             this.state.imageArray.map((image, index)=>{
                                 return(
                                     <ShowCarousel
-                                        image={image.image}
+                                        image={image.uri}
                                         key={image.id}
                                         delete={this.deleteImage.bind(this, index)}
                                     />

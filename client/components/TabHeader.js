@@ -78,10 +78,11 @@ export default function TabHeader({navigation}){
                 }}
                 onHide={() => {
                     searchHeaderRef.current.clear()
+                    navigation.navigate("Active Listing",{search:null})
                 }}
                 onSearch={(obj) => {
                     // update the active listing
-                    navigation.navigate("Active Listing",{search:true,data:obj.nativeEvent.text})
+                    navigation.navigate("Active Listing",{search:obj.nativeEvent.text})
                 }}
             />
         </View>
