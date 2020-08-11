@@ -5,32 +5,43 @@ import {
     View,
 } from "react-native";
 import styles from "../config/styles";
+import images from "../config/images";
 
 export default class ShowOrderItems extends Component {
     constructor(props) {
         super(props);
-        this.isbn = this.props.isbn;
-        this.title = this.props.title;
-        this.bookCover = this.props.bookCover;
+        this.item = this.props.item;
+        this.bookcover = this.item.cover;
+        this.state = {
+            isbn: this.item.isbn,
+        }
+        //
+        // console.warn(this.props.item)
+    }
+
+    componentDidMount() {
+        if (this.isbn === "") {
+            this.setState({
+                isbn: "No ISBN"
+            })
+        }
     }
 
     render() {
-        if (this.isbn === "") {
-            this.isbn = "No ISBN"
-        }
 
         return (
             <View style={styles.itemContainer}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
-                        <Image style={styles.itemCover} source={{uri:this.bookCover}}/>
+                        <Image style={styles.itemCover} source={!this.bookcover ? images.bookCover :
+                            {uri:this.bookcover}}/>
                     </View>
                     <View style={styles.itemTitleView}>
-                        <Text style={styles.itemTitle} numberOfLines={2}>{this.title}</Text>
-                        <Text style={{color:"grey"}}>ISBN: {this.isbn}</Text>
+                        <Text style={styles.itemTitle} numberOfLines={2}>{this.item.title}</Text>
+                        <Text style={{color:"grey"}}>ISBN: {this.item.isbn}</Text>
                     </View>
                     <View style={styles.priceView}>
-                        <Text style={{fontSize: 16}}>$ {this.props.price}</Text>
+                        <Text style={{fontSize: 16}}>$ {this.item.total_price}</Text>
                     </View>
                 </View>
             </View>

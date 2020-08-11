@@ -9,20 +9,20 @@ api = BookDto.api
 isbn_model = BookDto.isbn_model
 book_model = BookDto.book_model
 book_array_model = BookDto.book_array_model
-
+book_response_model = BookDto.book_response_model
 
 @api.route('')
 class Books(Resource):
-    @api.doc(description="get all books according to parameters'")
+    @api.doc(description="Get all the listed books of the op-shop with optional parameters")
     @api.response(200, 'success', model=book_array_model)
     @api.response(401, 'unauthorized')
-    @api.param('isbn', description="take isbn in the parameter if you have")
-    @api.param('title', description="take title in the parameter if you have")
+    @api.param('isbn', description="ISBN of the book - 10 or 13 digits")
+    @api.param('title', description="Title of the book")
+    @api.param('search', description="Search query to filter the books")
     @token_required
-    def get(self):
+    def get(self, user):
         params = request.args
-        token = request.headers.get('Authorization')
-        book_list = get_book_by_params(params, token)
+        book_list = get_all_books(params, user)
         book_array = {
             'books': book_list
         }
@@ -31,14 +31,14 @@ class Books(Resource):
 
 @api.route('/autodescription/<isbn>')
 class AutoDescription(Resource):
-    @api.doc(description="book autodescription")
-    @api.param('isbn', description="take isbn in the parameter if you have")
-    @api.response(200, 'success', book_model)
+    @api.doc(description="Get book details using ISBN from google API or ISBN DB")
+    @api.param('isbn', description="ISBN of the book - 10 0r 13 digits")
+    @api.response(200, 'success', book_response_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def get(self, isbn):
-        book = retrive_book(isbn)
-        return marshal(book, book_model), SUCCESS
+    def get(self, user, isbn):
+        book = retrieve_book(isbn)
+        return marshal(book, book_response_model), SUCCESS
 
 
 # @api.route('/confirm')
@@ -61,7 +61,7 @@ class BookActivities(Resource):
     @api.response(201, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def put(self, book_id):
+    def put(self, user, book_id):
         # data = json.load(request.get_data())
         data = request.form.to_dict()
         images = request.files
@@ -72,7 +72,7 @@ class BookActivities(Resource):
     @api.response(200, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def get(self, book_id):
+    def get(self, user, book_id):
         book = get_book(book_id)
         return marshal(book, book_model), SUCCESS
 
@@ -80,23 +80,24 @@ class BookActivities(Resource):
     @api.response(200, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def delete(self, book_id):
+    def delete(self, user, book_id):
         book = unlist_book(book_id)
         return marshal(book, book_model), SUCCESS
 
 
 @api.route('/list')
 class BookList(Resource):
-    @api.doc(description="list some books to ebay.")
+    @api.doc(description="List the book to ebay.")
     # @api.expect(book_model)
     @api.response(200, 'success', model=book_model)
     @api.response(401, 'unauthorized')
     @token_required
-    def post(self):
+    def post(self, user):
         # data = json.loads(request.get_data())
+        # token = request.headers.get('Authorization')
         data = request.form.to_dict()
         images = request.files
-        book = list_book(data, images)
+        book = confirm_book(data, images, user)
         return marshal(book, book_model), SUCCESS
 
 # @api.route('/unlist/<book_id>')

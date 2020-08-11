@@ -29,7 +29,7 @@ class Auth:
             return resp
 
         # after successfully varify the user backend api will issue token
-        token = TOKEN.generate_token(user.id, user.email, user.name)
+        token = TOKEN.generate_token(user.id, user.email, user.opshop_id)
         resp_data = {
             'user_info': {
                 'user_id': user.id,
