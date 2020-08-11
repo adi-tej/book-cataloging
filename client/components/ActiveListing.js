@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {ScrollView} from "react-native";
 import styles from "../config/styles";
 import ShowActiveListing from "./ShowActiveListing";
-import api,{setClientToken} from "../config/axios";
+import api from "../config/axios";
 
 export default class ActiveListing extends Component {
     constructor(props) {

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import SearchHeader from 'react-native-search-header';
 import {Header, Left, Right, Icon} from "native-base";

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, ScrollView} from "react-native";
+import {ScrollView} from "react-native";
 import styles from "../config/styles";
 import ShowPendingOrders from "./ShowPendingOrders";
 
