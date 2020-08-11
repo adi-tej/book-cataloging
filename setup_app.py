@@ -27,7 +27,7 @@ def run():
 def drop_all():
     db.drop_all()
 
-@manager.command()
+@manager.command
 def create_all():
     db.create_all()
 
