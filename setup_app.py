@@ -21,8 +21,15 @@ manager.add_command('db', MigrateCommand)
 def run():
     # db.drop_all()
     # db.create_all()
-    app.run(host='0.0.0.0')
+    app.run()
 
+@manager.command
+def drop_all():
+    db.drop_all()
+
+@manager.command()
+def create_all():
+    db.create_all()
 
 if __name__ == '__main__':
     manager.run()
