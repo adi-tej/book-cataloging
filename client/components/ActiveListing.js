@@ -30,16 +30,16 @@ export default class ActiveListing extends Component {
 
     //TODO: API call to get data before rendering
     componentDidMount() {
-        setClientToken("eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoiYWRtaW5AY2lyY2V4LmNvbSIsInVzZXJfbmFtZSI6IkFkbWluIiwiZ2VuZXJhdGVfdGltZSI6MTU5Njk4OTY2MS4wMDA2MDR9.edaZGWGNYW7-POkcI0YpI6CHEXux9xj-7Y9g_lCS2B_sneUOtMLEz9d7UKMyH7ufwERjG76BqIrodOZtDf7afw")
+        // setClientToken("eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoiYWRtaW5AY2lyY2V4LmNvbSIsInVzZXJfbmFtZSI6IkFkbWluIiwiZ2VuZXJhdGVfdGltZSI6MTU5Njk4OTY2MS4wMDA2MDR9.edaZGWGNYW7-POkcI0YpI6CHEXux9xj-7Y9g_lCS2B_sneUOtMLEz9d7UKMyH7ufwERjG76BqIrodOZtDf7afw")
         api.get(`/book`)
             .then(res => {
                 if(res.status === 200) {
-                    console.warn(res)
-                    const books = res.data.books
-                    books.forEach( book => {
-                        book.isbn = book.ISBN_10 ? book.ISBN_10 : book.ISBN_13
-                    })
-                    this.setState({ infoArray: books});
+                    // console.warn(res)
+                    // const books = res.data.books
+                    // books.forEach( book => {
+                    //     book.isbn = book.ISBN_10 ? book.ISBN_10 : book.ISBN_13
+                    // })
+                    this.setState({ infoArray: res.data.books});
                 }else{
                     console.warn('error')
                 }
@@ -52,6 +52,29 @@ export default class ActiveListing extends Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         //keyword from search
         //console.warn(this.props.route.params)
+        if(this.props.route && this.props.route.params) {
+            if (this.props.route.params.search) {
+                api.get(`/book`, {
+                    params: {
+                        search: this.props.route.params.data
+                    }
+                })
+                    .then(res => {
+                        if (res.status === 200) {
+                            // console.warn(res)
+                            // const books = res.data.books
+                            // books.forEach(book => {
+                            //     book.isbn = book.ISBN_10 ? book.ISBN_10 : book.ISBN_13
+                            // })
+                            this.setState({infoArray: res.data.books});
+                        } else {
+                            console.warn('error')
+                        }
+                    }).catch((error) => {
+                        console.warn(error.message);
+                });
+            }
+        }
     }
 
     //This function is to add a new order

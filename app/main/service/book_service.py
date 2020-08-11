@@ -385,8 +385,10 @@ def get_all_books(params, user):
         query2 = res.filter_by(**d).filter(Book.ISBN_13.like(query))
         query3 = res.filter_by(**d).filter(Book.title.like(query))
         res = query1.union(query2, query3)
-    return res.all()
-
+    books = res.all()
+    for book in books:
+        book.__dict__['isbn'] = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
+    return books
 
 def confirm_book(data, images, user):
     # payload = TOKEN.serializer.loads(token.encode())
