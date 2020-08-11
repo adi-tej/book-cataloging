@@ -3,7 +3,7 @@ import {DrawerContentScrollView, DrawerItemList, DrawerItem} from "@react-naviga
 export default function CustomDrawer(props) {
     return (
         <DrawerContentScrollView {...props} >
-            <DrawerItem label="LOGO NAME" labelStyle={{color:'white'}} onPress={}/>
+            <DrawerItem label="LOGO NAME" labelStyle={{color:'white'}} /> //onPress={}
             <DrawerItemList {...props} />
         </DrawerContentScrollView>
     );
