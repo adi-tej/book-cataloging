@@ -15,7 +15,8 @@ from app.main.config import EbayConfig
 from ..config import Config
 
 
-def find_book_info(isbn):  # function to search book in both api
+def find_book_info(isbn):
+
     book_info = extract_data_google_api(isbn)
     if not book_info:
         book_info = extract_isbndb_api(isbn)
@@ -26,6 +27,7 @@ def find_book_info(isbn):  # function to search book in both api
 
 
 def extract_data_google_api(isbn):
+
     google_url_book = Config.GOOGLE_API_BOOK_URL + "?q=isbn:{}&key={}".format(isbn,
                                                                               Config.GOOGLE_API_KEY)  # 9781925483598
     response = requests.get(google_url_book)
@@ -52,6 +54,7 @@ def extract_data_google_api(isbn):
 
 
 def extract_isbndb_api(isbn):
+
     isbn_url_book = Config.ISBN_BOOK_URL + "/{}".format(isbn)
     response = requests.get(isbn_url_book, headers={'Authorization': Config.ISBN_AUTH_KEY})
     data = response.json()
@@ -72,6 +75,7 @@ def extract_isbndb_api(isbn):
 
 
 def upload_to_s3(body, name):
+
     # ACCESS_KEY_ID = 'AKIA5WMHZHLO4GDCKDO6'
     # ACCESS_SECRET_KEY = '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'
     # BUCKET_NAME = 'circexunsw'
@@ -86,6 +90,7 @@ def upload_to_s3(body, name):
 
 
 def retrieve_book(data):
+
 
     book_data = find_book_info(data)
 
@@ -125,19 +130,28 @@ def retrieve_book(data):
     return book_data
 
 
-def revise_list_book(book):
+def revise_list_book(book,images):
+
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     request_info = {
         "Item": {
             "ItemID":book.book_id_ebay,
+            "Title": book.title + " " + book.id,
             "PictureDetails": {
-                "PictureURL": "URL-1",
-                "PictureURL": "URL-2",
+                "PictureURL": images[0],
+
                 # -- more PictureURL values are allowed here -- #
             },
+            "ConditionID": book.condition.value,
+            "Description": book.description,
+            "StartPrice": book.price
+
         }
     }
+
     ebay_conn.execute("ReviseItem", request_info)
+
+    return
 
 
 def update_book(data, images, book_id):
@@ -146,36 +160,47 @@ def update_book(data, images, book_id):
 
     for key, value in data.items():
         setattr(book, key, value)
-        image_number = 0
-        for x in images:
-            image_number = image_number + 1
-            image = images[x]
-            image.save(str(image_number) + '.png')
-            body = open(str(image_number) + '.png', 'rb')
-            key = str(book_id) + '/' + str(image_number) + '.png'
 
-            upload_to_s3(body, key)
-            body.close()
-            file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
 
-            image_dict = {}  # dictionary analogues to Image object
-            # if image_number == 1:  # updating  the new  1st image as cover
-            #     book.cover = file_url
-            image_object = Image()
-            image_dict['item_id'] = book.id
-            image_dict['aws_link'] = file_url
-            temp = image_object.__dict__
-            # image_dict['_sa_instance_state'] = temp['_sa_instance_state']
-            image_object.__dict__ = image_dict
+    #book.condition = ItemCondition[book.condition]
+    book.price = float(book.price)
+    image_number = 0
+    image_links = []
 
-            db.session.add(image_object)
-            db.session.commit()
+    for x in images:  # getting images
+
+        image_number = image_number + 1
+        image = images[x]
+        image.save(str(image_number) + '.png')
+        body = open(str(image_number) + '.png', 'rb')
+        key = str(book_id) + '/' + str(image_number) + '.png'
+
+        upload_to_s3(body, key)
+        body.close()
+        file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
+        image_links.append(file_url)
+
+    if image_links == []:
+        image_links.append(book.cover)
+
+    response = revise_list_book(book, image_links)
+
+
+
+    db.session.add(book)
+    db.session.commit()
+    for i, x in enumerate(image_links):  # getting images
+        image_dict = {'item_id': book_id, 'aws_link': x}
+        image_object = Image(**image_dict)
+        db.session.add(image_object)
 
     db.session.commit()
+
     return book
 
 
 def get_book(book_id):
+
     book = Book.query.filter_by(id=book_id).first()
     return book
 
@@ -252,60 +277,10 @@ def list_book(book):
     return book
 
 
-def list2_book(book_id):
-    book = Book.query.filter_by(book_id_local=book_id).first()
-    if book:
-        # build connection with ebay
-        # make request body to ebay
-        # execute request to ebay and get response
-        ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
-        request_info = {
-            "Item": {
-                "Title": book.title + " " + book.book_id_local,
-                "PictureDetails": {
-                    # This URL shold be replaced by Allen after finishing S3 storage
-                    "PictureURL": book.cover,
-                },
-
-                "PrimaryCategory": {
-                    "CategoryID": "2228",
-                },
-
-                "Country": "AU",
-                "Location": book.opshop.opshop_address,
-                "Site": "Australia",
-                "ConditionID": book.condition,
-                "PaymentMethods": "PayPal",
-                "PayPalEmailAddress": book.opshop.opshop_ebay_email,
-                "Description": book.description,
-                "ListingDuration": "Days_30",
-                "StartPrice": book.price,
-                "ListingType": "FixedPriceItem",
-                "Currency": "AUD",
-                "ReturnPolicy": {
-                    "ReturnsAcceptedOption": "ReturnsAccepted",
-                    "RefundOption": "MoneyBack",
-                    "ReturnsWithinOption": "Days_30",
-                    "ShippingCostPaidByOption": "Buyer"
-                },
-                "ShippingDetails": {
-                    "ShippingServiceOptions": {
-                        "FreeShipping": "True",
-                        "ShippingService": "AU_Express"
-                    }
-                },
-                "DispatchTimeMax": "3"
-            },
-        }
-        ebay_conn.execute("AddItem", request_info)
-        book.status = 'listed'
-        db.session.add(book)
-        db.session.commit()
-
-    return book
 
 
-def list3_book(book, image_links, user):
+def list_book(book, image_links, user):
+    """this function lists the book to ebay """
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     request_info = {
         "Item": {
@@ -313,6 +288,7 @@ def list3_book(book, image_links, user):
             "PictureDetails": {
                 # This URL shold be replaced by Allen after finishing S3 storage
                 "PictureURL": image_links[0],
+                "PictureURL": image_links[0]
             },
 
             "PrimaryCategory": {
@@ -345,8 +321,14 @@ def list3_book(book, image_links, user):
             "DispatchTimeMax": "3"
         },
     }
+    # for i in image_links:
+    #     if i:request_info["Item"]["PictureDetails"]["PictureURL"]=i
+
     resp = ebay_conn.execute("AddItem", request_info)
     return resp.dict()["ItemID"]
+
+
+
     # db.session.add(book)
     # db.session.commit()
 
@@ -402,6 +384,7 @@ def get_all_books(params, user):
 
 
 def confirm_book(data, images, user):
+
     # payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(id=user['id']).first()
     data['opshop_id'] = user.opshop.id
@@ -415,6 +398,7 @@ def confirm_book(data, images, user):
     image_number = 0
     image_links = []
     for x in images:  # getting images
+
         image_number = image_number + 1
         image = images[x]
         image.save(str(image_number) + '.png')
@@ -426,10 +410,15 @@ def confirm_book(data, images, user):
         file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
         image_links.append(file_url)
 
-    ebay_id = list3_book(book, image_links, user)
+    if image_links==[]:
+        image_links.append(book.cover)
+    else:
+        book.cover=image_links[0]
+
+    ebay_id = list_book(book, image_links, user)
     book.book_id_ebay = ebay_id
     book.status = ItemStatus.LISTED
-    book.cover = image_links[0]
+
     db.session.add(book)
     db.session.commit()
     for i, x in enumerate(image_links):  # getting images
