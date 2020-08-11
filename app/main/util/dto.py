@@ -39,14 +39,14 @@ class OrderDto:
         'quantity': fields.Integer
     })
 
-    order_model = api.model('order_items', {
+    order_model = api.model('order', {
         'order_id': fields.String,
-        'order_status': fields.String(enum=[x.value for x in OrderStatus], attribute='order_status.value'),
+        'status': fields.String(enum=[x.value for x in OrderStatus], attribute='status.value'),
         'items': fields.List(fields.Nested(item_model))
     })
 
-    order_array_model = api.model('order_items_array', {
-        'order_items': fields.List(fields.Nested(order_model))
+    order_array_model = api.model('order_array', {
+        'orders': fields.List(fields.Nested(order_model))
     })
 
     order_checkout_model = api.model('checkout_order_array', {
@@ -64,6 +64,23 @@ class BookDto:
     api = Namespace('book', description='book related operations')
     isbn_model = api.model('ISBN_10', {'ISBN': fields.Integer})
 
+    book_response_model = api.model('book', {
+        'id': fields.String,
+        'title': fields.String(default=''),
+        'author': fields.String(default=''),
+        'publisher': fields.String(default=''),
+        'edition': fields.Integer,
+        'page_count': fields.Integer,
+        'price': fields.Integer(default=0),
+        'genre': fields.String,
+        'cover': fields.String,
+        'quantity': fields.Integer(default=1),
+        'description': fields.String(default=''),
+        'status': fields.String(enum=[x.value for x in ItemStatus], attribute='status.value'),
+        'isbn': fields.String,
+        'notes': fields.String,
+        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value', default=ItemCondition.NEW.value)
+    })
     book_model = api.model('book', {
         'id': fields.String,
         'book_id_ebay': fields.String,
@@ -72,14 +89,15 @@ class BookDto:
         'author': fields.String,
         'publisher': fields.String,
         'edition': fields.Integer,
-        'pages_number': fields.Integer,
+        'page_count': fields.Integer,
+        'price': fields.Integer,
         'genre': fields.String,
         'cover': fields.String,
         'price': fields.Float,
         'quantity': fields.Integer,
         'description': fields.String,
-        'create_date': fields.DateTime,
-        'update_date': fields.DateTime,
+        'created_date': fields.DateTime,
+        'updated_date': fields.DateTime,
         'status': fields.String(enum=[x.value for x in ItemStatus], attribute='status.value'),
         'ISBN_10': fields.String,
         'ISBN_13': fields.String,
@@ -88,5 +106,5 @@ class BookDto:
     })
 
     book_array_model = api.model('book_array', {
-        'books': fields.List(fields.Nested(book_model)),
+        'books': fields.List(fields.Nested(book_response_model)),
     })

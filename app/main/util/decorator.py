@@ -14,16 +14,17 @@ def token_required(f):
             resp.status_code = UNAUTHORIZED
             return resp
 
-        result = TOKEN.validate_token(token)
-        if result == 'token expired':
-            resp = make_response(jsonify({'message': 'token expired'}))
+        user = TOKEN.validate_token(token)
+        if not user:
+        # if result == 'token expired':
+            resp = make_response(jsonify({'message': 'Invalid Authorization Token'}))
             resp.status_code = UNAUTHORIZED
             return resp
-        elif result == 'invalid token':
-            resp = make_response(jsonify({'message': 'invalid token'}))
-            resp.status_code = UNAUTHORIZED
-            return resp
-        else:
-            return f(*args, **kargs)
+        # elif result == 'invalid token':
+        #     resp = make_response(jsonify({'message': 'invalid token'}))
+        #     resp.status_code = UNAUTHORIZED
+        #     return resp
+        # else:
+        return f(*args, user, **kargs)
 
     return decorate
