@@ -2,7 +2,7 @@ import os
 
 # circex:CircEx2020@opshops.ch3sf71im1th.ap-southeast-2.rds.amazonaws.com:3306/opshopdb
 mysql_aws_db = 'mysql+pymysql://root:Asdfghjkl834966827@127.0.0.1/circex-dev'
-local_db = 'mysql+pymysql://root:Asdfghjkl834966827@127.0.0.1/circex-dev'
+local_db = 'mysql+pymysql://root:shops123@127.0.0.1/shops'
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 ebay_config_file_path = os.path.abspath("./ebay_config.yaml")
@@ -14,7 +14,7 @@ class Config:
     S3_BUCKET = 'circexunsw'
     S3_KEY = 'AKIA5WMHZHLO4GDCKDO6'
     S3_SECRET = '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'
-    S3_LOCATION = 'http://{}.s3-ap-southeast-2.amazonaws.com/'.format(S3_BUCKET)
+    S3_LOCATION = 'https://{}.s3-ap-southeast-2.amazonaws.com/'.format(S3_BUCKET)
     GOOGLE_API_KEY = 'AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o'
     GOOGLE_API_BASE_URL = 'https://www.googleapis.com'
     GOOGLE_API_BOOK_URL = GOOGLE_API_BASE_URL+'/books/v1/volumes'
