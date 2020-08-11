@@ -11,7 +11,7 @@ export default class ShowOrderItems extends Component {
     constructor(props) {
         super(props);
         this.item = this.props.item;
-        this.bookcover = this.item.cover;
+        this.bookCover = this.item.cover;
         this.state = {
             isbn: this.item.isbn,
         }
@@ -33,15 +33,15 @@ export default class ShowOrderItems extends Component {
             <View style={styles.itemContainer}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
-                        <Image style={styles.itemCover} source={!this.bookcover ? images.bookCover :
-                            {uri:this.bookcover}}/>
+                        <Image style={styles.itemCover} source={!this.bookCover ? images.bookCover :
+                            {uri:this.bookCover}}/>
                     </View>
                     <View style={styles.itemTitleView}>
                         <Text style={styles.itemTitle} numberOfLines={2}>{this.item.title}</Text>
                         <Text style={{color:"grey"}}>ISBN: {this.item.isbn}</Text>
                     </View>
                     <View style={styles.priceView}>
-                        <Text style={{fontSize: 16}}>$ {this.item.total_price}</Text>
+                        <Text style={{fontSize: 16}}>$ {this.item.price}</Text>
                     </View>
                 </View>
             </View>

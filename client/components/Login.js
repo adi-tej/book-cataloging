@@ -63,7 +63,7 @@ export default function Login({navigation}){
               }
           })
           .catch(function (error) {
-            // console.warn("error is: "+ error);
+            console.warn(error.message);
             Alert.alert("Invalid email or password. Please try it again.")
           })
 

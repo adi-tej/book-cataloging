@@ -1,6 +1,7 @@
 import enum
 from .. import db
-from sqlalchemy import func
+from sqlalchemy import func, text
+
 
 class RoleType(enum.Enum):
     ADMIN = 'admin'
@@ -54,7 +55,7 @@ class Order(db.Model):
     customer_contact = db.Column(db.String(100))
     created_date = db.Column(db.DateTime, default=func.now())
     status = db.Column(db.Enum(OrderStatus), default=OrderStatus.PENDING, nullable=False)
-    # orderitems = db.relationship('OrderItem', backref='order', lazy='dynamic')
+    orderitems = db.relationship('OrderItem', backref='order', lazy='dynamic')
 
 
 class ItemStatus(enum.Enum):
@@ -91,14 +92,14 @@ class Book(db.Model):
     quantity = db.Column(db.Integer, default=1)
     description = db.Column(db.String(300))
     created_date = db.Column(db.DateTime, server_default=func.now())
-    updated_date = db.Column(db.DateTime, onupdate=func.now)
+    updated_date = db.Column(db.DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
     status = db.Column(db.Enum(ItemStatus), default=ItemStatus.INACTIVE, nullable=False)
     ISBN_10 = db.Column(db.String(100))
     ISBN_13 = db.Column(db.String(100))
     notes = db.Column(db.String(300))
     condition = db.Column(db.Enum(ItemCondition), default=ItemCondition.NEW, nullable=False)
     images = db.relationship('Image', backref='item', lazy='dynamic')
-    # orderitems = db.relationship('OrderItem', backref='item', lazy='dynamic')
+    orderitems = db.relationship('OrderItem', backref='item', lazy='dynamic')
 
 
 class OrderItem(db.Model):
@@ -113,5 +114,5 @@ class OrderItem(db.Model):
 class Image(db.Model):
     __tablename__ = 'image'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    aws_link = db.Column(db.String(100), nullable=False)
+    uri = db.Column(db.String(100), nullable=False)
     item_id = db.Column(db.String(100), db.ForeignKey('book.id'), nullable=False)

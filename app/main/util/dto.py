@@ -63,7 +63,10 @@ class OrderDto:
 class BookDto:
     api = Namespace('book', description='book related operations')
     isbn_model = api.model('ISBN_10', {'ISBN': fields.Integer})
-
+    image = api.model('image', {
+        'id': fields.Integer,
+        'uri': fields.String
+    })
     book_response_model = api.model('book', {
         'id': fields.String,
         'title': fields.String(default=''),
@@ -71,7 +74,7 @@ class BookDto:
         'publisher': fields.String(default=''),
         'edition': fields.Integer,
         'page_count': fields.Integer,
-        'price': fields.Integer(default=0),
+        'price': fields.Float(default=0.0),
         'genre': fields.String,
         'cover': fields.String,
         'quantity': fields.Integer(default=1),
@@ -79,7 +82,8 @@ class BookDto:
         'status': fields.String(enum=[x.value for x in ItemStatus], attribute='status.value'),
         'isbn': fields.String,
         'notes': fields.String,
-        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value', default=ItemCondition.NEW.value)
+        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value', default=ItemCondition.NEW.value),
+        'images': fields.List(fields.Nested(image))
     })
     book_model = api.model('book', {
         'id': fields.String,
@@ -90,12 +94,10 @@ class BookDto:
         'publisher': fields.String,
         'edition': fields.Integer,
         'page_count': fields.Integer,
-        'price': fields.Integer,
         'genre': fields.String,
         'cover': fields.String,
         'price': fields.Float,
         'quantity': fields.Integer,
-        'price': fields.Integer,
         'description': fields.String,
         'created_date': fields.DateTime,
         'updated_date': fields.DateTime,

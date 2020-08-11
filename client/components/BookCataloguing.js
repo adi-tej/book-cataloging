@@ -30,7 +30,8 @@ export default class BookCataloguing extends Component{
                 isbn: "",
                 genre: "",
                 author: "",
-                pages: 0,
+                cover: "",
+                page_count: 0,
                 publisher:"",
                 price: 0,
                 condition:"",
@@ -50,7 +51,8 @@ export default class BookCataloguing extends Component{
                 const book = this.props.route.params.book
                 this.setState({
                     edit: true,
-                    book: book
+                    book: book,
+                    imageArray: book.images
                 })
             }
             if(this.props.route.params.isbn) {
@@ -59,35 +61,41 @@ export default class BookCataloguing extends Component{
                     .then(res => {
                         if(res.status === 200) {
                             const data = res.data
-                            const copyImageArray = Object.assign([], this.state.imageArray);
-                            copyImageArray.push({
-                                id: this.state.imageId,
-                                image: data.cover
-                            })
                             this.setState({
                                 book:data,
-                                imageArray: copyImageArray
+                                imageArray: data.images
                             })
                         }else{
+                            alert('Failed to fetch book details from ISBN '+isbn)
                             console.warn('Failed to fetch book auto description')
                         }
                     }).catch((error) => {
-                        console.warn('Failed to fetch book auto description')
+                        console.warn(error.message)
                 })
             }
         }
-        // api.get(`/user/home`)
-        //     .then(res => {
-        //         console.warn(res)
-        //         const data = res.data;
-        //         this.setState({ title: data.title });
-        //     }).catch((error)=>{
-        //         console.log("Api call error");
-        //         console.warn(error.message);
-        // });
 
     }
-
+    requestApi = (url, errMsg) => {
+        let reqData = new FormData();
+        for ( let key in this.state.book ) {
+            reqData.append(key, JSON.stringify(this.state.book[key]));
+        }
+        api.put(url, reqData,{
+            headers:{
+                'Content-Type': null
+            }
+        })
+            .then(res => {
+                if(res.status === 200) {
+                    this.props.navigation.navigate('RootNavigator')
+                }else{
+                    alert(errMsg)
+                }
+            }).catch((error)=>{
+            console.warn(error.message);
+        });
+    }
     onButtonPress() {
         if (this.state.title === "" || this.state.condition === "" || this.state.price === 0) {
             Alert.alert("Warning:",
@@ -97,26 +105,10 @@ export default class BookCataloguing extends Component{
             Alert.alert("BookCataloguing book: " + this.state.title)
             if(this.state.edit){
                 //TODO: API call to edit the listing
-                api.put(`/book/`+this.state.book.id)
-                    .then(res => {
-                        console.warn(res)
-                        const data = res.data;
-                        // this.setState({ title: data.title });
-                        this.props.navigation.navigate('RootNavigator')
-                    }).catch((error)=>{
-                        console.warn(error.message);
-                });
+                this.requestApi(`/book/`+this.state.book.id, "Failed to edit book")
             }else{
                 //TODO: API call to create the listing
-                api.put(`/book/list`,this.state.book)
-                    .then(res => {
-                        console.warn(res)
-                        const data = res.data;
-                        // this.setState({ title: data.title });
-                        this.props.navigation.navigate('RootNavigator')
-                    }).catch((error)=>{
-                    console.warn(error.message);
-                });
+                this.requestApi(`/book/list`, "Failed to list on ebay")
             }
         }
     }
@@ -131,10 +123,11 @@ export default class BookCataloguing extends Component{
         //TODO: API call to remove listing
         api.delete(`/book/`+this.state.book.id)
             .then(res => {
-                console.warn(res)
-                const data = res.data;
-                // this.setState({ title: data.title });
-                this.props.navigation.navigate('RootNavigator')
+                if(res.status === 200) {
+                    this.props.navigation.navigate('RootNavigator')
+                }else{
+                    alert('Failed to remove item')
+                }
             }).catch((error)=>{
             console.warn(error.message);
         });
@@ -149,7 +142,7 @@ export default class BookCataloguing extends Component{
     };
 
     validISBN = () => {
-        if ((this.state.isbn.length !== 10) && (this.state.isbn.length !== 13) && (this.state.isbn !== "")){
+        if ((this.state.book.isbn.length !== 10) && (this.state.book.isbn.length !== 13) && (this.state.book.isbn !== "")){
             this.setState({isbnError: true})
         } else{
             this.setState({isbnError: false})
@@ -170,7 +163,7 @@ export default class BookCataloguing extends Component{
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
                 id: this.imageId,
-                image: this.state.initImage
+                uri: this.state.initImage
             })
             this.setState({
                 imageArray: copyImageArray
@@ -196,7 +189,7 @@ export default class BookCataloguing extends Component{
                             this.state.imageArray.map((image, index)=>{
                                 return(
                                     <ShowCarousel
-                                        image={image.image}
+                                        image={image.uri}
                                         key={image.id}
                                         delete={this.deleteImage.bind(this, index)}
                                     />
@@ -225,7 +218,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.title}
-                    onChangeText={(title) => this.setState({title})}
+                    onChangeText={(title) => this.setState({book:{...this.state.book,title:title}})}
                 />
 
                 <Text style={styles.listingTitle}>ISBN: </Text>
@@ -237,7 +230,7 @@ export default class BookCataloguing extends Component{
                     maxLength={13}
                     onBlur={this.validISBN.bind(this)}
                     value={this.state.book.isbn}
-                    onChangeText={(isbn) => this.setState({isbn})}
+                    onChangeText={(isbn) => this.setState({book:{...this.state.book,isbn:isbn}})}
                 />
                     {this.state.isbnError?
                         <Text style={{color:'red'}}>Please enter 10 or 13 digits</Text>
@@ -250,7 +243,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.genre}
-                    onChangeText={(genre) => this.setState({genre})}
+                    onChangeText={(genre) => this.setState({book:{...this.state.book,genre:genre}})}
                 />
 
                 <Text style={styles.listingTitle}>Author: </Text>
@@ -259,7 +252,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.author}
-                    onChangeText={(author) => this.setState({author})}
+                    onChangeText={(author) => this.setState({book:{...this.state.book,author:author}})}
                 />
 
                 <Text style={styles.listingTitle}>Page: </Text>
@@ -268,8 +261,8 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.book.pages?this.state.book.pages.toString():0}
-                    onChangeText={(page) => this.setState({page})}
+                    value={this.state.book.page_count?this.state.book.page_count:0}
+                    onChangeText={(page) => this.setState({book:{...this.state.book,page_count:page}})}
                 />
 
                 <Text style={styles.listingTitle}>Publisher: </Text>
@@ -278,7 +271,7 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     style={styles.textInput}
                     value={this.state.book.publisher}
-                    onChangeText={(publisher) => this.setState({publisher})}
+                    onChangeText={(publisher) => this.setState({book:{...this.state.book,publisher:publisher}})}
                 />
 
                 <View style={{flex: 1, flexDirection: "row"}}>
@@ -291,7 +284,7 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
                     value={this.state.book.price?this.state.book.price.toString():0}
-                    onChangeText={(price) => this.setState({price})}
+                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price}})}
                 />
 
 
@@ -300,7 +293,7 @@ export default class BookCataloguing extends Component{
                     <Text style={styles.requiredText}>*</Text>
                 </View>
                 <RNPickerSelect
-                    onValueChange={(condition) => this.setState({condition})}
+                    onValueChange={(condition) => this.setState({book:{...this.state.book,condition:condition}})}
                     style={{
                         ...pickerSelectStyles,
                         // iconContainer: {
@@ -328,7 +321,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     multiline={true}
-                    onChangeText={(otherDetails) => this.setState({otherDetails})}
+                    onChangeText={(otherDetails) => this.setState({book:{otherDetails:otherDetails}})}
                 />
 
                 <View style={styles.buttonView}>

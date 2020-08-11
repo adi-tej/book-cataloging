@@ -1,11 +1,9 @@
 import React, { Component } from 'react';
 import {
     StyleSheet,
-    Text,
     TouchableOpacity,
     View,
     Image,
-    Button,
 } from 'react-native';
 
 import * as ImagePicker from 'expo-image-picker';

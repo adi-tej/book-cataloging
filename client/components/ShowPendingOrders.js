@@ -18,7 +18,7 @@ export default class ShowPendingOrders extends Component {
 
     componentDidMount() {
         const itemArray = this.props.order.items;
-        itemArray.map((item) => {this.price = this.price + item.total_price })
+        itemArray.map((item) => {this.price = this.price + item.price })
         this.setState({totalPrice: this.price});
         // console.warn("price ", this.price)
     }

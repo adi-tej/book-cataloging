@@ -1,7 +1,7 @@
-import React,{Component} from 'react';
-import {NavigationActions, SafeAreaView, StackActions} from 'react-navigation';
+import React from 'react';
+import {SafeAreaView} from 'react-navigation';
 
-import { Text, View} from 'react-native';
+import {Text} from 'react-native';
 export default function Logout({navigation}) {
     return(
         <SafeAreaView>

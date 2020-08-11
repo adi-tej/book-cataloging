@@ -356,10 +356,10 @@ const styles = StyleSheet.create({
 
     //orderItemDetails
     summaryContainer: {
-        width: "40%",
+        width: "60%",
         marginBottom:"3%",
         position:"relative",
-        left: "60%",
+        left: "40%",
     },
 
     summaryText: {
