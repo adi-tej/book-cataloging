@@ -345,7 +345,7 @@ def get_all_books(params, user):
     d = {'opshop_id': user['opshop_id'], 'status': ItemStatus.LISTED}
     if 'search' not in params:
         if 'isbn' in params:
-            if len(params[name]) == 10:
+            if len(params['isbn']) == 10:
                 d['ISBN_10'] = params['isbn']
             else:
                 d['ISBN_13'] = params['isbn']
