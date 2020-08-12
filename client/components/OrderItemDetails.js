@@ -58,6 +58,7 @@ export default class OrderItemDetails extends Component {
                         </Text>
                     </Body>
                 </Header>
+
                 <View style={{marginTop:'2%'}}>
                     <ScrollView style={styles.scrollContainer}>
                         {
@@ -71,6 +72,7 @@ export default class OrderItemDetails extends Component {
                             )
                         })}
 
+                        {/*---------------setting for order summary------------------*/}
                         <Text style={[styles.summaryText,{color: "lightgrey"}]}>
                             ----------------------------------</Text>
                         <View style={styles.summaryContainer}>

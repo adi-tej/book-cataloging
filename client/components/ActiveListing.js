@@ -30,7 +30,7 @@ export default class ActiveListing extends Component {
 
     //TODO: API call to get data before rendering
     componentDidMount() {
-        // setClientToken("eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoiYWRtaW5AY2lyY2V4LmNvbSIsInVzZXJfbmFtZSI6IkFkbWluIiwiZ2VuZXJhdGVfdGltZSI6MTU5Njk4OTY2MS4wMDA2MDR9.edaZGWGNYW7-POkcI0YpI6CHEXux9xj-7Y9g_lCS2B_sneUOtMLEz9d7UKMyH7ufwERjG76BqIrodOZtDf7afw")
+
         api.get(`/book`)
             .then(res => {
                 if(res.status === 200) {
@@ -48,6 +48,7 @@ export default class ActiveListing extends Component {
         });
 
     }
+
     //TODO: API call to Update state from search
     componentDidUpdate(prevProps, prevState, snapshot) {
         //keyword from search

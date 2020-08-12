@@ -40,15 +40,5 @@ export default class Checkout extends Component {
                     <Text style={{fontSize: 16}}>$ {this.book.price}</Text>
                 </View>
             </View>);
-
-                    {/*<TouchableOpacity*/}
-                    {/*    activityOpacity={0.5}*/}
-                    {/*    style={styles.removeButton}*/}
-                    {/*    onPress={this.onButtonPress.bind(this)}>*/}
-                    {/*    <Text style={styles.loginText}>Checkout item</Text>*/}
-                    {/*</TouchableOpacity>*/}
-            {/*    </View>*/}
-            {/*</View>*/}
-        // );
     }
 }

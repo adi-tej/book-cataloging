@@ -83,6 +83,7 @@ export default class BookCataloguing extends Component{
 
     }
 
+    // setting for "List item" or "edit item" button
     onButtonPress() {
         if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === 0) {
             Alert.alert("Warning:",
@@ -194,9 +195,10 @@ export default class BookCataloguing extends Component{
             })
         }
     };
+
     //TODO: All fields regex check
     render() {
-        return (
+        return ( //show all details of the book
             <SafeAreaView style={{flex:1}}>
                 <Header>
                     <Left>
@@ -206,6 +208,7 @@ export default class BookCataloguing extends Component{
                         {this.state.edit ? 'Edit book':'List a book'} </Text></Body>
                 </Header>
                 <KeyboardAwareScrollView behavior="padding" style={[styles.container,{marginTop:'5%'}]}>
+
                 {/*Create an Image Carousel*/}
                 <View>
                     <ScrollView horizontal={true} style={{flexDirection: "row"}}>
@@ -369,6 +372,7 @@ export default class BookCataloguing extends Component{
                 }
                 </View>
 
+                {/*------------------------setting remove-item modal---------------------------*/}
                 <Modal
                     transparent={true}
                     visible={this.state.modalVisible}
