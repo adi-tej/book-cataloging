@@ -48,14 +48,15 @@ def create_order(data, user):
             'quantity': item['quantity'],
             'price': book.price
         })
-
+    try:
         conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
         request = {
             "EndingReason": "LostOrBroken",
             "ItemID": book.book_id_ebay
         }
         conn.execute("EndItem", request)
-
+    except Exception:
+        pass
     db.session.commit()
     return response
 
