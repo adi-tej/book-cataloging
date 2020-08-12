@@ -70,7 +70,8 @@ export default class ActiveListing extends Component {
                 }).catch((error) => {
                     console.warn(error.message);
             });
-        }else{
+        }
+        if (nextProps.route.params.refresh) {
             this.getAllItems()
         }
 

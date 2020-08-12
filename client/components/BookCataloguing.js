@@ -115,7 +115,7 @@ export default class BookCataloguing extends Component{
                 })
                     .then(res => {
                         if(res.status === 200) {
-                            this.props.navigation.navigate('RootNavigator')
+                            this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to edit book")
                         }
@@ -132,7 +132,7 @@ export default class BookCataloguing extends Component{
                 })
                     .then(res => {
                         if(res.status === 200) {
-                            this.props.navigation.navigate('RootNavigator')
+                            this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to list on ebay")
                         }
@@ -154,7 +154,7 @@ export default class BookCataloguing extends Component{
         api.delete(`/book/`+this.state.book.id)
             .then(res => {
                 if(res.status === 200) {
-                    this.props.navigation.navigate('RootNavigator')
+                    this.props.navigation.navigate('Active Listing',{refresh:true})
                 }else{
                     alert('Failed to remove item')
                 }
