@@ -167,7 +167,7 @@ export default class ManualInput extends Component {
                     {/*closeButton*/}
                     <TouchableOpacity
                         style={styles.manualCloseButton}
-                        onPress={() => {this.props.navigation.navigate('RootNavigator')}}>
+                        onPress={() => {this.props.navigation.navigate("Active Listing",{refresh:true})}}>
                         <Text style={{ fontSize: 20, color: 'black'}}> x </Text>
                     </TouchableOpacity>
 
