@@ -37,6 +37,7 @@ export default class BookCataloguing extends Component{
                 condition:"",
                 otherDetails: ""
             },
+            imageId: 0,
             imageArray:[],
             modalVisible:false,
             isbnError:false,
@@ -49,11 +50,10 @@ export default class BookCataloguing extends Component{
         if(this.props.route && this.props.route.params){
             if(this.props.route.params.edit) {
                 const book = this.props.route.params.book
-                const images = this.props.route.params.images
                 this.setState({
                     edit: true,
                     book: book,
-                    imageArray: images
+                    imageArray: book.images
                 })
             }
             if(this.props.route.params.isbn) {
@@ -64,8 +64,9 @@ export default class BookCataloguing extends Component{
                             const data = res.data
                             const copyImageArray = Object.assign([], this.state.imageArray);
                             copyImageArray.push({
-                                id: this.state.imageId,
-                                image: data.cover
+                                id: this.imageId,
+                                uri: data.cover,  //update "image" to "uri"
+                                // uri: "https://circexunsw.s3-ap-southeast-2.amazonaws.com/521417bc-dbc2-11ea-a199-7085c2fa4e67/cover.png",
                             })
                             this.setState({
                                 book:data,
@@ -79,25 +80,15 @@ export default class BookCataloguing extends Component{
                 })
             }
         }
-        // api.get(`/user/home`)
-        //     .then(res => {
-        //         console.warn(res)
-        //         const data = res.data;
-        //         this.setState({ title: data.title });
-        //     }).catch((error)=>{
-        //         console.log("Api call error");
-        //         console.warn(error.message);
-        // });
 
     }
 
     onButtonPress() {
-        if (this.state.title === "" || this.state.condition === "" || this.state.price === 0) {
+        if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === 0) {
             Alert.alert("Warning:",
                 "You have to fill out Title, Condition and Price")
         } else{
             //TODO: API call to submit and redirect to RootNavigator
-            Alert.alert("BookCataloguing book: " + this.state.title)
             if(this.state.edit){
                 //TODO: API call to edit the listing
                 let reqData = new FormData();
@@ -113,18 +104,33 @@ export default class BookCataloguing extends Component{
                         console.warn(res)
                         const data = res.data;
                         // this.setState({ title: data.title });
-                        this.props.navigation.navigate('RootNavigator')
+                        Alert.alert(this.state.book.title, " is updated.")
+                        setTimeout(()=> {
+                            this.props.navigation.navigate('CameraTab')}, 2000)
+                        // this.props.navigation.navigate('RootNavigator')}, 2000)
                     }).catch((error)=>{
                         console.warn(error.message);
                 });
             }else{
                 //TODO: API call to create the listing
-                api.put(`/book/list`,this.state.book)
+                let reqData = new FormData();
+                for ( var key in this.state.book ) {
+                    reqData.append(key, JSON.stringify(this.state.book[key]));
+                }
+
+                api.put(`/book/list`,reqData,{
+                    headers:{
+                        'Content-Type': null
+                    }
+                })
                     .then(res => {
                         console.warn(res)
                         const data = res.data;
                         // this.setState({ title: data.title });
-                        this.props.navigation.navigate('RootNavigator')
+                        Alert.alert(this.state.book.title, " is listed")
+                        setTimeout(()=> {
+                            this.props.navigation.navigate('CameraTab')}, 2000)
+                        // this.props.navigation.navigate('RootNavigator')}, 2000)
                     }).catch((error)=>{
                     console.warn(error.message);
                 });
@@ -181,7 +187,7 @@ export default class BookCataloguing extends Component{
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
                 id: this.imageId,
-                image: this.state.initImage
+                uri: this.state.initImage //update "image" to "uri"
             })
             this.setState({
                 imageArray: copyImageArray
@@ -207,13 +213,14 @@ export default class BookCataloguing extends Component{
                             this.state.imageArray.map((image, index)=>{
                                 return(
                                     <ShowCarousel
-                                        image={image.image}
+                                        image={image.uri}
                                         key={image.id}
                                         delete={this.deleteImage.bind(this, index)}
                                     />
                                 )
                             })
                         }
+                        {console.warn("imageArray:", this.state.imageArray)}
                         {this.state.imageArray.length < 10 ?
                             <TouchableOpacity
                                 activityOpacity={0.5}
@@ -300,8 +307,8 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    keyboardType="number-pad"
-                    value={this.state.book.price?this.state.book.price.toString():0}
+                    // keyboardType="number-pad"
+                    value={this.state.book.price?this.state.book.price:0}
                     onChangeText={(price) => this.setState({book:{...this.state.book,price:price}})}
                 />
 

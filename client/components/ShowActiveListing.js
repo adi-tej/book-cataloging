@@ -9,6 +9,11 @@ import styles from "../config/styles";
 import images from "../config/images";
 //This class is to create a box of each listing item
 export default class ShowActiveListing extends Component {
+
+    constructor(props) {
+        super(props);
+        // console.warn("book is:", this.props.book)
+    }
     //TODO: redirect all props to edit listing
     render() {
         return (
@@ -16,8 +21,7 @@ export default class ShowActiveListing extends Component {
                 activityOpacity={0.5}
                 style={styles.itemContainer} onPress={() => this.props.navigation.navigate('BookCataloguing',{
                     edit:true,
-                    book:this.props.book,
-                    images:this.props.images
+                    book:this.props.book
             })}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>

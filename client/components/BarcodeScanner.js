@@ -38,8 +38,10 @@ export default function Barcode({navigation,mode}) {
         setBarcode(data);
         //TODO: redirect to book cataloging page with barcode/isbn as prop
         if (mode === "add") {
-            console.warn(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
-            navigation.navigate('BookCataloguing', {isbn: data})
+            // Alert.alert(`Searching for isbn ${data} ...`)
+            // console.warn(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
+            setScanned(false)
+            setTimeout( ()=> {navigation.navigate('BookCataloguing', {isbn: data}) }, 2000)
         } else if (mode === "checkout"){
 
             api.get('/book', {

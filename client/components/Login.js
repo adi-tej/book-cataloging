@@ -49,7 +49,7 @@ export default function Login({navigation}){
             password: data.password
           })
           .then(function (response) {
-            console.warn(response.data.token);
+            // console.warn(response.data.token);
             //if response status is 200 - navigate
               //else set state loginerror true
               if (response.status === 200) {
@@ -101,7 +101,10 @@ export default function Login({navigation}){
                     <Text style={{color:'red'}}>Invalid credentials</Text>
                     : null
                 }
-                <Text onPress={() => navigation.navigate('RootNavigator')} style={styles.resetAccountButton}>I don't have an account</Text>
+                {/*<Text onPress={() => navigation.navigate('RootNavigator')} style={styles.resetAccountButton}>I don't have an account</Text>*/}
+                <Text onPress={() =>
+                    Alert.alert("Please contact your manager to create an account for you.")
+                } style={styles.resetAccountButton}>I don't have an account</Text>
             </View>
         </KeyboardAwareScrollView>
     )

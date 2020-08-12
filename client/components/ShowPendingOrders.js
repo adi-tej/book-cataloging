@@ -20,7 +20,7 @@ export default class ShowPendingOrders extends Component {
         const itemArray = this.props.order.items;
         itemArray.map((item) => {this.price = this.price + item.price })
         this.setState({totalPrice: this.price});
-        // console.warn("price ", this.price)
+        // console.warn("order ", this.props.order)
     }
 
     //TODO: on press redirect to online order details page
