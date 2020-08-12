@@ -16,7 +16,6 @@ from ..config import Config
 
 
 def find_book_info(isbn):
-
     book_info = extract_data_google_api(isbn)
     if not book_info:
         book_info = extract_isbndb_api(isbn)
@@ -27,7 +26,6 @@ def find_book_info(isbn):
 
 
 def extract_data_google_api(isbn):
-
     google_url_book = Config.GOOGLE_API_BOOK_URL + "?q=isbn:{}&key={}".format(isbn,
                                                                               Config.GOOGLE_API_KEY)  # 9781925483598
     response = requests.get(google_url_book)
@@ -54,7 +52,6 @@ def extract_data_google_api(isbn):
 
 
 def extract_isbndb_api(isbn):
-
     isbn_url_book = Config.ISBN_BOOK_URL + "/{}".format(isbn)
     response = requests.get(isbn_url_book, headers={'Authorization': Config.ISBN_AUTH_KEY})
     data = response.json()
@@ -75,7 +72,6 @@ def extract_isbndb_api(isbn):
 
 
 def upload_to_s3(body, name):
-
     # ACCESS_KEY_ID = 'AKIA5WMHZHLO4GDCKDO6'
     # ACCESS_SECRET_KEY = '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'
     # BUCKET_NAME = 'circexunsw'
@@ -90,8 +86,6 @@ def upload_to_s3(body, name):
 
 
 def retrieve_book(data):
-
-
     book_data = find_book_info(data)
 
     if book_data:
@@ -116,7 +110,7 @@ def retrieve_book(data):
                 key = str(book_data['id']) + '/cover.png'
                 upload_to_s3(bookcover, key)  # image saved to amazon s3
                 bookcover.close()
-                file_url = Config.S3_LOCATION+'/%s' % (key)
+                file_url = Config.S3_LOCATION + '/%s' % (key)
                 book_data['cover'] = file_url  ## amazon url of file overwritten in Book['cover']
                 new_file.close()
                 # os.remove(file_name)
@@ -126,16 +120,15 @@ def retrieve_book(data):
     #
     # book.__dict__ = book_data
     if book_data['cover']:
-        book_data['images'] = [{'id':0,'uri':book_data['cover']}]
+        book_data['images'] = [{'id': 1, 'uri': book_data['cover']}]
     return book_data
 
 
-def revise_list_book(book,images):
-
+def revise_list_book(book, images):
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     request_info = {
         "Item": {
-            "ItemID":book.book_id_ebay,
+            "ItemID": book.book_id_ebay,
             "Title": book.title + " " + book.id,
             "PictureDetails": {
                 "PictureURL": images[0],
@@ -155,14 +148,12 @@ def revise_list_book(book,images):
 
 
 def update_book(data, images, book_id):
-
     book = Book.query.filter_by(id=book_id).first()  # fetching saved book info from table
 
     for key, value in data.items():
         setattr(book, key, value)
 
-
-    #book.condition = ItemCondition[book.condition]
+    # book.condition = ItemCondition[book.condition]
     book.price = float(book.price)
     image_number = 0
     image_links = []
@@ -185,8 +176,6 @@ def update_book(data, images, book_id):
 
     response = revise_list_book(book, image_links)
 
-
-
     db.session.add(book)
     db.session.commit()
     for i, x in enumerate(image_links):  # getting images
@@ -200,7 +189,6 @@ def update_book(data, images, book_id):
 
 
 def get_book(book_id):
-
     book = Book.query.filter_by(id=book_id).first()
     return book
 
@@ -277,8 +265,6 @@ def list_book(book):
     return book
 
 
-
-
 def list_book(book, image_links, user):
     """this function lists the book to ebay """
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
@@ -327,8 +313,6 @@ def list_book(book, image_links, user):
     resp = ebay_conn.execute("AddItem", request_info)
     return resp.dict()["ItemID"]
 
-
-
     # db.session.add(book)
     # db.session.commit()
 
@@ -337,7 +321,6 @@ def list_book(book, image_links, user):
 
 
 def unlist_book(book_id):
-
     book = Book.query.filter_by(id=book_id).first()
     if book:
         try:
@@ -361,16 +344,15 @@ def get_all_books(params, user):
     res = Book.query
     d = {'opshop_id': user['opshop_id'], 'status': ItemStatus.LISTED}
     if 'search' not in params:
-        for name in params:
-
-            if name == 'isbn':
-                if len(params[name]) == 10:
-                    d['ISBN_10'] = params['isbn']
-                else:
-                    d['ISBN_13'] = params['isbn']
-            if name == 'title':
-                d[name] = params[name]
-        res = res.filter_by(**d)
+        if name == 'isbn':
+            if len(params[name]) == 10:
+                d['ISBN_10'] = params['isbn']
+            else:
+                d['ISBN_13'] = params['isbn']
+            res = res.filter_by(**d)
+        if name == 'title':
+            query = '{}%'.format(params['title'])
+            res = res.filter_by(**d).filter(Book.title.like(query))
     else:
         query = '{}%'.format(params['search'])
         query1 = res.filter_by(**d).filter(Book.ISBN_10.like(query))
@@ -384,7 +366,6 @@ def get_all_books(params, user):
 
 
 def confirm_book(data, images, user):
-
     # payload = TOKEN.serializer.loads(token.encode())
     user = User.query.filter_by(id=user['id']).first()
     data['opshop_id'] = user.opshop.id
@@ -392,8 +373,16 @@ def confirm_book(data, images, user):
     # temp = book.__dict__
     # data['_sa_instance_state'] = temp['_sa_instance_state']
     # book.__dict__ = data
+    if len(data['isbn']) == 10:
+        data['ISBN_10'] = data['isbn']
+    else:
+        data['ISBN_13'] = data['isbn']
+    del data['isbn']
+    images_uri = data['images']
+    del data['images']
+
     book = Book(**data)
-    book.condition = ItemCondition[book.condition]
+    book.condition = ItemCondition(int(book.condition))
     book.price = float(book.price)
     image_number = 0
     image_links = []
@@ -410,10 +399,10 @@ def confirm_book(data, images, user):
         file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
         image_links.append(file_url)
 
-    if image_links==[]:
+    if image_links == []:
         image_links.append(book.cover)
     else:
-        book.cover=image_links[0]
+        book.cover = image_links[0]
 
     ebay_id = list_book(book, image_links, user)
     book.book_id_ebay = ebay_id

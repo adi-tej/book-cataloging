@@ -4,6 +4,7 @@ from ..model.models import *
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
 
+
 def create_order(data, user):
     """
         When there are new orders from opshop or ebay, this function
@@ -28,7 +29,6 @@ def create_order(data, user):
     items = data['items']
 
     for item in items:
-
         book = Book.query.filter_by(id=item['item_id']).first()
         order_item = OrderItem(
             order_id=order.id,
@@ -48,14 +48,15 @@ def create_order(data, user):
             'quantity': item['quantity'],
             'price': book.price
         })
-
+    try:
         conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
         request = {
             "EndingReason": "LostOrBroken",
             "ItemID": book.book_id_ebay
         }
         conn.execute("EndItem", request)
-
+    except Exception:
+        pass
     db.session.commit()
     return response
 
