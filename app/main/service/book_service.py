@@ -1,9 +1,9 @@
 from flask import jsonify, make_response
 from datetime import datetime
 from ebaysdk.trading import Connection
-import json
+import os
 import requests
-from uuid import uuid1
+from uuid import uuid1, uuid4
 import shutil
 import boto3
 from botocore.client import Config as BotoConfig
@@ -13,6 +13,7 @@ from ..util.decorator import TOKEN
 from .. import db
 from app.main.config import EbayConfig
 from ..config import Config
+import mimetypes
 
 
 def find_book_info(isbn):
@@ -45,9 +46,16 @@ def extract_data_google_api(isbn):
         book_data["page_count"] = book.get('pageCount', None)
         book_data["description"] = book.get('description', None)
         book_data['cover'] = book.get('imageLinks', {}).get('thumbnail', None)
-        book_data["isbn"] = book.get('industryIdentifiers', [0, {}])[1].get('identifier', None)
-        if not book_data["isbn"]:
-            book_data["isbn"] = book.get('industryIdentifiers', [{}])[0].get('identifier', None)
+        # if not book_data["isbn"]:
+        isbn = book.get('industryIdentifiers', None)
+        # print(len(isbn))
+        if isbn:
+            if len(isbn) > 1:
+                book_data["isbn"] = isbn[1].get('identifier', None)
+            elif len(isbn) > 0:
+                book_data["isbn"] = isbn[0].get('identifier', None)
+            else:
+                book_data["isbn"] = None
     return book_data  # return book object
 
 
@@ -70,55 +78,52 @@ def extract_isbndb_api(isbn):
 
     return book_data
 
-
-def upload_to_s3(body, name):
-    # ACCESS_KEY_ID = 'AKIA5WMHZHLO4GDCKDO6'
-    # ACCESS_SECRET_KEY = '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'
-    # BUCKET_NAME = 'circexunsw'
-    s3 = boto3.resource(
+def s3_bucket():
+    return boto3.resource(
         's3',
         aws_access_key_id=Config.S3_KEY,
         aws_secret_access_key=Config.S3_SECRET,
         config=BotoConfig(signature_version='s3v4')
-    )
+    ).Bucket(Config.S3_BUCKET)
+
+def delete_from_s3(key):
+    s3 = s3_bucket()
+    for obj in s3.objects.filter(Prefix=key + '/'):
+        s3.Object(s3.name, obj.key).delete()
+
+
+def upload_to_s3(body, name):
+    s3 = s3_bucket()
     # image upload
-    s3.Bucket(Config.S3_BUCKET).put_object(Key=name, Body=body)
+    s3.put_object(Key=name, Body=body)
 
 
 def retrieve_book(data):
     book_data = find_book_info(data)
-
     if book_data:
         book_data['id'] = uuid1()  # use user id to save image temporarily
-        # book_data['book_id_ebay'] = ''
-
         if book_data['cover']:
             image_r = requests.get(book_data['cover'], stream=True)
-
             if image_r.status_code == 200:  # if image retrieved succesfully
                 # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
-                image_r.raw.decode_content = True
-                # print(image_r.raw.read())
 
-                file_name = 'example.png'
+                content_type = image_r.headers['content-type']
+                extension = mimetypes.guess_extension(content_type)
+                file_name = 'example' + str(extension)
 
                 # Open a local file with wb ( write binary ) permission.
                 with open(file_name, 'wb') as new_file:
                     shutil.copyfileobj(image_r.raw, new_file)
 
                 bookcover = open(file_name, 'rb')  # opening the saved image
-                key = str(book_data['id']) + '/cover.png'
+                key = str(book_data['id']) + '/' + str(uuid1()) + str(extension)
                 upload_to_s3(bookcover, key)  # image saved to amazon s3
                 bookcover.close()
                 file_url = Config.S3_LOCATION + '/%s' % (key)
                 book_data['cover'] = file_url  ## amazon url of file overwritten in Book['cover']
                 new_file.close()
-                # os.remove(file_name)
-                # print("Attachment Successfully save in S3 Bucket url %s " % (file_url))
+                os.remove(file_name)
 
-    # book = Book()
-    #
-    # book.__dict__ = book_data
     if book_data['cover']:
         book_data['images'] = [{'id': 1, 'uri': book_data['cover']}]
     return book_data
@@ -202,85 +207,19 @@ def delete_book(book_id):
     return book
 
 
-def list_book(book):
-    if book:
-        # build connection with ebay
-        # make request body to ebay
-        # execute request to ebay and get response
-        try:
-            ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
-            request_info = {
-                "Item": {
-                    "Title": book.title + " " + book.id,
-                    "PictureDetails": {
-                        # This URL shold be replaced by Allen after finishing S3 storage
-                        "PictureURL": book.cover,
-                    },
-
-                    "PrimaryCategory": {
-                        "CategoryID": "2228",
-                    },
-
-                    "Country": "AU",
-                    "Location": book.opshop.address,
-                    "Site": "Australia",
-                    "SiteID": 15,
-                    "ConditionID": book.condition,
-                    "PaymentMethods": "PayPal",
-                    "PayPalEmailAddress": book.opshop.email,
-                    "Description": book.description,
-                    "ListingDuration": "Days_30",
-                    "StartPrice": book.price,
-                    "ListingType": "FixedPriceItem",
-                    "Currency": "AUD",
-                    "ReturnPolicy": {
-                        "ReturnsAcceptedOption": "ReturnsAccepted",
-                        "RefundOption": "MoneyBack",
-                        "ReturnsWithinOption": "Days_30",
-                        "ShippingCostPaidByOption": "Buyer"
-                    },
-                    "ShippingDetails": {
-                        "ShippingServiceOptions": {
-                            "FreeShipping": "True",
-                            "ShippingService": "AU_Express"
-                        }
-                    },
-                    "DispatchTimeMax": "3"
-                },
-            }
-            ebay_conn.execute("AddItem", request_info)
-            # update ebay id
-
-        except Exception:
-            print("error")
-            deletedbook = delete_book(book.id)
-            # "should give 500"
-            return deletedbook
-
-        book.status = 'listed'
-        db.session.commit()
-
-        # print("BOok returned from confirm",bookobject.__dict__)
-
-    return book
-
-
 def list_book(book, image_links, user):
     """this function lists the book to ebay """
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     request_info = {
         "Item": {
-            "Title": book.title + " " + book.id,
+            "Title": book.title,
             "PictureDetails": {
                 # This URL shold be replaced by Allen after finishing S3 storage
-                "PictureURL": image_links[0],
-                "PictureURL": image_links[0]
+                "PictureURL": image_links
             },
-
             "PrimaryCategory": {
                 "CategoryID": "2228",
             },
-
             "Country": "AU",
             "Location": user.opshop.address,
             "Site": "Australia",
@@ -307,36 +246,24 @@ def list_book(book, image_links, user):
             "DispatchTimeMax": "3"
         },
     }
-    # for i in image_links:
-    #     if i:request_info["Item"]["PictureDetails"]["PictureURL"]=i
-
     resp = ebay_conn.execute("AddItem", request_info)
     return resp.dict()["ItemID"]
-
-    # db.session.add(book)
-    # db.session.commit()
-
-    # when book null
-    # return book
 
 
 def unlist_book(book_id):
     book = Book.query.filter_by(id=book_id).first()
-    if book:
-        try:
-            ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
-            request_info = {
-                "EndingReason": "LostOrBroken",
-                "ItemID": book.book_id_ebay
-            }
-            ebay_conn.execute("EndItem", request_info)
-        except:
-            pass
-
-        book.status = ItemStatus.INACTIVE
-        db.session.add(book)
-        db.session.commit()
-        # book = delete_book(book_id)
+    try:
+        ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
+        request_info = {
+            "EndingReason": "LostOrBroken",
+            "ItemID": book.book_id_ebay
+        }
+        ebay_conn.execute("EndItem", request_info)
+    except Exception:
+        pass
+    book.status = ItemStatus.INACTIVE
+    db.session.add(book)
+    db.session.commit()
     return book
 
 
@@ -366,53 +293,54 @@ def get_all_books(params, user):
     return books
 
 
-def confirm_book(data, images, user):
-    # payload = TOKEN.serializer.loads(token.encode())
+def create_book(data, files, user):
     user = User.query.filter_by(id=user['id']).first()
     data['opshop_id'] = user.opshop.id
-    # book_id = data['id']
-    # temp = book.__dict__
-    # data['_sa_instance_state'] = temp['_sa_instance_state']
-    # book.__dict__ = data
-    if len(data['isbn']) == 10:
-        data['ISBN_10'] = data['isbn']
-    else:
-        data['ISBN_13'] = data['isbn']
-    del data['isbn']
-    images_uri = data['images']
-    del data['images']
+
+    if 'isbn' in data:
+        if len(data['isbn']) == 10:
+            data['ISBN_10'] = data['isbn']
+        else:
+            data['ISBN_13'] = data['isbn']
+        del data['isbn']
+    if 'images' in data:
+        del data['images']
 
     book = Book(**data)
     book.condition = ItemCondition(int(book.condition))
     book.price = float(book.price)
-    image_number = 0
-    image_links = []
-    for x in images:  # getting images
 
-        image_number = image_number + 1
-        image = images[x]
-        image.save(str(image_number) + '.png')
-        body = open(str(image_number) + '.png', 'rb')
-        key = str(data['id']) + '/' + str(image_number) + '.png'
+    image_links = []
+    if not book.cover:
+        delete_from_s3(book.id)
+    else:
+        image_links.append(book.cover)
+
+    for x in files:  # getting images
+        image_key = uuid4()
+        file = files[x]
+        filename = str(image_key) + '.png'
+        file.save(filename)
+        body = open(filename, 'rb')
+        key = str(book.id) + '/' + filename
 
         upload_to_s3(body, key)
         body.close()
+        os.remove(filename)
         file_url = 'https://circexunsw.s3-ap-southeast-2.amazonaws.com/%s' % (key)
         image_links.append(file_url)
 
-    if image_links == []:
-        image_links.append(book.cover)
-    else:
-        book.cover = image_links[0]
+    if image_links and not book.cover:
+            book.cover = image_links[0]
 
     ebay_id = list_book(book, image_links, user)
     book.book_id_ebay = ebay_id
     book.status = ItemStatus.LISTED
-
     db.session.add(book)
     db.session.commit()
+
     for i, x in enumerate(image_links):  # getting images
-        image_dict = {'item_id': data['id'], 'uri': x}
+        image_dict = {'item_id': book.id, 'uri': x}
         image_object = Image(**image_dict)
         db.session.add(image_object)
     db.session.commit()

@@ -109,7 +109,7 @@ class BookList(Resource):
         '''
         data = request.form.to_dict()
         images = request.files
-        book = confirm_book(data, images, user)
+        book = create_book(data, images, user)
         return marshal(book, book_model), SUCCESS
 
 # @api.route('/unlist/<book_id>')
