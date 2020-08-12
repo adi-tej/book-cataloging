@@ -3,10 +3,10 @@ import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import { View} from 'react-native';
 import Scanner from "../BarcodeScanner";
 import ManualInput from "../ManualInput";
-import Cataloging from "../Cataloging";
 import styles from "../../config/styles";
 
 const Tab = createBottomTabNavigator()
+
 export default function CameraTabNavigator({navigation,route}){
 
     const { mode } = route.params;

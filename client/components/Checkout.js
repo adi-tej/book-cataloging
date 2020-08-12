@@ -10,14 +10,7 @@ import images from "../config/images";
 export default class Checkout extends Component {
     constructor(props) {
         super(props);
-        // this.isbn = this.props.isbn;
-        this.bookCover = "https://picsum.photos/id/237/200/300";
-        this.title = "Shanghai";
-        // this.genre = "fiction";
-        this.author = "J.K. Rowling";
-        this.price = 12;
         this.book = this.props.book
-        // console.warn("info is: ", this.props.book)
         this.state = {
             modalVisible: this.props.modalVisible
         }

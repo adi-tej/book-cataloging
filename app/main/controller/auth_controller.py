@@ -14,7 +14,7 @@ auth_model = AuthDto.user_auth
 class UserLogin(Resource):
     @api.expect(auth_model, validate=True)
     @api.doc(
-        description="Login with email and password for token"
+        description="Login with email and password"
     )
     @api.response(201, 'success')
     @api.response(401, 'unauthorized')
@@ -25,7 +25,7 @@ class UserLogin(Resource):
 
 @api.route('logout')
 class UserLogout(Resource):
-    @api.doc(description="Logout from user")
+    @api.doc(description="Logout the session")
     @api.response(201, 'success')
     @api.response(401, 'unauthorized')
     @token_required

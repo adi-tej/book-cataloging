@@ -7,6 +7,11 @@ from setup_app import app
 # user information. 3. roles, this script will be executed at the terminal.
 
 with app.app_context():
+
+    '''
+    DB INIT DATA
+    '''
+
     # ---> opshops information <---
     opshop = Opshop()
     opshop.email = "weisong301@gmail.com"
@@ -42,12 +47,15 @@ with app.app_context():
     TESTING DATA
     '''
     # ---> books <---
-    book1 = Book(id=1, book_id_ebay=1, opshop_id=1, title='What If?', author='Randall Munroe', cover='https://homepages.cae.wisc.edu/~ece533/images/boat.png', publisher='John Murray', edition=1, price=7.99,
-                 status=ItemStatus.LISTED, ISBN_10='8273546373')
-    book2 = Book(id=2, book_id_ebay=2, opshop_id=1, title='Electronic Commerce', author='Gary P. Shneider', cover='https://homepages.cae.wisc.edu/~ece533/images/monarch.png', publisher='Cengage Learning', edition=1, price=139.95,
-                 status=ItemStatus.LISTED, ISBN_10='2355244373')
-    book3 = Book(id=3, book_id_ebay=3, opshop_id=1, title='The brief history of Time', author='Stephen Hawking', cover='https://homepages.cae.wisc.edu/~ece533/images/watch.png', publisher='Bantam Books', edition=1, price=8.99,
-                 status=ItemStatus.LISTED, ISBN_13='8273342373546')
+    book1 = Book(id=1, book_id_ebay=1, opshop_id=1, title='What If?', author='Randall Munroe',
+                 cover='https://homepages.cae.wisc.edu/~ece533/images/boat.png', publisher='John Murray', edition=1,
+                 price=7.99,status=ItemStatus.LISTED, ISBN_10='8273546373', description='')
+    book2 = Book(id=2, book_id_ebay=2, opshop_id=1, title='Electronic Commerce', author='Gary P. Shneider',
+                 cover='https://homepages.cae.wisc.edu/~ece533/images/monarch.png', publisher='Cengage Learning',
+                 edition=1, price=139.95, status=ItemStatus.LISTED, ISBN_10='2355244373', description='')
+    book3 = Book(id=3, book_id_ebay=3, opshop_id=1, title='The brief history of Time', author='Stephen Hawking',
+                 cover='https://homepages.cae.wisc.edu/~ece533/images/watch.png', publisher='Bantam Books', edition=1,
+                 price=8.99, status=ItemStatus.LISTED, ISBN_13='8273342373546', description='')
     db.session.add_all([book1, book2, book3])
     db.session.commit()
     # ---> images <---
@@ -59,7 +67,7 @@ with app.app_context():
     db.session.commit()
     # ---> orders <---
     order1 = Order(id=1, opshop_id=1, status=OrderStatus.PENDING)
-    order2 = Order(id=2, opshop_id=1, status=OrderStatus.CONFIRMED)
+    order2 = Order(id=2, opshop_id=1, status=OrderStatus.PENDING)
     db.session.add_all([order1, order2])
     db.session.commit()
 

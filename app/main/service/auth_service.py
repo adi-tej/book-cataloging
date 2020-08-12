@@ -11,10 +11,6 @@ class Auth:
     @staticmethod
     def login(data):
         """ for user login, user need to provide email and the password """
-        # user_info = data
-        user_email, user_name, password = '', '', ''
-        # user = User()
-        # if user_info['email']:
         email, password = \
             data['email'].strip(), data['password'].strip()
         user = User.query.filter_by(email=email).first()
@@ -39,8 +35,6 @@ class Auth:
             'token': token,
         }
         return make_response(resp_data, SUCCESS)
-        # resp.status_code = POST_SUCCESS
-        # return resp
 
     @staticmethod
     def logout(token):

@@ -2,14 +2,179 @@
     "swagger": "2.0",
     "basePath": "/",
     "paths": {
-        "/authentication/login": {
-            "post": {
+        "/book": {
+            "get": {
                 "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
                     "200": {
-                        "description": "Success"
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/book_array"
+                        }
                     }
                 },
-                "description": "Login with email and password for token",
+                "description": "Get all the listed books of the op-shop with optional parameters",
+                "operationId": "get_books",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "description": "Search query to filter the books",
+                        "name": "search",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "description": "Title of the book",
+                        "name": "title",
+                        "type": "string"
+                    },
+                    {
+                        "in": "query",
+                        "description": "ISBN of the book - 10 or 13 digits",
+                        "name": "isbn",
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "book"
+                ]
+            }
+        },
+        "/book/autodescription/{isbn}": {
+            "parameters": [
+                {
+                    "name": "isbn",
+                    "in": "path",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "get": {
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/book"
+                        }
+                    }
+                },
+                "description": "Get book details using ISBN from google API or ISBN DB",
+                "operationId": "get_auto_description",
+                "parameters": [
+                    {
+                        "name": "isbn",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "description": "ISBN of the book - 10 0r 13 digits"
+                    }
+                ],
+                "tags": [
+                    "book"
+                ]
+            }
+        },
+        "/book/list": {
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/book"
+                        }
+                    }
+                },
+                "description": "List the book to ebay.",
+                "operationId": "post_book_list",
+                "tags": [
+                    "book"
+                ]
+            }
+        },
+        "/book/{book_id}": {
+            "parameters": [
+                {
+                    "in": "path",
+                    "description": "book_id is required parameter if lookup books by id",
+                    "name": "book_id",
+                    "required": true,
+                    "type": "string"
+                }
+            ],
+            "delete": {
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/book"
+                        }
+                    }
+                },
+                "description": "delete some book by book id",
+                "operationId": "delete_book_activities",
+                "tags": [
+                    "book"
+                ]
+            },
+            "get": {
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/book"
+                        }
+                    }
+                },
+                "description": "retrieve book by book id",
+                "operationId": "get_book_activities",
+                "tags": [
+                    "book"
+                ]
+            },
+            "put": {
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/book"
+                        }
+                    }
+                },
+                "description": "updating the database and ebay with updated book data by the staff",
+                "operationId": "put_book_activities",
+                "tags": [
+                    "book"
+                ]
+            }
+        },
+        "/login": {
+            "post": {
+                "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "201": {
+                        "description": "success"
+                    }
+                },
+                "description": "Login with email and password",
                 "operationId": "post_user_login",
                 "parameters": [
                     {
@@ -22,177 +187,77 @@
                     }
                 ],
                 "tags": [
-                    "authentication"
+                    "auth"
                 ]
             }
         },
-        "/authentication/logout": {
+        "/logout": {
             "post": {
                 "responses": {
-                    "200": {
-                        "description": "Success"
+                    "401": {
+                        "description": "unauthorized"
+                    },
+                    "201": {
+                        "description": "success"
                     }
                 },
-                "description": "Logout user",
+                "description": "Logout the session",
                 "operationId": "post_user_logout",
                 "tags": [
-                    "authentication"
+                    "auth"
                 ]
             }
         },
-        "/book/": {
-            "post": {
-                "responses": {
-                    "201": {
-                        "description": "add book success"
-                    }
-                },
-                "description": "receive book information from scanning",
-                "operationId": "post_books",
-                "parameters": [
-                    {
-                        "name": "payload",
-                        "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/ISBN_10"
-                        }
-                    }
-                ],
-                "tags": [
-                    "book"
-                ]
-            }
-        },
-        "/book/avtivities/{book_id}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "description": null,
-                    "name": "book_id",
-                    "required": true,
-                    "type": "string"
-                }
-            ],
+        "/order": {
             "get": {
                 "responses": {
-                    "404": {
-                        "description": "book not found"
+                    "401": {
+                        "description": "unauthorized"
                     },
-                    "201": {
-                        "description": "retrive book information"
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "$ref": "#/definitions/order_array"
+                        }
                     }
                 },
-                "description": "retrive some book by book id",
-                "operationId": "get_book_activities",
-                "tags": [
-                    "book"
-                ]
-            },
-            "delete": {
-                "responses": {
-                    "404": {
-                        "description": "book not found"
-                    },
-                    "201": {
-                        "description": "book deletion success"
-                    }
-                },
-                "description": "delete some book by book id",
-                "operationId": "delete_book_activities",
-                "tags": [
-                    "book"
-                ]
-            },
-            "put": {
-                "responses": {
-                    "201": {
-                        "description": "add book success"
-                    }
-                },
-                "description": "updating the database and ebay with updated book data by the staff",
-                "operationId": "put_book_activities",
-                "tags": [
-                    "book"
-                ]
-            }
-        },
-        "/book/list": {
-            "post": {
-                "responses": {
-                    "400": {
-                        "description": "some items list failed"
-                    },
-                    "201": {
-                        "description": "all items list success"
-                    }
-                },
-                "description": "list some books to ebay or unlist books from ebay.",
-                "operationId": "post_book_list",
+                "description": "Get all orders of an op-shop",
+                "operationId": "get_order",
                 "parameters": [
                     {
-                        "name": "payload",
-                        "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/Book list"
-                        }
+                        "in": "query",
+                        "description": "status of the order (pending/confirmed)",
+                        "name": "status",
+                        "type": "string"
                     }
                 ],
                 "tags": [
-                    "book"
-                ]
-            }
-        },
-        "/book/unlist": {
-            "post": {
-                "responses": {
-                    "400": {
-                        "description": "some items unlist failed"
-                    },
-                    "201": {
-                        "description": "all items unlist success"
-                    }
-                },
-                "description": "unlist some books to ebay or unlist books from ebay.",
-                "operationId": "post_book_unlist",
-                "parameters": [
-                    {
-                        "name": "payload",
-                        "required": true,
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/Book list"
-                        }
-                    }
-                ],
-                "tags": [
-                    "book"
+                    "order"
                 ]
             }
         },
         "/order/checkout": {
             "post": {
                 "responses": {
-                    "400": {
-                        "description": "bad request"
-                    },
                     "401": {
                         "description": "unauthorized"
                     },
                     "201": {
-                        "description": "create order success"
+                        "description": "Success",
+                        "schema": {
+                            "$ref": "#/definitions/order"
+                        }
                     }
                 },
-                "description": "order from the in shop customer",
-                "operationId": "post_order",
+                "description": "Order for in-shop customer checkout",
+                "operationId": "post_order_checkout",
                 "parameters": [
                     {
                         "name": "payload",
                         "required": true,
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/new_order_items"
+                            "$ref": "#/definitions/checkout_order_array"
                         }
                     }
                 ],
@@ -201,76 +266,22 @@
                 ]
             }
         },
-        "/order/{order_id}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "description": null,
-                    "name": "order_id",
-                    "required": true,
-                    "type": "string"
-                }
-            ],
-            "get": {
-                "responses": {
-                    "404": {
-                        "description": "order not found"
-                    },
-                    "200": {
-                        "description": "order information"
-                    }
-                },
-                "description": "retrive order information",
-                "operationId": "get_order_list",
-                "tags": [
-                    "order"
-                ]
-            },
-            "delete": {
-                "responses": {
-                    "404": {
-                        "description": "order not found"
-                    },
-                    "200": {
-                        "description": "order deletion success"
-                    }
-                },
-                "description": "delete some order information",
-                "operationId": "delete_order_list",
-                "tags": [
-                    "order"
-                ]
-            },
-            "put": {
-                "responses": {
-                    "404": {
-                        "description": "order not found"
-                    },
-                    "200": {
-                        "description": "order updation success"
-                    }
-                },
-                "description": "update order information",
-                "operationId": "put_order_list",
-                "tags": [
-                    "order"
-                ]
-            },
+        "/order/confirm": {
             "post": {
                 "responses": {
-                    "201": {
-                        "description": "order confirmed success"
+                    "401": {
+                        "description": "unauthorized"
                     }
                 },
-                "description": "retrive order information",
-                "operationId": "post_order_list",
+                "description": "confirm the pending orders from ebay",
+                "operationId": "post_order_confirmation",
                 "parameters": [
                     {
                         "name": "payload",
                         "required": true,
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/comfirm_order"
+                            "$ref": "#/definitions/confirm order"
                         }
                     }
                 ],
@@ -279,37 +290,30 @@
                 ]
             }
         },
-        "/user/{user_id}": {
-            "parameters": [
-                {
-                    "in": "path",
-                    "description": "user unique id",
-                    "name": "user_id",
-                    "required": true,
-                    "type": "string"
-                }
-            ],
+        "/user/": {
             "get": {
                 "responses": {
+                    "401": {
+                        "description": "unauthorized"
+                    },
                     "404": {
-                        "description": "User not found"
+                        "description": "not found"
                     },
                     "200": {
-                        "description": "Success",
+                        "description": "success",
                         "schema": {
                             "$ref": "#/definitions/user"
                         }
                     }
                 },
                 "summary": "get a user given its identifier",
-                "operationId": "retrive a user",
+                "operationId": "retrieve a user",
                 "parameters": [
                     {
-                        "name": "X-Fields",
-                        "in": "header",
-                        "type": "string",
-                        "format": "mask",
-                        "description": "An optional fields mask"
+                        "in": "query",
+                        "description": "take user id as parameter",
+                        "name": "user_id",
+                        "type": "string"
                     }
                 ],
                 "tags": [
@@ -321,7 +325,7 @@
     "info": {
         "title": "Opshop flask restplus api",
         "version": "1.1",
-        "description": "opshop opshop"
+        "description": "CircEx is a mobile app for op-shop staff to list books on the e-commerce platform, eBay and to check out books online. This is beneficial for the op-shop digital development which would remarkably improve their working efficiency. And it is extremely advantageous in specific times like the current global pandemic when local business would struggle to function properly"
     },
     "produces": [
         "application/json"
@@ -329,13 +333,20 @@
     "consumes": [
         "application/json"
     ],
+    "securityDefinitions": {
+        "TOKEN-BASED": {
+            "type": "apiKey",
+            "name": "API-TOKEN",
+            "in": "header"
+        }
+    },
     "tags": [
         {
             "name": "user",
             "description": "user related operations"
         },
         {
-            "name": "authentication",
+            "name": "auth",
             "description": "user authentication operations"
         },
         {
@@ -350,7 +361,7 @@
     "definitions": {
         "user": {
             "properties": {
-                "user_id": {
+                "id": {
                     "type": "integer"
                 },
                 "opshop_id": {
@@ -359,13 +370,10 @@
                 "role_id": {
                     "type": "integer"
                 },
-                "register_email": {
+                "email": {
                     "type": "string"
                 },
-                "user_name": {
-                    "type": "string"
-                },
-                "password": {
+                "name": {
                     "type": "string"
                 }
             },
@@ -382,63 +390,169 @@
             },
             "type": "object"
         },
-        "new_order_items": {
+        "order_array": {
             "properties": {
-                "opshop_id": {
-                    "type": "integer"
-                },
-                "book_id": {
+                "orders": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    }
-                },
-                "quantity": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "total_price": {
-                    "type": "array",
-                    "items": {
-                        "type": "number"
-                    }
-                },
-                "item_status": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/order"
                     }
                 }
             },
             "type": "object"
         },
-        "comfirm_order": {
+        "order": {
             "properties": {
-                "opshop_id": {
-                    "type": "integer"
+                "order_id": {
+                    "type": "string"
                 },
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "pending",
+                    "enum": [
+                        "pending",
+                        "confirmed",
+                        "deleted",
+                        "cancelled",
+                        "completed"
+                    ]
+                },
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ordered_item"
+                    }
                 }
             },
             "type": "object"
         },
-        "ISBN_10": {
+        "ordered_item": {
             "properties": {
-                "ISBN": {
+                "item_id": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "isbn": {
+                    "type": "string"
+                },
+                "cover": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "total_price": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "checkout_order_array": {
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/checkout_item"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "checkout_item": {
+            "properties": {
+                "item_id": {
+                    "type": "string"
+                },
+                "quantity": {
                     "type": "integer"
                 }
             },
             "type": "object"
         },
-        "Book list": {
+        "confirm order": {
             "properties": {
-                "book_id": {
+                "order_id": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "book_array": {
+            "properties": {
+                "books": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/book"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "book": {
+            "properties": {
+                "id": {
                     "type": "string"
                 },
-                "purpose": {
+                "title": {
+                    "type": "string",
+                    "default": ""
+                },
+                "author": {
+                    "type": "string",
+                    "default": ""
+                },
+                "publisher": {
+                    "type": "string",
+                    "default": ""
+                },
+                "page_count": {
+                    "type": "integer",
+                    "default": 0
+                },
+                "price": {
+                    "type": "number",
+                    "default": 0.0
+                },
+                "genre": {
+                    "type": "string",
+                    "default": ""
+                },
+                "cover": {
+                    "type": "string",
+                    "default": ""
+                },
+                "description": {
+                    "type": "string",
+                    "default": ""
+                },
+                "isbn": {
+                    "type": "string",
+                    "default": ""
+                },
+                "condition": {
+                    "type": "integer",
+                    "default": 1000
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/image"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "image": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "uri": {
                     "type": "string"
                 }
             },

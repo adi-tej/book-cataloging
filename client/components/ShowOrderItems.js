@@ -15,8 +15,6 @@ export default class ShowOrderItems extends Component {
         this.state = {
             isbn: this.item.isbn,
         }
-        //
-        // console.warn(this.props.item)
     }
 
     componentDidMount() {

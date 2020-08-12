@@ -22,7 +22,6 @@ export default class OrderItemDetails extends Component {
         this.confirmed = this.props.route.params.confirmed;
     }
 
-    //TODO: call API to send confirm order to backend
     onConfirmPress = ()=> {
         api.post('/order/confirm', {
             order_id: this.orderNumber
@@ -31,7 +30,6 @@ export default class OrderItemDetails extends Component {
             if (response.status === 200) {
                  Alert.alert("Successfully Confirm Order " + this.orderNumber)
                 setTimeout(() => {
-                    // this.props.navigation.navigate("Pending Orders",{refresh:true})
                     this.props.route.params.navigation.navigate("Dashboard", {
                         screen: "Pending Orders",
                         refresh: true,
@@ -75,7 +73,6 @@ export default class OrderItemDetails extends Component {
                         </View>
 
                         {
-                            //TODO: update it to itemsArray and update the related info
                             this.itemsArray.map((info)=> {
                             return(
                                 <ShowOrderItems

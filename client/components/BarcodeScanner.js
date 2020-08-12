@@ -4,7 +4,6 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import styles from "../config/styles";
 import {Camera} from "expo-camera";
 import Checkout from "./Checkout";
-
 import api  from "../config/axios";
 
 export default function Barcode({navigation,mode}) {
@@ -36,10 +35,7 @@ export default function Barcode({navigation,mode}) {
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
         setBarcode(data);
-        //TODO: redirect to book cataloging page with barcode/isbn as prop
         if (mode === "add") {
-            // Alert.alert(`Searching for isbn ${data} ...`)
-            // console.warn(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
             setScanned(false)
             setTimeout( ()=> {navigation.navigate('BookCataloguing', {isbn: data}) }, 2000)
         } else if (mode === "checkout"){
@@ -51,24 +47,29 @@ export default function Barcode({navigation,mode}) {
             })
                 .then(response => {
                         if(response.status === 200) {
+                            console.warn(response.data)
                             const info = response.data.books[0]
                             if (info !== undefined) {
                                 setBook(info)
                                 setModalVisible(true)
                             } else {
                                 Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                                console.log('error while checkout')
                             }
+                        }else{
+                            Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                            console.log('error while checkout')
                         }
                     }).catch((error) => {
                         Alert.alert("Sorry, we don't have this book! You can't check it out.")
+                        console.log(error.message)
                 })
         }
     };
 
     // -----------------checkout modal setting ---------------------
-    //TODO: API call to request removal of this item
     const onCheckoutPress = (() => {
-         // console.warn("book info: ", book.id)
+         // console.log("book info: ", book.id)
 
         api.post('/order/checkout', {
           items: [
@@ -88,10 +89,12 @@ export default function Barcode({navigation,mode}) {
                 setScanned(false)
             } else {
                 Alert.alert("Oops! You can't remove this item now! Please try it later.")
+                console.log('error while removing item')
             }
           })
           .catch(function (error) {
             Alert.alert("Oops! You can't remove this item now! Please try it later.")
+              console.log(error.message)
           });
     });
     // -----------------modal setting
@@ -143,7 +146,6 @@ export default function Barcode({navigation,mode}) {
                 <View style={{backgroundColor:"#000000aa", flex: 1}}>
                     <View style={styles.checkoutPopup}>
                         <View style={{paddingVertical:"10%",}}>
-                            {/*TODO: pass bookCover, title, author and price to it*/}
                             <Checkout book={book}/>
                             <View style={styles.buttonView}>
                                 <TouchableOpacity

@@ -61,7 +61,7 @@ class Order(db.Model):
 class ItemStatus(enum.Enum):
     LISTED = 'listed'  # listed on ebay
     INACTIVE = 'inactive'  # remove item
-    SOLD_INSHOP = 'sold_inshop'
+    SOLD_INSHOP = 'sold_inshop'   # in shop checkout
     SOLD_ONLINE = 'sold_online'  # from ebay order confirmed
 
 
@@ -76,7 +76,7 @@ class ItemCondition(enum.Enum):
 
 class Book(db.Model):
     __tablename__ = 'book'
-    # book_id should from eBay
+    # book_id_ebay should be from eBay
     id = db.Column(db.String(100), primary_key=True)
     book_id_ebay = db.Column(db.String(100))
     opshop_id = db.Column(db.Integer, db.ForeignKey('opshop.id'), nullable=False)
@@ -90,7 +90,7 @@ class Book(db.Model):
     cover = db.Column(db.String(300))  # AMZON S3 --> https://applicationurl/cover/1.jpg
     price = db.Column(db.Float, default=0.0)
     quantity = db.Column(db.Integer, default=1)
-    description = db.Column(db.String(300))
+    description = db.Column(db.String(1000), nullable=False)
     created_date = db.Column(db.DateTime, server_default=func.now())
     updated_date = db.Column(db.DateTime, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
     status = db.Column(db.Enum(ItemStatus), default=ItemStatus.INACTIVE, nullable=False)
