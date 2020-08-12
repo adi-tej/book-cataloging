@@ -87,7 +87,7 @@ class Book(db.Model):
     edition = db.Column(db.Integer, default=0)
     page_count = db.Column(db.Integer, default=0)
     genre = db.Column(db.String(20))
-    cover = db.Column(db.String(100))  # AMZON S3 --> https://applicationurl/cover/1.jpg
+    cover = db.Column(db.String(300))  # AMZON S3 --> https://applicationurl/cover/1.jpg
     price = db.Column(db.Float, default=0.0)
     quantity = db.Column(db.Integer, default=1)
     description = db.Column(db.String(300))
@@ -114,5 +114,5 @@ class OrderItem(db.Model):
 class Image(db.Model):
     __tablename__ = 'image'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    uri = db.Column(db.String(100), nullable=False)
+    uri = db.Column(db.String(300), nullable=False)
     item_id = db.Column(db.String(100), db.ForeignKey('book.id'), nullable=False)
