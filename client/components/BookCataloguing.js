@@ -37,6 +37,7 @@ export default class BookCataloguing extends Component{
                 condition:"",
                 otherDetails: ""
             },
+            imageId: 0,
             imageArray:[],
             modalVisible:false,
             isbnError:false,
@@ -97,12 +98,11 @@ export default class BookCataloguing extends Component{
         });
     }
     onButtonPress() {
-        if (this.state.title === "" || this.state.condition === "" || this.state.price === 0) {
+        if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === 0) {
             Alert.alert("Warning:",
                 "You have to fill out Title, Condition and Price")
         } else{
             //TODO: API call to submit and redirect to RootNavigator
-            Alert.alert("BookCataloguing book: " + this.state.title)
             if(this.state.edit){
                 //TODO: API call to edit the listing
                 this.requestApi(`/book/`+this.state.book.id, "Failed to edit book")
@@ -163,16 +163,17 @@ export default class BookCataloguing extends Component{
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
                 id: this.imageId,
-                uri: this.state.initImage
+                uri: this.state.initImage //update "image" to "uri"
             })
             this.setState({
                 imageArray: copyImageArray
             })
         }
     };
+
     //TODO: All fields regex check
     render() {
-        return (
+        return ( //show all details of the book
             <SafeAreaView style={{flex:1}}>
                 <Header>
                     <Left>
@@ -182,6 +183,7 @@ export default class BookCataloguing extends Component{
                         {this.state.edit ? 'Edit book':'List a book'} </Text></Body>
                 </Header>
                 <KeyboardAwareScrollView behavior="padding" style={[styles.container,{marginTop:'5%'}]}>
+
                 {/*Create an Image Carousel*/}
                 <View>
                     <ScrollView horizontal={true} style={{flexDirection: "row"}}>
@@ -196,6 +198,7 @@ export default class BookCataloguing extends Component{
                                 )
                             })
                         }
+                        {console.warn("imageArray:", this.state.imageArray)}
                         {this.state.imageArray.length < 10 ?
                             <TouchableOpacity
                                 activityOpacity={0.5}
@@ -282,8 +285,8 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    keyboardType="number-pad"
-                    value={this.state.book.price?this.state.book.price.toString():0}
+                    // keyboardType="number-pad"
+                    value={this.state.book.price?this.state.book.price:0}
                     onChangeText={(price) => this.setState({book:{...this.state.book,price:price}})}
                 />
 
@@ -344,6 +347,7 @@ export default class BookCataloguing extends Component{
                 }
                 </View>
 
+                {/*------------------------setting remove-item modal---------------------------*/}
                 <Modal
                     transparent={true}
                     visible={this.state.modalVisible}

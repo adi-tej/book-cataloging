@@ -73,20 +73,20 @@ export default class ActiveListing extends Component {
     }
 
     //This function is to add a new order
-    addNewListingItem = () => {
-        const copyInfoArray = Object.assign([], this.state.infoArray);
-        copyInfoArray.push({
-            id: this.updateid,
-            cover: this.updateBookCover,
-            title: this.updateTitle,
-            author: this.updateAuthor,
-            genre: this.updateGenre,
-            price: this.updatePrice
-        })
-        this.setState({
-            infoArray: copyInfoArray
-        })
-    }
+    // addNewListingItem = () => {
+    //     const copyInfoArray = Object.assign([], this.state.infoArray);
+    //     copyInfoArray.push({
+    //         id: this.updateid,
+    //         cover: this.updateBookCover,
+    //         title: this.updateTitle,
+    //         author: this.updateAuthor,
+    //         genre: this.updateGenre,
+    //         price: this.updatePrice
+    //     })
+    //     this.setState({
+    //         infoArray: copyInfoArray
+    //     })
+    // }
     //TODO: set all fields to prop
     render() {
         return (
@@ -95,6 +95,7 @@ export default class ActiveListing extends Component {
                     this.state.infoArray.map((info, index)=>{
                         return(
                             <ShowActiveListing
+                                key={info.id}
                                 book={info}
                                 navigation={this.props.navigation}
                             />

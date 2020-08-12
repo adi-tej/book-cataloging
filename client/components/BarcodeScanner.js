@@ -15,17 +15,18 @@ export default function Barcode({navigation,mode}) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const [barcode, setBarcode] = useState("");
-    const [title, setTitle] = useState("");
-    // const [genre, setGenre] = useState("");
-    const [author, setAuthor] = useState("");
-    // const [pages, setPages] = useState(0);
-    // const [publisher, setPublisher] = useState("");
-    const [price, setPrice] = useState(0);
-    const [initImage, setInitImage] = useState(null);
+    // const [title, setTitle] = useState("");
+    // // const [genre, setGenre] = useState("");
+    // const [author, setAuthor] = useState("");
+    // // const [pages, setPages] = useState(0);
+    // // const [publisher, setPublisher] = useState("");
+    // const [price, setPrice] = useState(0);
+    // const [initImage, setInitImage] = useState(null);
 
     const [book, setBook] = useState(null);
 
 
+    //access camera permission
     useEffect(() => {
         (async () => {
             const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -33,13 +34,22 @@ export default function Barcode({navigation,mode}) {
         })();
     }, []);
 
+    if (hasPermission === null) {
+        return <Text>Requesting for camera permission</Text>;
+    }
+    if (hasPermission === false) {
+        return <Text>No access to camera</Text>;
+    }
+
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
         setBarcode(data);
         //TODO: redirect to book cataloging page with barcode/isbn as prop
         if (mode === "add") {
-            console.warn(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
-            navigation.navigate('BookCataloguing', {isbn: data})
+            // Alert.alert(`Searching for isbn ${data} ...`)
+            // console.warn(`Go to listing page: Bar code with type ${type} and data ${data} has been scanned!`);
+            setScanned(false)
+            setTimeout( ()=> {navigation.navigate('BookCataloguing', {isbn: data}) }, 2000)
         } else if (mode === "checkout"){
 
             api.get('/book', {
@@ -63,13 +73,10 @@ export default function Barcode({navigation,mode}) {
         }
     };
 
-    // -----------------modal setting ---------------------
-    //TODO: API call to pass the item item_id to backend and request removal of this item
+    // -----------------checkout modal setting ---------------------
+    //TODO: API call to request removal of this item
     const onCheckoutPress = (() => {
          console.warn("book info: ", book.id)
-        // Alert.alert("Successfully remove item from eBay!")
-        // setTimeout(()=>{setModalVisible(false)},1000)
-        // setScanned(false)
 
         api.post('/order/checkout', {
           items: [
@@ -84,7 +91,6 @@ export default function Barcode({navigation,mode}) {
                 Alert.alert("Successfully remove item from eBay!")
                 const info = response.data.items[0]
                 info.total_price = info.price
-                // console.warn(info)
                 setTimeout(()=>{setModalVisible(false)},1000)
                 setBook(info)
                 setScanned(false)
@@ -93,20 +99,14 @@ export default function Barcode({navigation,mode}) {
             }
           })
           .catch(function (error) {
-            // console.warn(error);
             Alert.alert("Oops! You can't remove this item now! Please try it later.")
           });
     });
     // -----------------modal setting
 
-    if (hasPermission === null) {
-        return <Text>Requesting for camera permission</Text>;
-    }
-    if (hasPermission === false) {
-        return <Text>No access to camera</Text>;
-    }
 
     return (
+        //setting layout of barcode scanner page
         <View
             style={styles.cameraComponent}>
             <BarCodeScanner
@@ -143,7 +143,7 @@ export default function Barcode({navigation,mode}) {
                 </View>
             </BarCodeScanner>
 
-            {/*---------------------popup for checkout------*/}
+            {/*---------------------setting popup window for checkout------*/}
             <Modal
                 transparent={true}
                 visible={modalVisible}

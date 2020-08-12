@@ -33,7 +33,7 @@ export default class ShowOrderItems extends Component {
             <View style={styles.itemContainer}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
-                        <Image style={styles.itemCover} source={!this.bookCover ? images.bookCover :
+                        <Image style={styles.itemCover} source={!this.bookCover ? images.noImage :
                             {uri:this.bookCover}}/>
                     </View>
                     <View style={styles.itemTitleView}>

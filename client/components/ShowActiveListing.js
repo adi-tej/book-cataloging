@@ -9,6 +9,11 @@ import styles from "../config/styles";
 import images from "../config/images";
 //This class is to create a box of each listing item
 export default class ShowActiveListing extends Component {
+
+    constructor(props) {
+        super(props);
+        // console.warn("book is:", this.props.book)
+    }
     //TODO: redirect all props to edit listing
     render() {
         return (

@@ -23,14 +23,13 @@ export default class Checkout extends Component {
         }
     }
 
-
     render() {
         return (
             // <View style={styles.checkoutPopup}>
             //     <View style={{paddingVertical:"10%",}}>
             <View style={styles.itemInfo}>
                 <View style={styles.itemCoverView}>
-                    <Image style={styles.itemCover} source={!this.book.cover ? images.bookCover :
+                    <Image style={styles.itemCover} source={!this.book.cover ? images.noImage :
                             {uri:this.book.cover}}/>
                 </View>
                 <View style={styles.itemTitleView}>
@@ -41,15 +40,5 @@ export default class Checkout extends Component {
                     <Text style={{fontSize: 16}}>$ {this.book.price}</Text>
                 </View>
             </View>);
-
-                    {/*<TouchableOpacity*/}
-                    {/*    activityOpacity={0.5}*/}
-                    {/*    style={styles.removeButton}*/}
-                    {/*    onPress={this.onButtonPress.bind(this)}>*/}
-                    {/*    <Text style={styles.loginText}>Checkout item</Text>*/}
-                    {/*</TouchableOpacity>*/}
-            {/*    </View>*/}
-            {/*</View>*/}
-        // );
     }
 }

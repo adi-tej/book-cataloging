@@ -16,9 +16,6 @@ export default class TabNavigator extends Component{
             <TabHeader navigation={this.props.navigation}/>
             <Tab.Navigator initialRouteName="Cataloging">
                 <Tab.Screen name="Active Listing" component={ActiveListing} />
-                {/*<Tab.Screen name="Pending Orders" component={Orders} />*/}
-                {/*<Tab.Screen name="Accepted Orders" component={Orders} />*/}
-                {/*<Tab.Screen name="Active Listing" children={()=> <ActiveListing mode={"active listing"} navigation={navigation}/>} />*/}
                 <Tab.Screen name="Pending Orders" children={() => <Orders mode={"pending"} navigation={this.props.navigation}/>} />
                 <Tab.Screen name="Accepted Orders" children={() => <Orders mode={"confirmed"} navigation={this.props.navigation}/>}/>
 

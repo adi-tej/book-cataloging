@@ -56,6 +56,7 @@ export default class ManualInput extends Component {
     }
 
 
+    //setting search_button for isbn number searching
     onButtonPress = () => {
         if (this.mode === "add"){
             if (!this.state.isbnError && this.state.isbn !== "") {
@@ -98,7 +99,7 @@ export default class ManualInput extends Component {
         }
     }
 
-    //TODO: get the info from backend and send to BookCataloguing page
+    //setting for "NoISBN" text
     onTextPress = () => {
         if (this.mode === "add") {
             this.props.navigation.navigate('BookCataloguing')
@@ -107,7 +108,7 @@ export default class ManualInput extends Component {
         }
     }
 
-    // -----------------modal setting
+    //setting for checkout-modal
     //TODO: pass the item ISBN to backend and request removal of this item
     onCheckoutPress = () => {
         api.post('/order/checkout', {
@@ -132,7 +133,7 @@ export default class ManualInput extends Component {
           });
     }
 
-    // -----------------noIsbnModal setting
+    // setting for noIsbnModal
     onSearchPress = () =>{
 
         if (this.state.title === ""){

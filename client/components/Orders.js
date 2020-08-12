@@ -90,7 +90,6 @@ export default class Orders extends Component {
                             <ShowPendingOrders
                                 confirmed={this.mode !== "pending" }
                                 key={order.order_id}
-                                //TODO: need to update timer
                                 navigation={this.props.navigation}
                                 order={order}
                             />
