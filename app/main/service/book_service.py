@@ -344,16 +344,15 @@ def get_all_books(params, user):
     res = Book.query
     d = {'opshop_id': user['opshop_id'], 'status': ItemStatus.LISTED}
     if 'search' not in params:
-        for name in params:
-
-            if name == 'isbn':
-                if len(params[name]) == 10:
-                    d['ISBN_10'] = params['isbn']
-                else:
-                    d['ISBN_13'] = params['isbn']
-            if name == 'title':
-                d[name] = params[name]
-        res = res.filter_by(**d)
+        if name == 'isbn':
+            if len(params[name]) == 10:
+                d['ISBN_10'] = params['isbn']
+            else:
+                d['ISBN_13'] = params['isbn']
+            res = res.filter_by(**d)
+        if name == 'title':
+            query = '{}%'.format(params['title'])
+            res = res.filter_by(**d).filter(Book.title.like(query))
     else:
         query = '{}%'.format(params['search'])
         query1 = res.filter_by(**d).filter(Book.ISBN_10.like(query))
