@@ -1,6 +1,6 @@
 from flask_restplus import Namespace, fields
 
-from app.main.model.models import ItemCondition, ItemStatus, OrderStatus
+from app.main.model.models import ItemCondition, OrderStatus
 
 
 class UserDto:
@@ -72,40 +72,15 @@ class BookDto:
         'title': fields.String(default=''),
         'author': fields.String(default=''),
         'publisher': fields.String(default=''),
-        'edition': fields.Integer,
-        'page_count': fields.Integer,
+        'page_count': fields.Integer(default=0),
         'price': fields.Float(default=0.0),
-        'genre': fields.String,
-        'cover': fields.String,
-        'quantity': fields.Integer(default=1),
+        'genre': fields.String(default=''),
+        'cover': fields.String(default=''),
         'description': fields.String(default=''),
-        'status': fields.String(enum=[x.value for x in ItemStatus], attribute='status.value'),
-        'isbn': fields.String,
-        'notes': fields.String,
-        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value', default=ItemCondition.NEW.value),
+        'isbn': fields.String(default=''),
+        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value',
+                                    default=ItemCondition.NEW.value),
         'images': fields.List(fields.Nested(image))
-    })
-    book_model = api.model('book', {
-        'id': fields.String,
-        'book_id_ebay': fields.String,
-        'opshop_id': fields.Integer,
-        'title': fields.String,
-        'author': fields.String,
-        'publisher': fields.String,
-        'edition': fields.Integer,
-        'page_count': fields.Integer,
-        'genre': fields.String,
-        'cover': fields.String,
-        'price': fields.Float,
-        'quantity': fields.Integer,
-        'description': fields.String,
-        'created_date': fields.DateTime,
-        'updated_date': fields.DateTime,
-        'status': fields.String(enum=[x.value for x in ItemStatus], attribute='status.value'),
-        'ISBN_10': fields.String,
-        'ISBN_13': fields.String,
-        'notes': fields.String,
-        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value')
     })
 
     book_array_model = api.model('book_array', {

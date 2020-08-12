@@ -42,16 +42,11 @@ export default function Login({navigation}){
         }
     }
     const handleLogin = () => {
-        //TODO: API call to login
-
         api.post('/login', {
             email: data.email,
             password: data.password
           })
           .then(function (response) {
-            // console.warn(response.data.token);
-            //if response status is 200 - navigate
-              //else set state loginerror true
               if (response.status === 200) {
                   setClientToken(response.data.token);
                   navigation.navigate('RootNavigator')
@@ -63,8 +58,8 @@ export default function Login({navigation}){
               }
           })
           .catch(function (error) {
-            console.warn(error.message);
-            Alert.alert("Invalid email or password. Please try it again.")
+            console.log(error.message);
+            Alert.alert("Unable to connect to server. Please try later...")
           })
 
     }
@@ -79,7 +74,6 @@ export default function Login({navigation}){
                     onBlur={() => validateEmail()}
                     keyboardType='email-address'
                     autoCorrect={false}
-                    // onSubmitEditing={()=>this.password.focus()}
                     blurOnSubmit={false}
                 />
                 {data.emailError?
@@ -91,7 +85,6 @@ export default function Login({navigation}){
                     style={styles.textInput}
                     onChangeText={val => handlePasswordChange(val)}
                     secureTextEntry={true}
-                    // ref={(input)=>data.password=input}
                     blurOnSubmit={false}
                 />
                 <TouchableOpacity activeOpacity={0.7} onPress={() => handleLogin()} title="Login" style={styles.loginButton}>
@@ -101,7 +94,6 @@ export default function Login({navigation}){
                     <Text style={{color:'red'}}>Invalid credentials</Text>
                     : null
                 }
-                {/*<Text onPress={() => navigation.navigate('RootNavigator')} style={styles.resetAccountButton}>I don't have an account</Text>*/}
                 <Text onPress={() =>
                     Alert.alert("Please contact your manager to create an account for you.")
                 } style={styles.resetAccountButton}>I don't have an account</Text>

@@ -29,24 +29,24 @@ export default class BookCataloguing extends Component{
                 isbn: "",
                 genre: "",
                 author: "",
+                edition: 0,
                 cover: "",
                 page_count: 0,
                 publisher:"",
                 price: 0,
                 condition:0,
-                otherDetails: ""
+                description: ""
             },
             imageArray:[],
-            // imageId: this.state.imageArray.length,
             modalVisible:false,
             isbnError:false,
             priceError:false,
             initImage: null,
             edit:false
         };
-        this.imageId = this.state.imageArray.length;
+        this.imageId = this.state.imageArray.length + 1;
     }
-//TODO: API call to get book data before rendering and set to state
+
     componentDidMount() {
         if(this.props.route && this.props.route.params){
             if(this.props.route.params.edit) {
@@ -63,16 +63,17 @@ export default class BookCataloguing extends Component{
                     .then(res => {
                         if(res.status === 200) {
                             const data = res.data
+                            console.log(data)
                             this.setState({
                                 book:data,
                                 imageArray: data.images
                             })
                         }else{
                             alert('Failed to fetch book details from ISBN '+isbn)
-                            console.warn('Failed to fetch book auto description')
+                            console.log('Failed to fetch book auto description')
                         }
                     }).catch((error) => {
-                        console.warn(error.message)
+                        console.log(error.message)
                 })
             }
         }
@@ -81,32 +82,30 @@ export default class BookCataloguing extends Component{
     getFormData = () => {
         let reqData = new FormData();
         this.state.book.images = this.state.imageArray
-        if (this.state.imageArray.length === 0){
-            this.state.book.cover = null
-        }
         for ( let key in this.state.book ) {
-            reqData.append(key,  JSON.stringify(this.state.book[key]));
+            if(key === 'images') {
+                reqData.append(key, JSON.stringify(this.state.book[key]));
+            }else{
+                reqData.append(key, this.state.book[key]);
+            }
         }
-
-        this.state.imageArray.forEach(image => {
-            reqData.append('image',{
+        this.state.imageArray.forEach((image, i) => {
+            reqData.append("image"+image.id.toString(), {
                 uri: image.uri,
-                type: 'image/jpg',
+                type: "image/jpeg",
                 name: image.id.toString()
-            })
-        })
-        console.warn(reqData)
+            });
+        });
         return reqData
 
     }
     onButtonPress() {
-        if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === 0) {
+
+        if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === "" || this.state.book.description === "" || this.state.imageArray.length === 0) {
             Alert.alert("Warning:",
-                "You have to fill out Title, Condition and Price")
+                "You have to fill out Title, Condition, Price, Description and add at-least one image")
         } else{
-            //TODO: API call to submit and redirect to RootNavigator
             if(this.state.edit){
-                //TODO: API call to edit the listing
                 let reqData = this.getFormData()
                 api.put(`/book/`+this.state.book.id, reqData,{
                     headers:{
@@ -118,12 +117,12 @@ export default class BookCataloguing extends Component{
                             this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to edit book")
+                            console.log('Failed to edit book')
                         }
                     }).catch((error)=>{
-                    console.warn(error.message);
+                    console.log(error.message);
                 });
             }else{
-                //TODO: API call to create the listing
                 let reqData = this.getFormData()
                 api.post(`/book/list`, reqData,{
                     headers:{
@@ -132,12 +131,14 @@ export default class BookCataloguing extends Component{
                 })
                     .then(res => {
                         if(res.status === 200) {
+                            console.log(res.data)
                             this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to list on ebay")
+                            console.log('Failed to list book')
                         }
                     }).catch((error)=>{
-                    console.warn(error.message);
+                    console.log(error.message);
                 });
             }
         }
@@ -150,20 +151,26 @@ export default class BookCataloguing extends Component{
 
     onConfirmRemovePress = () =>{
         this.setState({modalVisible:false})
-        //TODO: API call to remove listing
         api.delete(`/book/`+this.state.book.id)
             .then(res => {
                 if(res.status === 200) {
                     this.props.navigation.navigate('Active Listing',{refresh:true})
                 }else{
                     alert('Failed to remove item')
+                    console.log('Failed to remove item')
                 }
             }).catch((error)=>{
-            console.warn(error.message);
+            console.log(error.message);
         });
     }
 
     deleteImage = (index) =>{
+        console.log(index,'-----', this.state.book.cover)
+        if(index === 0){
+            if(this.state.book.cover !== ''){
+                this.state.book.cover = ''
+            }
+        }
         const copyImageArray = Object.assign([], this.state.imageArray);
         copyImageArray.splice(index, 1)
         this.setState({
@@ -197,10 +204,6 @@ export default class BookCataloguing extends Component{
         });
         if (!cancelled) {
             this.setState({initImage: uri});
-            //add this image to imageArray
-            // while (this.imageId + 1  in this.state.imageArray.id){
-            //     this.imageId = this.imageId + 1;
-            // }
             let imgIds = []
             this.state.imageArray.forEach((img) => {
                 imgIds.push(img.id)
@@ -208,7 +211,6 @@ export default class BookCataloguing extends Component{
             while (imgIds.includes(this.imageId)){
                 this.imageId = this.imageId + 1;
             }
-
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
                 id: this.imageId,
@@ -220,7 +222,6 @@ export default class BookCataloguing extends Component{
         }
     };
 
-    //TODO: All fields regex check
     render() {
         return ( //show all details of the book
             <SafeAreaView style={{flex:1}}>
@@ -247,7 +248,6 @@ export default class BookCataloguing extends Component{
                                 )
                             })
                         }
-                        {/*{console.warn("imageArray:", this.state.imageArray)}*/}
                         {this.state.imageArray.length < 10 ?
                             <TouchableOpacity
                                 activityOpacity={0.5}
@@ -313,7 +313,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.book.page_count?this.state.book.page_count:0}
+                    value={this.state.book.page_count?this.state.book.page_count.toString():0}
                     onChangeText={(page) => this.setState({book:{...this.state.book,page_count:page}})}
                 />
 
@@ -335,7 +335,7 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     onBlur={this.validPrice.bind(this)}
-                    value={this.state.book.price?this.state.book.price:0}
+                    value={this.state.book.price?this.state.book.price.toString():0}
                     onChangeText={(price) => this.setState({book:{...this.state.book,price:price.trim()}})}
                 />
                     {this.state.priceError?
@@ -348,12 +348,10 @@ export default class BookCataloguing extends Component{
                     <Text style={styles.requiredText}>*</Text>
                 </View>
                 <RNPickerSelect
+                    value={this.state.book.condition}
                     onValueChange={(condition) => this.setState({book:{...this.state.book,condition:condition}})}
                     style={{
                         ...pickerSelectStyles,
-                        // iconContainer: {
-                        // top: 20,
-                        // right: 10,},
                     }}
                     items={[
                         { label: 'New', value: 1000 },
@@ -366,19 +364,20 @@ export default class BookCataloguing extends Component{
                     placeholder={{label: "Select a condition..."}}
                     useNativeAndroidPickerStyle={false}
                     textInputProps={{ underlineColor: 'transparent' }}
-                    // Icon={() => {
-                    //     return <Icon name="arrow-down" size={16} color="lightgrey" />;
-                    // }}
 
                 />
 
-                <Text style={styles.listingTitle}>Other Details: </Text>
+                <View style={{flex: 1, flexDirection: "row"}}>
+                    <Text style={styles.listingTitle}>Description: </Text>
+                    <Text style={styles.requiredText}>*</Text>
+                </View>
                 <TextInput
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     multiline={true}
-                    onChangeText={(otherDetails) => this.setState({book:{otherDetails:otherDetails}})}
+                    value={this.state.book.description}
+                    onChangeText={(description) => this.setState({book:{...this.state.book,description:description}})}
                 />
 
                 <View style={styles.buttonView}>

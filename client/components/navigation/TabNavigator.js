@@ -15,7 +15,6 @@ export default class TabNavigator extends Component{
     return(
         <View style={{flex:1}}>
             <TabHeader navigation={this.props.navigation}/>
-            {/*{console.warn("TabNavigator props: ", this.props)}*/}
             <Tab.Navigator initialRouteName="Cataloging">
                 <Tab.Screen name="Active Listing" component={ActiveListing} />
                 <Tab.Screen name="Pending Orders" children={() => <Orders mode={"pending"} navigation={this.props.navigation} params={this.props.route.params}/>} />

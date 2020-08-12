@@ -1,5 +1,4 @@
 import json
-
 from flask import request
 from flask_restplus import Resource, marshal
 from app.main.service.order_service import *
@@ -17,28 +16,25 @@ order_confirm_model = OrderDto.order_confirm_model
 
 @api.route('')
 class Order(Resource):
-    @api.doc(description="retrieve orders according to order status (not required)")
-    @api.param('status', 'take the order status in the parameter')
+    @api.doc(description="Get all orders of an op-shop")
+    @api.param('status', 'status of the order (pending/confirmed)')
     @api.response(200, 'success', order_array_model)
     @api.response(401, 'unauthorized')
     @token_required
     def get(self, user):
         status = request.args.get('status')
-        # token = request.headers.get('Authorization')
-
-        orders = retrieve_order(status, user)
+        orders = get_all_orders(status, user)
         return marshal(orders, order_array_model), SUCCESS
 
 
 @api.route('/checkout')
 class OrderCheckout(Resource):
-    @api.doc(description="order from the in shop customer")
+    @api.doc(description="Order for in-shop customer checkout")
     @api.expect(order_checkout_model, validate=True)
     @api.response(201, 'Success', model=order_model)
     @api.response(401, 'unauthorized')
     @token_required
     def post(self, user):
-        # token = request.headers.get('Authorization')
         data = json.loads(request.get_data())
         order = create_order(data, user)
         return marshal(order, order_model), SUCCESS
@@ -46,14 +42,13 @@ class OrderCheckout(Resource):
 
 @api.route('/confirm')
 class OrderConfirmation(Resource):
-    @api.doc(description="confirm the orders from ebay")
+    @api.doc(description="confirm the pending orders from ebay")
     @api.expect(order_confirm_model, validate=True)
     @api.response(401, 'unauthorized')
     @token_required
     def post(self, user):
         data = json.loads(request.get_data())
         order_array = confirm_order(data)
-
         return marshal(order_array, order_confirm_model), SUCCESS
 
 # @api.route('/<order_id>')

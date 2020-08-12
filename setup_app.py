@@ -4,6 +4,10 @@ from flask_cors import CORS
 from app.main import create_app, db
 from app.app import blueprint
 
+"""
+    Create App with Environment
+    ('production', 'development', 'test')
+"""
 app = create_app('development')
 CORS(app)
 app.register_blueprint(blueprint)
@@ -19,8 +23,6 @@ manager.add_command('db', MigrateCommand)
 
 @manager.command
 def run():
-    # db.drop_all()
-    # db.create_all()
     app.run(host='0.0.0.0')
 
 

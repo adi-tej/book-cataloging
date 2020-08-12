@@ -11,18 +11,13 @@ import api  from "../config/axios";
 export default class Orders extends Component {
     constructor(props) {
         super(props);
-        this.updateOrderNumber = "";
-        this.updateTimeout = 2;
-        this.updateTotalPrice = 0;
         this.mode = this.props.mode;
-        // console.warn("props.params: ", this.props)
         this.state = {
             orderArray:[],
             refreshing: false,
             }
     }
 
-//API call to get orders data before rendering and set to state
     componentDidMount() {
         api.get('/order', {
                 params: {
@@ -31,7 +26,6 @@ export default class Orders extends Component {
             })
                 .then((response) => {
                     if (response.status === 200) {
-                        // console.warn(response.data)
                         this.setState({orderArray: response.data.orders})
                     }
 
@@ -68,7 +62,6 @@ export default class Orders extends Component {
 
 
     componentWillReceiveProps(nextProps) {
-        // console.warn("refresh-----", nextProps.params)
         if (nextProps.params !== undefined) {
             if (nextProps.params.refresh) {
                 this.refreshOrders()

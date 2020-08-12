@@ -31,19 +31,13 @@ export default class ManualInput extends Component {
                 isbn: "",
                 genre: "",
                 author: "",
-                pages: 0,
+                page_count: 0,
                 publisher:"",
                 price: 0,
                 condition:"",
-                otherDetails: ""
+                description: ""
             },
             title:"",
-            // genre: "",
-            // author: "",
-            // pages: 0,
-            // publisher:"",
-            // price: 0,
-            // initImage: null,
         }
     }
 
@@ -60,10 +54,7 @@ export default class ManualInput extends Component {
     onButtonPress = () => {
         if (this.mode === "add"){
             if (!this.state.isbnError && this.state.isbn !== "") {
-                //TODO: get all info form backend and send to BookCataloguing page
-                //TODO: should also check if we get the info
                 this.props.navigation.navigate('BookCataloguing', {isbn: this.state.isbn})
-                // Alert.alert("Go to listing page, ISBN number is: " + this.state.isbn)
             } else {
                 Alert.alert("Please enter a valid ISBN number with 10 or 13 digits")
             }
@@ -77,7 +68,6 @@ export default class ManualInput extends Component {
                     })
                         .then((response) => {
                             if (response.status === 200) {
-                                // console.warn(response.data.books[0])
                                 const info = response.data.books[0]
                                 if (info !== undefined) {
                                     this.setState({
@@ -90,7 +80,7 @@ export default class ManualInput extends Component {
                             }
                         })
                         .catch((error) => {
-                            console.warn(error.message)
+                            console.log(error.message)
                            Alert.alert("Sorry, we don't have this book! You can't check it out.")
                         })
             } else {
@@ -109,7 +99,6 @@ export default class ManualInput extends Component {
     }
 
     //setting for checkout-modal
-    //TODO: pass the item ISBN to backend and request removal of this item
     onCheckoutPress = () => {
         api.post('/order/checkout', {
             items: [
@@ -128,7 +117,7 @@ export default class ManualInput extends Component {
             }
           })
           .catch(function (error) {
-            console.warn(error.message);
+            console.log(error.message);
             Alert.alert("Oops! You can't remove this item now! Please try it later.")
           });
     }
@@ -146,7 +135,6 @@ export default class ManualInput extends Component {
                     })
                         .then((response) => {
                             if (response.status === 200) {
-                                // console.warn(response.data.books[0])
                                 const info = response.data.books[0]
                                 if (info !== undefined) {
                                     this.setState({
@@ -160,7 +148,7 @@ export default class ManualInput extends Component {
                             }
                         })
                         .catch((error) => {
-                            console.warn(error.message)
+                            console.log(error.message)
                            Alert.alert("Sorry, we don't have this book! You can't check it out.")
                         })
         } else{
@@ -222,7 +210,6 @@ export default class ManualInput extends Component {
                     <View style={{backgroundColor:"#000000aa", flex: 1}}>
                         <View style={styles.checkoutPopup}>
                             <View style={{paddingVertical:"10%",}}>
-                                {/*TODO: pass bookCover, title, author and price to it*/}
                                 <Checkout book={this.state.book}/>
                                 <View style={styles.buttonView}>
                                     <TouchableOpacity
