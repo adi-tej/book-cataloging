@@ -121,7 +121,7 @@ export default function Barcode({navigation,mode}) {
                             width:'8%',
                             marginLeft : '3%'
                         }]}
-                        onPress={() => navigation.navigate('Active Listing',{refresh:true})}>
+                        onPress={() => navigation.navigate('Active Listing')}>
                         <Text style={{ fontSize: 18, color: 'white'}}> X </Text>
                     </TouchableOpacity>
 
