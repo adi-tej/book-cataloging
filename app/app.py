@@ -20,7 +20,13 @@ blueprint = Blueprint('api', __name__)
 api = Api(blueprint,
           title='Opshop flask restplus api',
           version='1.1',
-          description='opshop opshop',
+          description='CircEx is a mobile app for op-shop staff to list '
+                      'books on the e-commerce platform, eBay and to check'
+                      ' out books online. This is beneficial for the op-shop'
+                      ' digital development which would remarkably improve their'
+                      ' working efficiency. And it is extremely advantageous '
+                      'in specific times like the current global pandemic when'
+                      ' local business would struggle to function properly',
           authorizations={
               "TOKEN-BASED": {
                   "type": "apiKey",

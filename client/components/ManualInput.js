@@ -90,6 +90,7 @@ export default class ManualInput extends Component {
                             }
                         })
                         .catch((error) => {
+                            console.warn(error.message)
                            Alert.alert("Sorry, we don't have this book! You can't check it out.")
                         })
             } else {
@@ -127,7 +128,7 @@ export default class ManualInput extends Component {
             }
           })
           .catch(function (error) {
-            // console.warn(error);
+            console.warn(error.message);
             Alert.alert("Oops! You can't remove this item now! Please try it later.")
           });
     }
@@ -159,6 +160,7 @@ export default class ManualInput extends Component {
                             }
                         })
                         .catch((error) => {
+                            console.warn(error.message)
                            Alert.alert("Sorry, we don't have this book! You can't check it out.")
                         })
         } else{

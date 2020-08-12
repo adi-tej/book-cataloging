@@ -62,28 +62,41 @@ export default class BookCataloguing extends Component{
                     .then(res => {
                         if(res.status === 200) {
                             const data = res.data
-                            const copyImageArray = Object.assign([], this.state.imageArray);
-                            copyImageArray.push({
-                                id: this.imageId,
-                                uri: data.cover,  //update "image" to "uri"
-                                // uri: "https://circexunsw.s3-ap-southeast-2.amazonaws.com/521417bc-dbc2-11ea-a199-7085c2fa4e67/cover.png",
-                            })
                             this.setState({
                                 book:data,
-                                imageArray: copyImageArray
+                                imageArray: data.images
                             })
                         }else{
+                            alert('Failed to fetch book details from ISBN '+isbn)
                             console.warn('Failed to fetch book auto description')
                         }
                     }).catch((error) => {
-                        console.warn('Failed to fetch book auto description')
+                        console.warn(error.message)
                 })
             }
         }
 
     }
-
-    // setting for "List item" or "edit item" button
+    requestApi = (url, errMsg) => {
+        let reqData = new FormData();
+        for ( let key in this.state.book ) {
+            reqData.append(key, JSON.stringify(this.state.book[key]));
+        }
+        api.put(url, reqData,{
+            headers:{
+                'Content-Type': null
+            }
+        })
+            .then(res => {
+                if(res.status === 200) {
+                    this.props.navigation.navigate('RootNavigator')
+                }else{
+                    alert(errMsg)
+                }
+            }).catch((error)=>{
+            console.warn(error.message);
+        });
+    }
     onButtonPress() {
         if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === 0) {
             Alert.alert("Warning:",
@@ -92,49 +105,10 @@ export default class BookCataloguing extends Component{
             //TODO: API call to submit and redirect to RootNavigator
             if(this.state.edit){
                 //TODO: API call to edit the listing
-                let reqData = new FormData();
-                for ( var key in this.state.book ) {
-                    reqData.append(key, JSON.stringify(this.state.book[key]));
-                }
-                api.put(`/book/`+this.state.book.id, reqData,{
-                    headers:{
-                        'Content-Type': null
-                    }
-                })
-                    .then(res => {
-                        console.warn(res)
-                        const data = res.data;
-                        // this.setState({ title: data.title });
-                        Alert.alert(this.state.book.title, " is updated.")
-                        setTimeout(()=> {
-                            this.props.navigation.navigate('CameraTab')}, 2000)
-                        // this.props.navigation.navigate('RootNavigator')}, 2000)
-                    }).catch((error)=>{
-                        console.warn(error.message);
-                });
+                this.requestApi(`/book/`+this.state.book.id, "Failed to edit book")
             }else{
                 //TODO: API call to create the listing
-                let reqData = new FormData();
-                for ( var key in this.state.book ) {
-                    reqData.append(key, JSON.stringify(this.state.book[key]));
-                }
-
-                api.put(`/book/list`,reqData,{
-                    headers:{
-                        'Content-Type': null
-                    }
-                })
-                    .then(res => {
-                        console.warn(res)
-                        const data = res.data;
-                        // this.setState({ title: data.title });
-                        Alert.alert(this.state.book.title, " is listed")
-                        setTimeout(()=> {
-                            this.props.navigation.navigate('CameraTab')}, 2000)
-                        // this.props.navigation.navigate('RootNavigator')}, 2000)
-                    }).catch((error)=>{
-                    console.warn(error.message);
-                });
+                this.requestApi(`/book/list`, "Failed to list on ebay")
             }
         }
     }
@@ -149,10 +123,11 @@ export default class BookCataloguing extends Component{
         //TODO: API call to remove listing
         api.delete(`/book/`+this.state.book.id)
             .then(res => {
-                console.warn(res)
-                const data = res.data;
-                // this.setState({ title: data.title });
-                this.props.navigation.navigate('RootNavigator')
+                if(res.status === 200) {
+                    this.props.navigation.navigate('RootNavigator')
+                }else{
+                    alert('Failed to remove item')
+                }
             }).catch((error)=>{
             console.warn(error.message);
         });

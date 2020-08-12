@@ -2,7 +2,8 @@ import axios from 'axios'
 
 // Create axios client, pre-configured with baseURL
 let api = axios.create({
-    baseURL: 'http://192.168.1.106:5000',
+    baseURL: 'http://ec2-user@ec2-3-25-170-12.ap-southeast-2.compute.amazonaws.com:5000',
+    // baseURL: 'http://192.168.1.106:5000',
     timeout: 10000,
 });
 

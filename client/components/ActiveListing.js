@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {ScrollView} from "react-native";
 import styles from "../config/styles";
 import ShowActiveListing from "./ShowActiveListing";
-import api,{setClientToken} from "../config/axios";
+import api from "../config/axios";
 
 export default class ActiveListing extends Component {
     constructor(props) {
@@ -27,55 +27,49 @@ export default class ActiveListing extends Component {
                     author:"Tom", genre:"Non-fiction", price: 10.456},
             ]}
     }
-
-    //TODO: API call to get data before rendering
-    componentDidMount() {
-
+    getAllItems = () =>{
         api.get(`/book`)
             .then(res => {
                 if(res.status === 200) {
-                    // console.warn(res)
-                    // const books = res.data.books
-                    // books.forEach( book => {
-                    //     book.isbn = book.ISBN_10 ? book.ISBN_10 : book.ISBN_13
-                    // })
                     this.setState({ infoArray: res.data.books});
                 }else{
-                    console.warn('error')
+                    alert('Failed to get books')
+                    console.warn('failed to get books')
                 }
             }).catch((error)=>{
-                console.warn(error.message);
+            console.warn(error.message);
         });
+    }
+    //TODO: API call to get data before rendering
+    componentDidMount() {
+        // setClientToken("eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2VtYWlsIjoiYWRtaW5AY2lyY2V4LmNvbSIsInVzZXJfbmFtZSI6IkFkbWluIiwiZ2VuZXJhdGVfdGltZSI6MTU5Njk4OTY2MS4wMDA2MDR9.edaZGWGNYW7-POkcI0YpI6CHEXux9xj-7Y9g_lCS2B_sneUOtMLEz9d7UKMyH7ufwERjG76BqIrodOZtDf7afw")
+        this.getAllItems()
 
     }
-
     //TODO: API call to Update state from search
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentWillReceiveProps(nextProps) {
         //keyword from search
         //console.warn(this.props.route.params)
-        if(this.props.route && this.props.route.params) {
-            if (this.props.route.params.search) {
-                api.get(`/book`, {
-                    params: {
-                        search: this.props.route.params.data
+        if (nextProps.route.params.search != null) {
+            api.get(`/book`, {
+                params: {
+                    search: nextProps.route.params.search
+                }
+            })
+                .then(res => {
+                    if (res.status === 200) {
+                        this.setState({infoArray: res.data.books});
+                    } else {
+                        alert('Failed to search')
+                        console.warn('failed to search')
                     }
-                })
-                    .then(res => {
-                        if (res.status === 200) {
-                            // console.warn(res)
-                            // const books = res.data.books
-                            // books.forEach(book => {
-                            //     book.isbn = book.ISBN_10 ? book.ISBN_10 : book.ISBN_13
-                            // })
-                            this.setState({infoArray: res.data.books});
-                        } else {
-                            console.warn('error')
-                        }
-                    }).catch((error) => {
-                        console.warn(error.message);
-                });
-            }
+                }).catch((error) => {
+                    console.warn(error.message);
+            });
+        }else{
+            this.getAllItems()
         }
+
     }
 
     //This function is to add a new order
@@ -95,9 +89,6 @@ export default class ActiveListing extends Component {
     // }
     //TODO: set all fields to prop
     render() {
-
-        //console.warn(this.props.route.params)
-        //this.props.navigation.routes.params.update();
         return (
             <ScrollView style={styles.container}>
                 {

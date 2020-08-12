@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {View, Text, TouchableOpacity} from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import Orders from "./Orders";
-import ActiveListing from "./ActiveListing";
-import TabHeader from "./TabHeader";
+import Orders from "../Orders";
+import ActiveListing from "../ActiveListing";
+import TabHeader from "../TabHeader";
 
-import styles from "../config/styles";
+import styles from "../../config/styles";
 
 const Tab = createMaterialTopTabNavigator()
 

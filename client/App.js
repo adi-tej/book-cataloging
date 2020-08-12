@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MenuProvider } from 'react-native-popup-menu';
 import Home from "./components/Home";
-import DrawerNavigator from "./components/DrawerNavigator";
-import CameraTabNavigator from "./components/CameraTabNavigator";
+import DrawerNavigator from "./components/navigation/DrawerNavigator";
+import CameraTabNavigator from "./components/navigation/CameraTabNavigator";
 import BookCataloguing from "./components/BookCataloguing";
 import OrderItemDetails from "./components/OrderItemDetails";
 

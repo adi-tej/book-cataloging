@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import SearchHeader from 'react-native-search-header';
 import {Header, Left, Right, Icon} from "native-base";
@@ -78,10 +78,11 @@ export default function TabHeader({navigation}){
                 }}
                 onHide={() => {
                     searchHeaderRef.current.clear()
+                    navigation.navigate("Active Listing",{search:null})
                 }}
                 onSearch={(obj) => {
                     // update the active listing
-                    navigation.navigate("Active Listing",{search:true,data:obj.nativeEvent.text})
+                    navigation.navigate("Active Listing",{search:obj.nativeEvent.text})
                 }}
             />
         </View>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-export default function Cataloging({navigation, mode}){
+export default function Cataloging({ mode}){
     console.warn(mode)
     return(
         <View>

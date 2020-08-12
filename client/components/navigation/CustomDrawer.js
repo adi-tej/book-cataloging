@@ -1,5 +1,4 @@
 import React from 'react';
-import { Text, View} from 'react-native';
 import {DrawerContentScrollView, DrawerItemList, DrawerItem} from "@react-navigation/drawer";
 export default function CustomDrawer(props) {
     return (
