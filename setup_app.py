@@ -8,7 +8,7 @@ from app.app import blueprint
     Create App with Environment
     ('production', 'development', 'test')
 """
-app = create_app('development')
+app = create_app('production')
 CORS(app)
 app.register_blueprint(blueprint)
 
