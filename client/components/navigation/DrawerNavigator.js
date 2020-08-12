@@ -4,7 +4,6 @@ import {createDrawerNavigator} from "@react-navigation/drawer";
 import colors from '../../config/colors';
 import Logout from "../Logout";
 import TabNavigator from "./TabNavigator";
-// import Login from "./Login"
 import CustomDrawer from "./CustomDrawer";
 import Home from "../Home";
 const Drawer = createDrawerNavigator()

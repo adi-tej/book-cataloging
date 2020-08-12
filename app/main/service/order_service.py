@@ -4,6 +4,7 @@ from ..model.models import *
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
 
+
 def create_order(data, user):
     """
         When there are new orders from opshop or ebay, this function
@@ -28,7 +29,6 @@ def create_order(data, user):
     items = data['items']
 
     for item in items:
-
         book = Book.query.filter_by(id=item['item_id']).first()
         order_item = OrderItem(
             order_id=order.id,

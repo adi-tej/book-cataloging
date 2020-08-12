@@ -11,6 +11,7 @@ book_model = BookDto.book_model
 book_array_model = BookDto.book_array_model
 book_response_model = BookDto.book_response_model
 
+
 @api.route('')
 class Books(Resource):
     @api.doc(description="Get all the listed books of the op-shop with optional parameters")
@@ -95,6 +96,17 @@ class BookList(Resource):
     def post(self, user):
         # data = json.loads(request.get_data())
         # token = request.headers.get('Authorization')
+        '''
+        '[
+            {
+            "id":0,
+            "uri":"https://circexunsw.s3-ap-southeast-2.amazonaws.com/1f20210b-dc88-11ea-a58a-7085c2fa4e67/cover.png"
+            },{
+            "id":1,
+            "uri":"file:///var/mobile/Containers/Data/Application/C99902B1-00AB-4616-9CC9-2C6A100BDDC1/Library/Caches/ExponentExperienceData/%2540anonymous%252Fexpo-testing-95428dcd-a5f8-46a1-af65-b5a15af46c9f/ImagePicker/83776967-4381-4D18-AE33-D07AC776BE59.jpg"},{"id":2,"uri":"file:///var/mobile/Containers/Data/Application/C99902B1-00AB-4616-9CC9-2C6A100BDDC1/Library/Caches/ExponentExperienceData/%2540anonymous%252Fexpo-testing-95428dcd-a5f8-46a1-af65-b5a15af46c9f/ImagePicker/9CA18A32-44F5-4DA6-BE8C-3B4A4200D8A6.jpg"
+            }
+        ]'
+        '''
         data = request.form.to_dict()
         images = request.files
         book = confirm_book(data, images, user)

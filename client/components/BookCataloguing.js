@@ -77,25 +77,26 @@ export default class BookCataloguing extends Component{
         }
 
     }
-    requestApi = (url, errMsg) => {
+    getFormData = () => {
         let reqData = new FormData();
-        for ( let key in this.state.book ) {
-            reqData.append(key, JSON.stringify(this.state.book[key]));
+        this.state.book.images = this.state.imageArray
+        if (this.state.imageArray.length === 0){
+            this.state.book.cover = null
         }
-        api.put(url, reqData,{
-            headers:{
-                'Content-Type': null
-            }
+        for ( let key in this.state.book ) {
+            reqData.append(key,  JSON.stringify(this.state.book[key]));
+        }
+
+        this.state.imageArray.forEach(image => {
+            reqData.append('image',{
+                uri: image.uri,
+                type: 'image/jpg',
+                name: image.id.toString()
+            })
         })
-            .then(res => {
-                if(res.status === 200) {
-                    this.props.navigation.navigate('RootNavigator')
-                }else{
-                    alert(errMsg)
-                }
-            }).catch((error)=>{
-            console.warn(error.message);
-        });
+        console.warn(reqData)
+        return reqData
+
     }
     onButtonPress() {
         if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === 0) {
@@ -105,10 +106,38 @@ export default class BookCataloguing extends Component{
             //TODO: API call to submit and redirect to RootNavigator
             if(this.state.edit){
                 //TODO: API call to edit the listing
-                this.requestApi(`/book/`+this.state.book.id, "Failed to edit book")
+                let reqData = this.getFormData()
+                api.put(`/book/`+this.state.book.id, reqData,{
+                    headers:{
+                        'Content-Type': null
+                    }
+                })
+                    .then(res => {
+                        if(res.status === 200) {
+                            this.props.navigation.navigate('RootNavigator')
+                        }else{
+                            alert("Failed to edit book")
+                        }
+                    }).catch((error)=>{
+                    console.warn(error.message);
+                });
             }else{
                 //TODO: API call to create the listing
-                this.requestApi(`/book/list`, "Failed to list on ebay")
+                let reqData = this.getFormData()
+                api.post(`/book/list`, reqData,{
+                    headers:{
+                        'Content-Type': null
+                    }
+                })
+                    .then(res => {
+                        if(res.status === 200) {
+                            this.props.navigation.navigate('RootNavigator')
+                        }else{
+                            alert("Failed to list on ebay")
+                        }
+                    }).catch((error)=>{
+                    console.warn(error.message);
+                });
             }
         }
     }
