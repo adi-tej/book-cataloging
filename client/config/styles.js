@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     },
     itemTitleView:{
         flexDirection:"column",
-        width: width/2.2,
+        width: "60%",
         marginVertical : '5%',
         marginHorizontal: "3%",
     },

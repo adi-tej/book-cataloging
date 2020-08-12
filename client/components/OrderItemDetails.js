@@ -19,6 +19,7 @@ export default class OrderItemDetails extends Component {
         this.orderNumber = this.props.route.params.order.order_id;
         this.itemsArray = this.props.route.params.order.items;
         this.totalPrice = this.props.route.params.totalPrice;
+        this.confirmed = this.props.route.params.confirmed;
     }
 
     //TODO: call API to send confirm order to backend
@@ -54,13 +55,20 @@ export default class OrderItemDetails extends Component {
                             style={{fontSize:20,
                                 fontWeight : 'bold',
                                 marginBottom:"2%"}}>
-                            Order#: {this.orderNumber}
+                            Order Details
                         </Text>
                     </Body>
                 </Header>
 
                 <View style={{marginTop:'2%'}}>
+
                     <ScrollView style={styles.scrollContainer}>
+                        <View style={{width: "100%", marginVertical : "2%",}}>
+                            <Text style={{fontSize:18,
+                                marginBottom:"2%"}}>
+                                Order #: {this.orderNumber}</Text>
+                        </View>
+
                         {
                             //TODO: update it to itemsArray and update the related info
                             this.itemsArray.map((info)=> {
@@ -84,13 +92,16 @@ export default class OrderItemDetails extends Component {
 
                     </ScrollView>
 
-                    <TouchableOpacity
-                        activityOpacity={0.5}
-                        style={[styles.searchButton,{marginVertical:"2%"}]}
-                        onPress={this.onConfirmPress}
-                        >
-                        <Text style={styles.loginText}>Confirm Order</Text>
-                    </TouchableOpacity>
+                    {!this.confirmed ?
+                        <TouchableOpacity
+                            activityOpacity={0.5}
+                            style={[styles.searchButton,{marginVertical:"2%"}]}
+                            onPress={this.onConfirmPress}
+                            >
+                            <Text style={styles.loginText}>Confirm Order</Text>
+                        </TouchableOpacity> : null
+                    }
+
                 </View>
             </SafeAreaView>
         );
