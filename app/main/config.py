@@ -2,7 +2,7 @@ import os
 
 # circex:CircEx2020@opshops.ch3sf71im1th.ap-southeast-2.rds.amazonaws.com:3306/opshopdb
 mysql_aws_db = 'mysql+pymysql://circex:CircEx2020@opshops.ch3sf71im1th.ap-southeast-2.rds.amazonaws.com:3306/opshopdb'
-local_db = 'mysql+pymysql://root:shops123@127.0.0.1/shops'
+local_db = 'mysql+pymysql://username:password@127.0.0.1/local-db'
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 ebay_config_file_path = os.path.abspath("./ebay_config.yaml")
