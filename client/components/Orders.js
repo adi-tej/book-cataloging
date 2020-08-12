@@ -1,9 +1,13 @@
 import React, {Component} from 'react';
-import {ScrollView} from "react-native";
+import {
+    ScrollView,
+    RefreshControl,
+} from "react-native";
 import styles from "../config/styles";
 import ShowPendingOrders from "./ShowPendingOrders";
 
 import api  from "../config/axios";
+
 export default class Orders extends Component {
     constructor(props) {
         super(props);
@@ -13,7 +17,9 @@ export default class Orders extends Component {
         this.mode = this.props.mode;
         this.state = {
             orderArray:[],
+            refreshing: false,
             }
+            // console.warn("autorefresh: ", this.state.autoRefresh)
     }
 
 //API call to get orders data before rendering and set to state
@@ -35,55 +41,49 @@ export default class Orders extends Component {
                 })
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    refreshOrders = () => {
+        this.setState({refreshing: true})
+        setTimeout(
+         () => {api.get('/order', {
+                params: {
+                    status: this.mode
+                }
+            })
+                .then((response) => {
+                    if (response.status === 200) {
+                        // console.warn(response.data)
+                        if (this.state.orderArray !== response.data.orders) {
+                             this.setState({orderArray: response.data.orders})
+                           }
+                    }
 
-        // prevState = this.state
-        // setTimeout(
-        //  () => {api.get('/order', {
-        //         params: {
-        //             status: this.mode
-        //         }
-        //     })
-        //         .then((response) => {
-        //             if (response.status === 200) {
-        //                 // console.warn(response.data)
-        //                 if (prevState.orderArray !== response.data.orders) {
-        //                      this.setState({orderArray: response.data.orders})
-        //                    }
-        //             }
-        //
-        //         })
-        //         .catch(function (error) {
-        //            console.warn(error)
-        //         }) }
-        // , 10000)
+                })
+                .catch(function (error) {
+                   console.warn(error)
+                })
+             this.setState({refreshing: false})
+         }
+        , 1000)
     }
 
-    // // //This function is to remove a confirmed order
-    // removeComfirmedOrder = (index) => {
-    //     const copyOrderArray = Object.assign([], this.state.orderArray);
-    //     copyOrderArray.splice(index, 1)
-    //     this.setState({
-    //         orderArray: copyOrderArray
-    //     })
-    // }
-    // //
-    // // //This function is to add a new order
-    // addNewOrder = () => {
-    //     const copyOrderArray = Object.assign([], this.state.orderArray);
-    //     copyOrderArray.push({
-    //         orderNumber: this.updateOrderNumber,
-    //         timeout: this.updateTimeout,
-    //         totalPrice: this.updateTotalPrice
-    //     })
-    //     this.setState({
-    //         orderArray: copyOrderArray
-    //     })
-    // }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        // this.setState({autoRefresh: this.props.refresh})
+        // if (this.props.refresh) {
+        //     this.refreshOrders()
+        //     this.setState({autoRefresh: false})
+        // }
+    }
 
     render() {
         return (
-            <ScrollView style={styles.container}>
+            <ScrollView
+                style={styles.container}
+                refreshControl={
+                    <RefreshControl refreshing={this.state.refreshing}
+                                    onRefresh={this.refreshOrders.bind(this)}
+                    />
+                }
+            >
                 {
                     this.state.orderArray.map((order, index)=>{
                         return(

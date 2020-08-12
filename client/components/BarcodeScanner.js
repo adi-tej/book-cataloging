@@ -76,7 +76,7 @@ export default function Barcode({navigation,mode}) {
     // -----------------checkout modal setting ---------------------
     //TODO: API call to request removal of this item
     const onCheckoutPress = (() => {
-         console.warn("book info: ", book.id)
+         // console.warn("book info: ", book.id)
 
         api.post('/order/checkout', {
           items: [

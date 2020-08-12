@@ -26,14 +26,22 @@ export default class ShowPendingOrders extends Component {
     //TODO: on press redirect to online order details page
     render() {
         return (
+            // <TouchableOpacity
+            //     activityOpacity={0.5}
+            //     style={styles.orderContainer}
+            //     onPress={!this.props.confirmed ? ()=>
+            //         this.props.navigation.navigate('OrderDetails', {
+            //             order: this.props.order,
+            //             totalPrice: this.state.totalPrice,
+            //             navigation: this.props.navigation }) : null}>
             <TouchableOpacity
-                activityOpacity={0.5}
-                style={styles.orderContainer}
-                onPress={!this.props.confirmed ? ()=>
-                    this.props.navigation.navigate('OrderDetails', {
-                        order: this.props.order,
-                        totalPrice: this.state.totalPrice,
-                        navigation: this.props.navigation }) : null}>
+            activityOpacity={0.5}
+            style={styles.orderContainer}
+            onPress={()=> this.props.navigation.navigate('OrderDetails', {
+                    confirmed: this.props.confirmed,
+                    order: this.props.order,
+                    totalPrice: this.state.totalPrice,
+                    navigation: this.props.navigation })}>
                 <Text style={styles.orderNumberText}>Order #: {this.props.order.order_id}</Text>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.orderInfoText}>Total price: ${this.state.totalPrice}</Text>

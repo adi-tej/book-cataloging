@@ -40,6 +40,7 @@ export default class BookCataloguing extends Component{
             // imageId: this.state.imageArray.length,
             modalVisible:false,
             isbnError:false,
+            priceError:false,
             initImage: null,
             edit:false
         };
@@ -146,6 +147,15 @@ export default class BookCataloguing extends Component{
             this.setState({isbnError: true})
         } else{
             this.setState({isbnError: false})
+        }
+    }
+
+    validPrice = () => {
+        const re = /^\d+\.?\d*$/;
+        if (!re.test(this.state.book.price)) {
+            this.setState({priceError: true})
+        } else {
+            this.setState({priceError: false})
         }
     }
 
@@ -295,11 +305,14 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    // keyboardType="number-pad"
+                    onBlur={this.validPrice.bind(this)}
                     value={this.state.book.price?this.state.book.price:0}
-                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price}})}
+                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price.trim()}})}
                 />
-
+                    {this.state.priceError?
+                        <Text style={{color:'red'}}>Please enter a valid price</Text>
+                        : null
+                    }
 
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.listingTitle}>Condition: </Text>
