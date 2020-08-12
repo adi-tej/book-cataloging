@@ -1,13 +1,19 @@
-import React,{Component} from 'react';
-import { NavigationActions, StackActions } from 'react-navigation';
+import React, {Component} from 'react';
+import api from "../config/axios";
+export default class Logout extends Component {
 
-import { Text, View} from 'react-native';
-export default function Logout({navigation}) {
-    return(
-        <View>
-            <Text>This is logout</Text>
-        </View>
-    )
+    componentDidMount(){
+        api.post('logout')
+            .then( res =>{
+                if(res.status === 200){
+                    this.props.navigation.navigate('Landing')
+                }else{
+                    console.log('Logout Failed')
+                    alert('Logout Failed')
+                }
+            })
+    }
+
 }
 // export default class Logout extends Component {
 //     constructor(props) {
