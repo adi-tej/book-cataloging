@@ -25,19 +25,15 @@ export default class Checkout extends Component {
 
     render() {
         return (
-            // <View style={styles.checkoutPopup}>
-            //     <View style={{paddingVertical:"10%",}}>
             <View style={styles.itemInfo}>
                 <View style={styles.itemCoverView}>
                     <Image style={styles.itemCover} source={!this.book.cover ? images.noImage :
                             {uri:this.book.cover}}/>
                 </View>
                 <View style={styles.itemTitleView}>
-                    <Text style={styles.itemTitle} numberOfLines={2}>{this.book.title}</Text>
+                    <Text style={styles.itemTitle} numberOfLines={1}>{this.book.title}</Text>
                     <Text style={{color:"grey"}}>By {this.book.author}</Text>
-                </View>
-                <View style={styles.priceView}>
-                    <Text style={{fontSize: 16}}>$ {this.book.price}</Text>
+                    <Text style={styles.itemPrice}>$ {this.book.price}</Text>
                 </View>
             </View>);
     }

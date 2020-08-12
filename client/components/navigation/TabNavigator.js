@@ -10,14 +10,16 @@ import styles from "../../config/styles";
 const Tab = createMaterialTopTabNavigator()
 
 export default class TabNavigator extends Component{
+
     render(){
     return(
         <View style={{flex:1}}>
             <TabHeader navigation={this.props.navigation}/>
+            {/*{console.warn("TabNavigator props: ", this.props)}*/}
             <Tab.Navigator initialRouteName="Cataloging">
                 <Tab.Screen name="Active Listing" component={ActiveListing} />
-                <Tab.Screen name="Pending Orders" children={() => <Orders mode={"pending"} navigation={this.props.navigation}/>} />
-                <Tab.Screen name="Accepted Orders" children={() => <Orders mode={"confirmed"} navigation={this.props.navigation}/>}/>
+                <Tab.Screen name="Pending Orders" children={() => <Orders mode={"pending"} navigation={this.props.navigation} params={this.props.route.params}/>} />
+                <Tab.Screen name="Accepted Orders" children={() => <Orders mode={"confirmed"} navigation={this.props.navigation} params={this.props.route.params}/>}/>
 
             </Tab.Navigator>
             <TouchableOpacity

@@ -237,9 +237,9 @@ const styles = StyleSheet.create({
         marginBottom: "2%",
         fontWeight:"bold",
     },
-    priceView:{
-        justifyContent: "center",
-        width:width/4
+    itemPrice:{
+        fontSize : 16,
+        marginTop: "2%",
     },
 
     /**

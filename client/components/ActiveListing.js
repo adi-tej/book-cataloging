@@ -53,7 +53,7 @@ export default class ActiveListing extends Component {
     //TODO: API call to Update state from search
     componentWillReceiveProps(nextProps) {
         //keyword from search
-        //console.warn(this.props.route.params)
+        // console.warn(nextProps)
         if (nextProps.route.params.search != null) {
             api.get(`/book`, {
                 params: {

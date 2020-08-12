@@ -31,7 +31,12 @@ export default class OrderItemDetails extends Component {
             if (response.status === 200) {
                  Alert.alert("Successfully Confirm Order " + this.orderNumber)
                 setTimeout(() => {
-                    this.props.route.params.navigation.navigate("RootNavigator")},
+                    // this.props.navigation.navigate("Pending Orders",{refresh:true})
+                    this.props.route.params.navigation.navigate("Dashboard", {
+                        screen: "Pending Orders",
+                        refresh: true,
+                    })
+                    },
                     1500
                 )
             }
