@@ -78,7 +78,7 @@ export default function TabHeader({navigation}){
                 }}
                 onHide={() => {
                     searchHeaderRef.current.clear()
-                    navigation.navigate("Active Listing",{search:null})
+                    navigation.navigate("Active Listing",{refresh:true})
                 }}
                 onSearch={(obj) => {
                     // update the active listing

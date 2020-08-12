@@ -40,6 +40,7 @@ export default class BookCataloguing extends Component{
             // imageId: this.state.imageArray.length,
             modalVisible:false,
             isbnError:false,
+            priceError:false,
             initImage: null,
             edit:false
         };
@@ -114,7 +115,7 @@ export default class BookCataloguing extends Component{
                 })
                     .then(res => {
                         if(res.status === 200) {
-                            this.props.navigation.navigate('RootNavigator')
+                            this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to edit book")
                         }
@@ -131,7 +132,7 @@ export default class BookCataloguing extends Component{
                 })
                     .then(res => {
                         if(res.status === 200) {
-                            this.props.navigation.navigate('RootNavigator')
+                            this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to list on ebay")
                         }
@@ -153,7 +154,7 @@ export default class BookCataloguing extends Component{
         api.delete(`/book/`+this.state.book.id)
             .then(res => {
                 if(res.status === 200) {
-                    this.props.navigation.navigate('RootNavigator')
+                    this.props.navigation.navigate('Active Listing',{refresh:true})
                 }else{
                     alert('Failed to remove item')
                 }
@@ -175,6 +176,15 @@ export default class BookCataloguing extends Component{
             this.setState({isbnError: true})
         } else{
             this.setState({isbnError: false})
+        }
+    }
+
+    validPrice = () => {
+        const re = /^\d+\.?\d*$/;
+        if (!re.test(this.state.book.price)) {
+            this.setState({priceError: true})
+        } else {
+            this.setState({priceError: false})
         }
     }
 
@@ -324,11 +334,14 @@ export default class BookCataloguing extends Component{
                     underlineColorAndroid={"transparent"}
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
-                    // keyboardType="number-pad"
+                    onBlur={this.validPrice.bind(this)}
                     value={this.state.book.price?this.state.book.price:0}
-                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price}})}
+                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price.trim()}})}
                 />
-
+                    {this.state.priceError?
+                        <Text style={{color:'red'}}>Please enter a valid price</Text>
+                        : null
+                    }
 
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.listingTitle}>Condition: </Text>

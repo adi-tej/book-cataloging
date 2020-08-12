@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     textInput : {
         width : '100%',
         borderColor: 'black',
-        paddingHorizontal : '5%',
+        paddingHorizontal : '2%',
         borderWidth: 1,
         fontSize : 16,
         marginVertical : '2%',
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     },
     itemTitleView:{
         flexDirection:"column",
-        width: width/2.2,
+        width: "60%",
         marginVertical : '5%',
         marginHorizontal: "3%",
     },
