@@ -22,7 +22,7 @@ export default function CameraTabNavigator({navigation,route}){
                 style:styles.cameraScanTabNavigator
             }}>
                 <Tab.Screen name="Barcode" children={()=> <Scanner mode={mode} navigation={navigation}/>} />
-                <Tab.Screen name="OCR" children={()=> <Cataloging mode={mode} navigation={navigation}/>} />
+                {/*<Tab.Screen name="OCR" children={()=> <Cataloging mode={mode} navigation={navigation}/>} />*/}
                 <Tab.Screen name="Manual" children={()=> <ManualInput mode={mode} navigation={navigation}/>}/>
 
             </Tab.Navigator>
