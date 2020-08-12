@@ -22,7 +22,6 @@ import api from "../config/axios";
 export default class BookCataloguing extends Component{
     constructor(props) {
         super(props);
-        this.imageId = 0;
         this.state = {
             book:{
                 id:"",
@@ -34,16 +33,17 @@ export default class BookCataloguing extends Component{
                 page_count: 0,
                 publisher:"",
                 price: 0,
-                condition:"",
+                condition:0,
                 otherDetails: ""
             },
-            imageId: 0,
             imageArray:[],
+            // imageId: this.state.imageArray.length,
             modalVisible:false,
             isbnError:false,
             initImage: null,
             edit:false
-        }
+        };
+        this.imageId = this.state.imageArray.length;
     }
 //TODO: API call to get book data before rendering and set to state
     componentDidMount() {
@@ -159,7 +159,17 @@ export default class BookCataloguing extends Component{
         if (!cancelled) {
             this.setState({initImage: uri});
             //add this image to imageArray
-            this.imageId = this.imageId + 1;
+            // while (this.imageId + 1  in this.state.imageArray.id){
+            //     this.imageId = this.imageId + 1;
+            // }
+            let imgIds = []
+            this.state.imageArray.forEach((img) => {
+                imgIds.push(img.id)
+            })
+            while (imgIds.includes(this.imageId)){
+                this.imageId = this.imageId + 1;
+            }
+
             const copyImageArray = Object.assign([], this.state.imageArray);
             copyImageArray.push({
                 id: this.imageId,
@@ -198,7 +208,7 @@ export default class BookCataloguing extends Component{
                                 )
                             })
                         }
-                        {console.warn("imageArray:", this.state.imageArray)}
+                        {/*{console.warn("imageArray:", this.state.imageArray)}*/}
                         {this.state.imageArray.length < 10 ?
                             <TouchableOpacity
                                 activityOpacity={0.5}
@@ -304,11 +314,12 @@ export default class BookCataloguing extends Component{
                         // right: 10,},
                     }}
                     items={[
-                        { label: 'Brand new', value: 'Brand new' },
-                        { label: 'Like new', value: 'Like new' },
-                        { label: 'Very good', value: 'Very good' },
-                        { label: 'Good', value: 'Good' },
-                        { label: 'Acceptable', value: 'Acceptable' },
+                        { label: 'New', value: 1000 },
+                        { label: 'Like new', value: 2750 },
+                        { label: 'Used', value: 3000 },
+                        { label: 'Very good', value: 4000 },
+                        { label: 'Good', value: 5000 },
+                        { label: 'Acceptable', value: 6000 },
                     ]}
                     placeholder={{label: "Select a condition..."}}
                     useNativeAndroidPickerStyle={false}
@@ -316,6 +327,7 @@ export default class BookCataloguing extends Component{
                     // Icon={() => {
                     //     return <Icon name="arrow-down" size={16} color="lightgrey" />;
                     // }}
+
                 />
 
                 <Text style={styles.listingTitle}>Other Details: </Text>
