@@ -105,7 +105,7 @@ class BookDto:
         'ISBN_10': fields.String,
         'ISBN_13': fields.String,
         'notes': fields.String,
-        'condition': fields.String(enum=[x.name for x in ItemCondition], attribute='condition.number')
+        'condition': fields.Integer(enum=[x.value for x in ItemCondition], attribute='condition.value')
     })
 
     book_array_model = api.model('book_array', {
