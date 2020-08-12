@@ -15,11 +15,11 @@ export default class Orders extends Component {
         this.updateTimeout = 2;
         this.updateTotalPrice = 0;
         this.mode = this.props.mode;
+        // console.warn("props.params: ", this.props)
         this.state = {
             orderArray:[],
             refreshing: false,
             }
-            // console.warn("autorefresh: ", this.state.autoRefresh)
     }
 
 //API call to get orders data before rendering and set to state
@@ -66,12 +66,14 @@ export default class Orders extends Component {
         , 1000)
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        // this.setState({autoRefresh: this.props.refresh})
-        // if (this.props.refresh) {
-        //     this.refreshOrders()
-        //     this.setState({autoRefresh: false})
-        // }
+
+    componentWillReceiveProps(nextProps) {
+        // console.warn("refresh-----", nextProps.params)
+        if (nextProps.params !== undefined) {
+            if (nextProps.params.refresh) {
+                this.refreshOrders()
+            }
+        }
     }
 
     render() {

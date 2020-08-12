@@ -257,7 +257,7 @@ export default class BookCataloguing extends Component{
                             </TouchableOpacity> : null
                         }
                     </ScrollView>
-                    <Text style={[styles.requiredText, {fontSize: 14, marginBottom:"2%"}]}>* Max number of images: 10</Text>
+                    <Text style={[styles.requiredText, {fontSize: 14, marginBottom:"2%"}]}>* You must upload at least 1 and up to 10 images</Text>
                 </View>
 
                 {/*Create other information View*/}

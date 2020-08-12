@@ -30,10 +30,7 @@ export default class ShowActiveListing extends Component {
                     <View style={styles.itemTitleView}>
                         <Text style={styles.itemTitle} numberOfLines={1}>{this.props.book.title}</Text>
                         <Text style={{color:"grey"}}>By {this.props.book.author}</Text>
-                        {/*<Text style={{color:"grey"}}>{this.props.genre}</Text>*/}
-                    {/*</View>*/}
-                    {/*<View style={styles.priceView}>*/}
-                        <Text style={{fontSize: 16}}>$ {this.props.book.price}</Text>
+                        <Text style={styles.itemPrice}>$ {this.props.book.price}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

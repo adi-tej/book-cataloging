@@ -15,14 +15,6 @@ export default function Barcode({navigation,mode}) {
     const [modalVisible, setModalVisible] = useState(false);
 
     const [barcode, setBarcode] = useState("");
-    // const [title, setTitle] = useState("");
-    // // const [genre, setGenre] = useState("");
-    // const [author, setAuthor] = useState("");
-    // // const [pages, setPages] = useState(0);
-    // // const [publisher, setPublisher] = useState("");
-    // const [price, setPrice] = useState(0);
-    // const [initImage, setInitImage] = useState(null);
-
     const [book, setBook] = useState(null);
 
 
