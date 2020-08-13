@@ -162,17 +162,25 @@ def get_order_ebay(user):
                                          + ebay_order['ShippingAddress']['Street1'] + " " \
                                          + ebay_order['ShippingAddress']['PostalCode']
                 order.customer_name = ebay_order['ShippingAddress']['Name']
-
+                order.customer_contact = ebay_order['TransactionArray'][0]['Buyer']['Email']
+                order.created_date = ebay_order['TransactionArray'][0]['CreatedDate']
                 seller_email = ebay_order['SellerEmail']
                 order.status = OrderStatus.PENDING
-
+                db.session.add(order)
                 order_item_list = []
                 # for one order, there may be many items, they are put into transactions(array)
                 for transaction in ebay_order['TransactionArray']['Transaction']:
-                    order.customer_contact = transaction['Buyer']['Email']
-                    order.created_date = transaction['CreatedDate']
-                    item_id = transaction['Item']['ItemID']
-                    cur_item = Book.query.filter_by(book_id_ebay=item_id).first()
+                    item = transaction['Item']
+                    cur_item = Book.query.filter_by(book_id_ebay=item['ItemID']).first()
+                    if not cur_item:
+                        cur_item = Book()
+                        cur_item.id = uuid1()
+                        cur_item.book_id_ebay = item['ItemID']
+                        cur_item.title = item['Title']
+                        cur_item.condition = ItemCondition(int(item['ConditionID']))
+                        cur_item.status = ItemStatus.LISTED
+                        cur_item.opshop_id = user['opshop_id']
+                        db.session.add(cur_item)
                     orderitem = OrderItem()
                     orderitem.order_id = order.id
                     orderitem.item_id = cur_item.id
@@ -180,11 +188,8 @@ def get_order_ebay(user):
                     orderitem.total_price = float(transaction['TransactionPrice']['value'])
                     orderitem.single_price = float(transaction['TransactionPrice']['value']) / \
                                              int(transaction['QuantityPurchased'])
-                    order_item_list.append(orderitem)
-                print('Adding order -- ', order.id)
-                db.session.add(order)
-                db.session.add_all(order_item_list)
-                db.session.commit()
+                    db.session.add(orderitem)
+            db.session.commit()
     except Exception as e:
         print(e)
         return

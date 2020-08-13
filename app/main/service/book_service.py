@@ -18,27 +18,28 @@ def retrieve_book(data):
     book_data = find_book_info(data)
     if book_data:
         book_data['id'] = uuid1()  # use user id to save image temporarily
-        if book_data['cover']:
-            image_r = requests.get(book_data['cover'], stream=True)
-            if image_r.status_code == 200:  # if image retrieved succesfully
-                # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+        if 'cover' in book_data:
+            if book_data['cover']:
+                image_r = requests.get(book_data['cover'], stream=True)
+                if image_r.status_code == 200:  # if image retrieved succesfully
+                    # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
 
-                content_type = image_r.headers['content-type']
-                extension = mimetypes.guess_extension(content_type)
-                file_name = 'example' + str(extension)
+                    content_type = image_r.headers['content-type']
+                    extension = mimetypes.guess_extension(content_type)
+                    file_name = 'example' + str(extension)
 
-                # Open a local file with wb ( write binary ) permission.
-                with open(file_name, 'wb') as new_file:
-                    shutil.copyfileobj(image_r.raw, new_file)
+                    # Open a local file with wb ( write binary ) permission.
+                    with open(file_name, 'wb') as new_file:
+                        shutil.copyfileobj(image_r.raw, new_file)
 
-                bookcover = open(file_name, 'rb')  # opening the saved image
-                key = str(book_data['id']) + '/' + str(uuid1()) + str(extension)
-                upload_to_s3(bookcover, key)  # image saved to amazon s3
-                bookcover.close()
-                file_url = Config.S3_LOCATION + '/%s' % (key)
-                book_data['cover'] = file_url
-                new_file.close()
-                os.remove(file_name)
+                    bookcover = open(file_name, 'rb')  # opening the saved image
+                    key = str(book_data['id']) + '/' + str(uuid1()) + str(extension)
+                    upload_to_s3(bookcover, key)  # image saved to amazon s3
+                    bookcover.close()
+                    file_url = Config.S3_LOCATION + '/%s' % (key)
+                    book_data['cover'] = file_url
+                    new_file.close()
+                    os.remove(file_name)
 
     if book_data['cover']:
         book_data['images'] = [{'id': 1, 'uri': book_data['cover']}]
