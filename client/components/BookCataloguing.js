@@ -63,11 +63,14 @@ export default class BookCataloguing extends Component{
                     .then(res => {
                         if(res.status === 200) {
                             const data = res.data
-                            console.log(data)
                             this.setState({
-                                book:data,
-                                imageArray: data.images
+                                book:data
                             })
+                            if(data.images){
+                                this.setState({
+                                    imageArray: data.images
+                                })
+                            }
                         }else{
                             alert('Failed to fetch book details from ISBN '+isbn)
                             console.log('Failed to fetch book auto description')
