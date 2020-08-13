@@ -86,8 +86,9 @@ def get_all_orders(status, user):
     response = {
         'orders': [],
     }
-    if status == OrderStatus.PENDING:
-        get_order_ebay()
+
+    if OrderStatus(status) == OrderStatus.PENDING:
+        get_order_ebay(user)
 
     d = {'opshop_id': user['opshop_id']}
     if status:
@@ -131,11 +132,12 @@ def confirm_order(data):
     return data
 
 
-def get_order_ebay():
+def get_order_ebay(user):
     """ periodically retrieve new orders from ebay """
+    DURATION_IN_MINUTES = 60
     try:
         ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
-        past_time = time() - 10 * 60 * 60 - 5 * 60
+        past_time = time() - 10 * 60 * 60 - DURATION_IN_MINUTES * 60
         past_time = strftime('%Y-%m-%d %H:%M:%S', localtime(past_time))
         cur_time = time() - 10 * 60 * 60
         cur_time = strftime('%Y-%m-%d %H:%M:%S', localtime(cur_time))
@@ -144,7 +146,7 @@ def get_order_ebay():
             "CreateTimeTo": cur_time,
             "IncludeFinalValueFee": True,
             "OrderRole": "Seller",
-            "OrderStatus": OrderStatus.COMPLETED
+            "OrderStatus": OrderStatus.COMPLETED.value
         }
 
         resp = ebay_conn.execute("GetOrders", request_info)
@@ -155,34 +157,37 @@ def get_order_ebay():
             for ebay_order in all_orders:
                 order = Order()
                 order.id = ebay_order['OrderID']
+                order.opshop_id = user['opshop_id']
                 order.customer_address = ebay_order['ShippingAddress']['CityName'] + " " \
                                          + ebay_order['ShippingAddress']['Street1'] + " " \
                                          + ebay_order['ShippingAddress']['PostalCode']
                 order.customer_name = ebay_order['ShippingAddress']['Name']
-                order.customer_contact = ebay_order['TranscationArray']['Transaction']['Buyer']['Email']
+
                 seller_email = ebay_order['SellerEmail']
-                order.date = ebay_order['TranscationArray']['Transaction']['CreateDate']
                 order.status = OrderStatus.PENDING
 
                 order_item_list = []
                 # for one order, there may be many items, they are put into transactions(array)
-                for transaction in ebay_order['TranscationArray']['Transaction']:
+                for transaction in ebay_order['TransactionArray']['Transaction']:
+                    order.customer_contact = transaction['Buyer']['Email']
+                    order.created_date = transaction['CreatedDate']
                     item_id = transaction['Item']['ItemID']
                     cur_item = Book.query.filter_by(book_id_ebay=item_id).first()
                     orderitem = OrderItem()
                     orderitem.order_id = order.id
                     orderitem.item_id = cur_item.id
-                    orderitem.quantity = transaction['QuantityPurchased']
-                    orderitem.total_price = transaction['TransactionPrice']['value']
-                    orderitem.single_price = transaction['TransactionPrice']['value'] / \
-                                             transaction['QuantityPurchased']
+                    orderitem.quantity = int(transaction['QuantityPurchased'])
+                    orderitem.total_price = float(transaction['TransactionPrice']['value'])
+                    orderitem.single_price = float(transaction['TransactionPrice']['value']) / \
+                                             int(transaction['QuantityPurchased'])
                     order_item_list.append(orderitem)
 
                 db.session.add(order)
                 db.session.add_all(order_item_list)
                 db.session.commit()
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
+        return
     # return order_items_array
 
 #

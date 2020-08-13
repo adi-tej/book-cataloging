@@ -43,7 +43,7 @@ class OrderStatus(enum.Enum):
     CONFIRMED = 'confirmed'
     DELETED = 'deleted'
     CANCELLED = 'cancelled'
-    COMPLETED = 'completed'
+    COMPLETED = 'Completed'
 
 
 class Order(db.Model):
