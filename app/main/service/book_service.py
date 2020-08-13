@@ -329,7 +329,7 @@ def revise_list_book(book, images):
             "ItemID": book.book_id_ebay,
             "Title": book.title + " " + book.id,
             "PictureDetails": {
-                "PictureURL": images[0],
+                "PictureURL": images,
 
                 # -- more PictureURL values are allowed here -- #
             },
