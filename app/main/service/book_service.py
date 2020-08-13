@@ -283,7 +283,7 @@ def list_book(book, image_links, user):
     ebay_conn = Connection(config_file=EbayConfig.config_file, domain=EbayConfig.domain, debug=EbayConfig.debug)
     request_info = {
         "Item": {
-            "Title": book.title+" "+book.id,
+            "Title": book.title,
             "PictureDetails": {
                 # This URL shold be replaced by Allen after finishing S3 storage
                 "PictureURL": image_links
