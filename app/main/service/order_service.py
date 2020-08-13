@@ -151,7 +151,7 @@ def get_order_ebay(user):
 
         resp = ebay_conn.execute("GetOrders", request_info)
         print('Number of orders returned -- ', resp.dict()['ReturnedOrderCountActual'])
-        if resp.dict()['ReturnedOrderCountActual'] != 0:
+        if int(resp.dict()['ReturnedOrderCountActual']) > 0:
             all_orders = resp.dict()['OrderArray']['Order']
 
             for ebay_order in all_orders:
