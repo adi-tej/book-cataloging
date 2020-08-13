@@ -150,7 +150,7 @@ def get_order_ebay(user):
         }
 
         resp = ebay_conn.execute("GetOrders", request_info)
-
+        print('Number of orders returned -- ', resp.dict()['ReturnedOrderCountActual'])
         if resp.dict()['ReturnedOrderCountActual'] != 0:
             all_orders = resp.dict()['OrderArray']['Order']
 
@@ -181,7 +181,7 @@ def get_order_ebay(user):
                     orderitem.single_price = float(transaction['TransactionPrice']['value']) / \
                                              int(transaction['QuantityPurchased'])
                     order_item_list.append(orderitem)
-
+                print('Adding order -- ', order.id)
                 db.session.add(order)
                 db.session.add_all(order_item_list)
                 db.session.commit()
