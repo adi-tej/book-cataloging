@@ -5,6 +5,8 @@ from uuid import uuid1, uuid4
 import shutil
 import boto3
 from botocore.client import Config as BotoConfig
+from sqlalchemy import desc
+
 from app.main.model.models import Image, Book, ItemStatus, ItemCondition
 from app.main.model.user import User
 from .. import db
@@ -144,7 +146,7 @@ def get_all_books(params, user):
         query2 = res.filter_by(**d).filter(Book.ISBN_13.like(query))
         query3 = res.filter_by(**d).filter(Book.title.like(query))
         res = query1.union(query2, query3)
-    books = res.all()
+    books = res.order_by(desc(Book.updated_date)).all()
     for book in books:
         book.__dict__['isbn'] = book.ISBN_10 if book.ISBN_10 else book.ISBN_13
     return books
