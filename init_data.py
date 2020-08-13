@@ -14,7 +14,11 @@ with app.app_context():
 
     # ---> opshops information <---
     opshop = Opshop()
-    opshop.email = "weisong301@gmail.com"
+
+    """
+        Op-shop Ebay email
+    """
+    opshop.email = "aditeja.dasari@student.unsw.edu.au"
     opshop.name = "opshop1"
     opshop.address = "Sydney, UNSW"
     opshop.staff_count = 4
