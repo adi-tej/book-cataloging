@@ -1,5 +1,7 @@
 from uuid import uuid1
 from ebaysdk.trading import Connection
+from sqlalchemy import desc
+
 from ..model.models import *
 from app.main.config import EbayConfig
 from time import time, localtime, strftime
@@ -93,7 +95,7 @@ def get_all_orders(status, user):
     d = {'opshop_id': user['opshop_id']}
     if status:
         d['status'] = status
-    order_list = Order.query.filter_by(**d).all()
+    order_list = Order.query.filter_by(**d).order_by(desc(Order.created_date)).all()
 
     for order in order_list:
         order_obj = {
