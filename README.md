@@ -29,8 +29,7 @@ Setup and Deployment backend
 
 -   **Step1: Config local database**
 
-If you are going to setup the application on your own localhost, you need to setup your own local MySQL database and replace the
-**username, password and local database** in the **[app/main/config.py]{.ul}** with username, password and schema name of your local database:
+If you are going to setup the application on your own localhost, you need to setup your own local MySQL database and replace the **username, password and local database** in the **[app/main/config.py]** with username, password and schema name of your local database:
 ```
 local_db = "mysql+pymysql://username:password\@127.0.0.1/local-database\
 ```
@@ -41,74 +40,61 @@ local_db = "mysql+pymysql://username:password\@127.0.0.1/local-database\
 -   **Step3: Setup running environment**
 
 We provide three running environments: **development, test,** and **production,** the default environment is **production**.
-If you want to try another environment, you can modify it in the **[setup_app.py]{.ul}**:
+If you want to try another environment, you can modify it in the **[setup_app.py]**:
 ```
 app = create_app(\'development\')
 ```
 -   **Step4: Setup database**
 
-> Please run the following commend under the project root folder --
+Please run the following commend under the project root folder --
 > **book-cataloging**:
 
 To create all the tables in the database
-
-> python3 set_up.py create_all
-
+```
+python3 set_up.py create_all
+```
 To delete all the tables in the database
-
-> python3 set_up.py drop_all
-
+```
+python3 set_up.py drop_all
+```
 -   **Step5: Run the application under the project root folder -- book-cataloging**
-
-> python3 set_up.py run
-
+```
+python3 set_up.py run
+```
 -   **Step6: Initialize database under the project root folder -- book-cataloging**
 
-> Run the following command to add initial data to database along with
-> some testing data.
->
-> python3 init_data.py
-
+Run the following command to add initial data to database along with some testing data.
+```
+python3 init_data.py
+```
 Setup and Deployment Frontend 
 -----------------------------
 
 -   **Step 1: Install Expo CLI and React Native CLI**
-
-> npm i -g expo-cli
->
-> npm i -g react-native-cli
-
+```
+npm i -g expo-cli
+npm i -g react-native-cli
+```
 -   **Step 2: Install Node Modules under book-cataloging/client
     directory**
-
-> cd client
->
-> npm install
-
+```
+cd client
+npm install
+```
 -   **Step 3: Prepare your emulator or device**
 
-> **a. Test with your own device (recommended)**
->
-> If you want to test the app in your **own device**, install "Expo
-> client" application in your iOS or android mobile phone.
->
-> ![](media/image2.png){width="2.2777876202974627in"
-> height="0.7053390201224847in"}
->
-> We recommend you use your own device for testing the app, because it
-> is easier to take images using the camera of your device.
->
-> **b. Test with an Android emulator**
->
-> Install Android Studio 4 and set platform tools of Android SDK to
-> environment variable.
->
-> Setup SDK in Android studio to API.
+**a. Test with your own device (recommended)**
+If you want to test the app in your **own device**, install "Expo client" application in your iOS or android mobile phone.
 
-![](media/image3.png){width="5.1692924321959755in" height="2.525in"}
+We recommend you use your own device for testing the app, because it is easier to take images using the camera of your device.
 
-![](media/image4.png){width="5.152083333333334in"
-height="2.748611111111111in"} Create an Android Virtual Device (AVD) you
+ **b. Test with an Android emulator**
+
+Install Android Studio 4 and set platform tools of Android SDK to environment variable.
+Setup SDK in Android studio to API.
+
+https://github.com/CircEx/book-cataloging/blob/master/images/WhatsApp%20Image%202020-07-25%20at%2023.51.52.jpeg
+Create an Android Virtual Device (AVD) you
 want to use and start it.
 
 -   **Step 4: Configure axios file**
