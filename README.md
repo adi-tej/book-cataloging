@@ -1,4 +1,4 @@
-Notebefore deploying system:
+**Note before deploying system:**
 
 1. If you want to view more details about our source code, you can follow
 session 1 (**System Requirements**) and session 2 (**Deploying system package**) to 
@@ -129,14 +129,14 @@ expo start
 Now you would get a popup to your browser as below. To avoid developer logs, please **enable the
 production mode**.
 
- 6.1 Using your own **iOS device** to test the app.
+ a. Using your own **iOS device** to test the app.
 
  Please scan the QR code in the page using your phone camera. And then
  you will be redirected to Expo client.
 
  Note: Your device and local machine should under same Wi-Fi.
 
- 6.2 Using an **Android emulator**
+ b. Using an **Android emulator**
  
  Please click "Run on Android device/emulator" and view the app on AVD.
 
