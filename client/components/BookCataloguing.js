@@ -104,7 +104,9 @@ export default class BookCataloguing extends Component{
     }
     onButtonPress() {
 
-        if (this.state.book.title === "" || this.state.book.condition === "" || this.state.book.price === "" || this.state.book.description === "" || this.state.imageArray.length === 0) {
+        if (this.state.book.title === "" || this.state.book.condition === "" ||
+            this.state.book.price === "" || this.state.book.description === "" ||
+            this.state.imageArray.length === 0) {
             Alert.alert("Warning:",
                 "You have to fill out Title, Condition, Price, Description and add at-least one image")
         } else{
@@ -273,8 +275,13 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     value={this.state.book.title}
+                    multiline={true}
                     onChangeText={(title) => this.setState({book:{...this.state.book,title:title}})}
                 />
+                    {this.state.book.title.length>35 ?
+                         <Text style={{color:'red', marginBottom:'2%'}}> Exceeds by {this.state.book.title.length-35} chars...</Text>
+                        :null
+                    }
 
                 <Text style={styles.listingTitle}>ISBN: </Text>
                 <TextInput
@@ -382,6 +389,10 @@ export default class BookCataloguing extends Component{
                     value={this.state.book.description}
                     onChangeText={(description) => this.setState({book:{...this.state.book,description:description}})}
                 />
+                {this.state.book.description.length>3999 ?
+                         <Text style={{color:'red', marginBottom:'2%'}}> Exceeds by {this.state.book.description.length-3999} chars...</Text>
+                        :null
+                    }
 
                 <View style={styles.buttonView}>
                 <TouchableOpacity
