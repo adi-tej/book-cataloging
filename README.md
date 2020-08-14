@@ -12,48 +12,39 @@ Operating System: Windows 7+, Linux
 
 -   Node JS <https://nodejs.org/en/download/>
 
--   Java JDK7+
-    > <https://www.oracle.com/au/java/technologies/javase/javase-jdk8-downloads.html>
+-   Java JDK7 <https://www.oracle.com/au/java/technologies/javase/javase-jdk8-downloads.html>
 
 Deploying system package
 ========================
 
  Get app package from GitHub with Https
 --------------------------------------
-
-> git clone https:*//github.com/CircEx/book-cataloging.git*
-
-If you do not have access to Github, please download our package in
-Teams group 2.
+```
+git clone https:*//github.com/CircEx/book-cataloging.git*
+```
+If you do not have access to Github, please download our package in Teams group 2.
 
 Setup and Deployment backend
 ----------------------------
 
 -   **Step1: Config local database**
 
-> If you are going to setup the application on your own localhost, you
-> need to setup your own local MySQL database and replace the
-> **username, password and local database** in the
-> **[app/main/config.py]{.ul}** with username, password and schema name
-> of your local database:
->
-> local_db =
-> \"mysql+pymysql://username:password\@127.0.0.1/local-database\"
-
+If you are going to setup the application on your own localhost, you need to setup your own local MySQL database and replace the
+**username, password and local database** in the **[app/main/config.py]{.ul}** with username, password and schema name of your local database:
+```
+local_db = "mysql+pymysql://username:password\@127.0.0.1/local-database\
+```
 -   **Step2: Install the Python dependencies**
-
-> sudo pip3 install -r requirements.txt
-
+```
+ sudo pip3 install -r requirements.txt
+```
 -   **Step3: Setup running environment**
 
-> We provide three running environments: **development, test,** and
-> **production,** the default environment is **production**.
->
-> If you want to try another environment, you can modify it in the
-> **[setup_app.py]{.ul}**:
->
-> app = create_app(\'development\')
-
+We provide three running environments: **development, test,** and **production,** the default environment is **production**.
+If you want to try another environment, you can modify it in the **[setup_app.py]{.ul}**:
+```
+app = create_app(\'development\')
+```
 -   **Step4: Setup database**
 
 > Please run the following commend under the project root folder --
@@ -67,13 +58,11 @@ To delete all the tables in the database
 
 > python3 set_up.py drop_all
 
--   **Step5: Run the application under the project root folder --
-    book-cataloging**
+-   **Step5: Run the application under the project root folder -- book-cataloging**
 
 > python3 set_up.py run
 
--   **Step6: Initialize database under the project root folder --
-    book-cataloging**
+-   **Step6: Initialize database under the project root folder -- book-cataloging**
 
 > Run the following command to add initial data to database along with
 > some testing data.
