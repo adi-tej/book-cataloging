@@ -1,10 +1,11 @@
 {
   "expo": {
-    "name": "client",
-    "slug": "client",
+    "name": "circex",
+    "slug": "circex",
+    "privacy": "unlisted",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/circex.png",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -17,10 +18,18 @@
       "**/*"
     ],
     "ios": {
+      "icon": "./assets/circex-ios.png",
+      "bundleIdentifier": "com.comp9323.circex",
+      "buildNumber": "1.0.0",
       "supportsTablet": true
+    },
+    "android": {
+      "package": "com.comp9323.circex",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": ""
   }
 }
