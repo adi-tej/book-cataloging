@@ -389,8 +389,8 @@ export default class BookCataloguing extends Component{
                     value={this.state.book.description}
                     onChangeText={(description) => this.setState({book:{...this.state.book,description:description}})}
                 />
-                {this.state.book.description.length>3999 ?
-                         <Text style={{color:'red', marginBottom:'2%'}}> Exceeds by {this.state.book.description.length-3999} chars...</Text>
+                {this.state.book.description.length>800 ?
+                         <Text style={{color:'red', marginBottom:'2%'}}> Exceeds by {this.state.book.description.length-800} chars...</Text>
                         :null
                     }
 
