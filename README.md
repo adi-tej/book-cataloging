@@ -31,7 +31,7 @@ Operating System: Windows 7+, Linux
 2.1 Get app package from GitHub with Https
 --------------------------------------
 ```shell script
-git clone https:*//github.com/CircEx/book-cataloging.git*
+git clone https://github.com/CircEx/book-cataloging.git
 ```
 If you do not have access to Github, please download our package in Teams group 2.
 
