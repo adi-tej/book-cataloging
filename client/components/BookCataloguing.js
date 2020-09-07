@@ -8,7 +8,7 @@ import {
     ScrollView,
     StyleSheet,
     SafeAreaView,
-    Modal,
+    Modal, Dimensions,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import {Header, Left, Body, Icon} from "native-base";
@@ -18,6 +18,9 @@ import * as ImagePicker from "expo-image-picker";
 import ShowCarousel from "./ShowCarousel";
 import styles from "../config/styles";
 import api from "../config/axios";
+import PriceCheckout from "./PriceCheckout";
+
+const width = Dimensions.get('window').width;
 
 export default class BookCataloguing extends Component{
     constructor(props) {
@@ -32,12 +35,26 @@ export default class BookCataloguing extends Component{
                 edition: 0,
                 cover: "",
                 page_count: 0,
+                weight: 0,
                 publisher:"",
                 price: 0,
                 condition:0,
                 description: ""
             },
             imageArray:[],
+            checkPriceArray:[
+                {item_price: 20.5, logistics_price: 3.99, item_location: 'Australia'},
+                {item_price: 23.5, logistics_price: 3.99, item_location: 'United Kingdom'},
+                {item_price: 25.5, logistics_price: 3.99, item_location: 'United Kingdom'},
+                {item_price: 22.5, logistics_price: 7.99, item_location: 'USA'},
+                {item_price: 20.5, logistics_price: 3.99, item_location: 'Australia'},
+                {item_price: 23.5, logistics_price: 3.99, item_location: 'United Kingdom'},
+                {item_price: 25.5, logistics_price: 3.99, item_location: 'United Kingdom'},
+                {item_price: 22.5, logistics_price: 7.99, item_location: 'USA'},
+                {item_price: 25.5, logistics_price: 3.99, item_location: 'United Kingdom'},
+                {item_price: 22.5, logistics_price: 7.99, item_location: 'USA'},
+            ],
+            priceModalVisible:false,
             modalVisible:false,
             isbnError:false,
             priceError:false,
@@ -122,7 +139,6 @@ export default class BookCataloguing extends Component{
                             this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to edit book")
-                            console.log('Failed to edit book')
                         }
                     }).catch((error)=>{
                     console.log(error.message);
@@ -140,7 +156,6 @@ export default class BookCataloguing extends Component{
                             this.props.navigation.navigate('Active Listing',{refresh:true})
                         }else{
                             alert("Failed to list on ebay")
-                            console.log('Failed to list book')
                         }
                     }).catch((error)=>{
                     console.log(error.message);
@@ -169,8 +184,11 @@ export default class BookCataloguing extends Component{
         });
     }
 
+    onCheckPricePress = () => {
+        this.setState({priceModalVisible: true})
+    }
+
     deleteImage = (index) =>{
-        console.log(index,'-----', this.state.book.cover)
         if(index === 0){
             if(this.state.book.cover !== ''){
                 this.state.book.cover = ''
@@ -323,8 +341,19 @@ export default class BookCataloguing extends Component{
                     style={styles.textInput}
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
-                    value={this.state.book.page_count?this.state.book.page_count.toString():0}
+                    value={this.state.book.page_count?this.state.book.page_count.toString():null}
                     onChangeText={(page) => this.setState({book:{...this.state.book,page_count:page}})}
+                />
+
+                <Text style={styles.listingTitle}>Estimated Weight(kg): </Text>
+                <TextInput
+                    underlineColorAndroid={"transparent"}
+                    style={styles.textInput}
+                    clearButtonMode={"while-editing"}
+                    keyboardType="number-pad"
+                    value={this.state.book.weight?this.state.book.weight.toString():null}
+                    // value={this.state.book.page_count?(this.state.book.page_count * 70 / 1000).toString():0}
+                    onChangeText={(weight) => this.setState({book:{...this.state.book,weight:weight}})}
                 />
 
                 <Text style={styles.listingTitle}>Publisher: </Text>
@@ -337,22 +366,29 @@ export default class BookCataloguing extends Component{
                 />
 
                 <View style={{flex: 1, flexDirection: "row"}}>
-                    <Text style={styles.listingTitle}>Price: </Text>
+                    <Text style={styles.listingTitle}>Price (AU$): </Text>
                     <Text style={styles.requiredText}>*</Text>
                 </View>
-                <TextInput
+                <View style={{flex: 1, flexDirection: "row"}}>
+                    <TextInput
                     underlineColorAndroid={"transparent"}
-                    style={styles.textInput}
+                    style={[styles.textInput, {width: '60%'}]}
                     clearButtonMode={"while-editing"}
                     onBlur={this.validPrice.bind(this)}
-                    value={this.state.book.price?this.state.book.price.toString():0}
+                    value={this.state.book.price?this.state.book.price.toString():null}
                     onChangeText={(price) => this.setState({book:{...this.state.book,price:price.trim()}})}
-                />
+                    />
+                    <TouchableOpacity
+                    activityOpacity={0.5}
+                    style={[styles.loginButton, {marginHorizontal: '3%'}]}
+                    onPress={this.onCheckPricePress.bind(this)}>
+                        <Text style={{color: 'white', fontSize: 18}}>Check Price</Text>
+                    </TouchableOpacity>
+                </View>
                     {this.state.priceError?
                         <Text style={{color:'red'}}>Please enter a valid price</Text>
                         : null
                     }
-
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <Text style={styles.listingTitle}>Condition: </Text>
                     <Text style={styles.requiredText}>*</Text>
@@ -395,23 +431,23 @@ export default class BookCataloguing extends Component{
                     }
 
                 <View style={styles.buttonView}>
-                <TouchableOpacity
-                    activityOpacity={0.5}
-                    style={styles.removeButton}
-                    onPress={this.onButtonPress.bind(this)}>
-                    <Text style={styles.loginText}>{
-                       this.state.edit ? 'Update' : 'List on eBay'
-                    }</Text>
-                </TouchableOpacity>
-                {
-                    this.state.edit ?
-                        <TouchableOpacity
-                            activityOpacity={0.5}
-                            style={styles.removeButton}
-                            onPress={this.onRemoveButtonPress.bind(this)}>
-                            <Text style={styles.loginText}>Remove Item</Text>
-                        </TouchableOpacity> : null
-                }
+                    <TouchableOpacity
+                        activityOpacity={0.5}
+                        style={styles.removeButton}
+                        onPress={this.onButtonPress.bind(this)}>
+                        <Text style={styles.loginText}>{
+                           this.state.edit ? 'Update' : 'List on eBay'
+                        }</Text>
+                    </TouchableOpacity>
+                    {
+                        this.state.edit ?
+                            <TouchableOpacity
+                                activityOpacity={0.5}
+                                style={styles.removeButton}
+                                onPress={this.onRemoveButtonPress.bind(this)}>
+                                <Text style={styles.loginText}>Remove Item</Text>
+                            </TouchableOpacity> : null
+                    }
                 </View>
 
                 {/*------------------------setting remove-item modal---------------------------*/}
@@ -451,6 +487,73 @@ export default class BookCataloguing extends Component{
                     </View>
                 </Modal>
                 </KeyboardAwareScrollView>
+
+                {/*--------------------------------------check price modal------------------------------------------*/}
+                <Modal
+                    transparent={true}
+                    visible={this.state.priceModalVisible}
+                >
+                    <View style={{backgroundColor:"#000000aa", flex: 1}}>
+                        <View style={[styles.checkoutPopup, {height: '80%'}]}>
+
+                            <TouchableOpacity
+                                style={styles.closeButton}
+                                onPress={() => this.setState({priceModalVisible: false})}
+                            >
+                                <Text style={{ fontSize: 18, color: 'lightgrey'}}> X </Text>
+                            </TouchableOpacity>
+
+                            <View style={styles.setPrice}>
+                                <Text style={{fontWeight: "bold", fontSize: 18,}}> Set Price (AU$): </Text>
+                                <TextInput
+                                    underlineColorAndroid={"transparent"}
+                                    style={[styles.textInput, {width: '30%', fontSize: 18}]}
+                                    clearButtonMode={"while-editing"}
+                                    onBlur={this.validPrice.bind(this)}
+                                    value={this.state.book.price?this.state.book.price.toString():null}
+                                    onChangeText={(price) => this.setState({book:{...this.state.book,price:price.trim()}})}
+                                />
+                                <TouchableOpacity
+                                    activityOpacity={0.5}
+                                    style={[styles.loginButton, {marginHorizontal: '3%'}]}
+                                    onPress={() => this.setState({priceModalVisible: false})}>
+                                    <Text style={{color: 'white', fontSize: 18}}> Go </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <Text style={{
+                                color: "lightgrey",
+                                textAlign: "center",
+                                marginTop: "2%",
+                            }}>{"-".repeat(width*0.14)}</Text>
+                            <Text style={styles.priceModalTitle}>Recommended Price</Text>
+
+                            {/*====================================================*/}
+                            <View style={styles.headerFormat}>
+                                <Text style={{flex: 1, fontWeight: "bold"}}>Total price</Text>
+                                <Text style={{flex: 1, fontWeight: "bold"}}>Item price</Text>
+                                <Text style={{flex: 1, fontWeight: "bold"}}>Postage</Text>
+                                <Text style={{flex: 1.3, fontWeight: "bold"}}>Item location</Text>
+                            </View>
+                            <ScrollView style={{marginBottom: "5%"}}>
+                                {
+                                    this.state.checkPriceArray.map((price, index)=>{
+                                        return(
+                                            <PriceCheckout
+                                                price={price}
+                                                key={index}/>)
+                                    })
+                                }
+                                <Text style={styles.resourceText}>
+                                    (Data Resource: eBay platform)</Text>
+                            </ScrollView>
+
+                            {/*==============================================================*/}
+
+                        </View>
+                    </View>
+                </Modal>
+
             </SafeAreaView>
         )
     }
