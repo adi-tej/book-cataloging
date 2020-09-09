@@ -435,4 +435,4 @@ def auto_price(isbn):
                 price_info['item_location'] = 'Australia'
         price_array.append(price_info)
 
-    return price_info
+    return price_array
