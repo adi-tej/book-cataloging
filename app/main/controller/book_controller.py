@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, jsonify
 from flask_restplus import Resource, marshal
 from app.main.service.book_service import *
 from ..util.dto import BookDto
@@ -38,6 +38,18 @@ class AutoDescription(Resource):
     def get(self, user, isbn):
         book = retrieve_book(isbn)
         return marshal(book, book_response_model), SUCCESS
+
+
+@api.route('/autopricing/<isbn>')
+class AutoPricing(Resource):
+    @api.doc(decription="Get example prices using ISBN")
+    @api.param('isbn', description="ISBN of the book - 10 0r 13 digits")
+    @api.response(200, 'success', book_response_model)
+    @api.response(401, 'unauthorized')
+    @token_required
+    def get(self, user, isbn):
+        price_array = auto_price(isbn)
+        return jsonify({'prices_array':price_array})
 
 
 @api.route('/<book_id>')

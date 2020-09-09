@@ -1,0 +1,40 @@
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>################################################################################\r\n# This .gitignore file was automatically created by Microsoft(R) Visual Studio.\r\n################################################################################\r\n\r\n/.vs\r\n/.idea\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .gitignore	(revision bb44e6504bbf1a040782206056ea47af2ed4a8a3)
++++ .gitignore	(date 1599483814056)
+@@ -4,3 +4,5 @@
+ 
+ /.vs
+ /.idea
++.vscode/settings.json
++.gitignore
+Index: test_scripting/parse_web.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>\r\nimport requests, re\r\nfrom bs4 import BeautifulSoup\r\n\r\n# ISBN number get from frontend\r\nurl = 'https://www.ebay.com.au/sch/i.html?_from=R40&_nkw=%099781780228228&_sacat=0&_sop=15'\r\nhtml = requests.get(url)\r\n\r\nsoup = BeautifulSoup(\r\n\thtml.text,\r\n\t'html.parser'\r\n)\r\n\r\nresults = soup.find_all('div', attrs={'class':'s-item__info clearfix'})\r\n\r\n\r\nfor item in results:\r\n\tinside = item.find_all('div', attrs={'class':'s-item__details clearfix'})\r\n\tinside_tag = inside[0]\r\n\tprice_tags = inside_tag.find_all('div', attrs={'class':'s-item__detail s-item__detail--primary'})\r\n\tcountry_tag = inside_tag.find('span', attrs={'class':'s-item__detail s-item__detail--secondary'})\r\n\r\n\t# output item price and postage price\r\n\tprint(price_tags[0].find('span', attrs={'class':'s-item__price'}).text)\r\n\tprint(price_tags[2].find('span', attrs={'class':'s-item__shipping s-item__logisticsCost'}).text)\r\n\r\n\t# output country\r\n\tif country_tag:\r\n\t\tcountry = country_tag.find('span', attrs={'class':'s-item__location s-item__itemLocation'})\r\n\t\tif country:\r\n\t\t\tprint(country.text)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- test_scripting/parse_web.py	(revision bb44e6504bbf1a040782206056ea47af2ed4a8a3)
++++ test_scripting/parse_web.py	(date 1599484495760)
+@@ -1,8 +1,8 @@
+ 
+-import requests, re
++import requests
+ from bs4 import BeautifulSoup
+ 
+-# ISBN number get from frontend
++# ISBN number get from fron
+ url = 'https://www.ebay.com.au/sch/i.html?_from=R40&_nkw=%099781780228228&_sacat=0&_sop=15'
+ html = requests.get(url)
+ 
+@@ -29,3 +29,4 @@
+ 		country = country_tag.find('span', attrs={'class':'s-item__location s-item__itemLocation'})
+ 		if country:
+ 			print(country.text)
++
