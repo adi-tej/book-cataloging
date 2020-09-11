@@ -18,7 +18,7 @@
       "**/*"
     ],
     "ios": {
-      "icon": "./assets/circex-ios.png",
+      "icon": "./assets/circex.png",
       "bundleIdentifier": "com.comp9323.circex",
       "buildNumber": "1.0.0",
       "supportsTablet": true
