@@ -22,3 +22,4 @@ uuid~=1.30
 boto3~=1.14.38
 cryptography===3.0
 botocore~=1.17.38
+bs4~=0.0.1
