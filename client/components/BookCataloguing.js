@@ -42,18 +42,7 @@ export default class BookCataloguing extends Component{
                 description: ""
             },
             imageArray:[],
-            checkPriceArray:[
-                {item_price: 20.5, logistics_price: 3.99, item_location: 'Australia'},
-                {item_price: 23.5, logistics_price: 3.99, item_location: 'United Kingdom'},
-                {item_price: 25.5, logistics_price: 3.99, item_location: 'United Kingdom'},
-                {item_price: 22.5, logistics_price: 7.99, item_location: 'USA'},
-                {item_price: 20.5, logistics_price: 3.99, item_location: 'Australia'},
-                {item_price: 23.5, logistics_price: 3.99, item_location: 'United Kingdom'},
-                {item_price: 25.5, logistics_price: 3.99, item_location: 'United Kingdom'},
-                {item_price: 22.5, logistics_price: 7.99, item_location: 'USA'},
-                {item_price: 25.5, logistics_price: 3.99, item_location: 'United Kingdom'},
-                {item_price: 22.5, logistics_price: 7.99, item_location: 'USA'},
-            ],
+            checkPriceArray:[],
             priceModalVisible:false,
             modalVisible:false,
             isbnError:false,
@@ -203,6 +192,7 @@ export default class BookCataloguing extends Component{
                             Alert.alert('Failed to fetch book prices from eBay')
                         }
                     }).catch((error) => {
+                        Alert.alert('Failed to fetch book prices from eBay')
                         console.warn(error.message)
                 })
     }
@@ -371,7 +361,6 @@ export default class BookCataloguing extends Component{
                     clearButtonMode={"while-editing"}
                     keyboardType="number-pad"
                     value={this.state.book.weight?this.state.book.weight.toString():null}
-                    // value={this.state.book.page_count?(this.state.book.page_count * 70 / 1000).toString():0}
                     onChangeText={(weight) => this.setState({book:{...this.state.book,weight:weight}})}
                 />
 
@@ -545,7 +534,7 @@ export default class BookCataloguing extends Component{
                                 textAlign: "center",
                                 marginTop: "2%",
                             }}>{"-".repeat(width*0.14)}</Text>
-                            <Text style={styles.priceModalTitle}>Recommended Price</Text>
+                            <Text style={styles.priceModalTitle}>Recommended Price (AU$)</Text>
 
                             {/*====================================================*/}
                             <View style={styles.headerFormat}>
