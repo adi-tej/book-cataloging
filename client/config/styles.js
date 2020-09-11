@@ -404,6 +404,29 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: "lightgrey",
         fontStyle: "italic"
+    },
+
+    //ocrScanner
+    ocrView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: '3%'
+    },
+    noteView: {
+        alignItems: 'flex-start',
+        margin: '3%',
+        backgroundColor:'lightgrey',
+        padding: '3%'
+    },
+    noteText: {
+        fontWeight: "bold",
+        fontSize: 20,
+        marginBottom:'3%'
+    },
+    bulletText: {
+        fontSize: 18,
+        marginBottom:'2%'
     }
 })
 export default styles

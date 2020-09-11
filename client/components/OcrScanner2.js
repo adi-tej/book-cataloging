@@ -64,15 +64,23 @@ export default class OcrScanner2 extends React.Component {
 
         return (
             <View style={{flex:1}}>
+                <View style={styles.ocrView}>
+                    <View style={styles.noteView}>
+                        <Text style={styles.noteText}>
+                        Note: Please take a clear picture</Text>
+                        <Text style={styles.bulletText}>
+                            To make sure your context includes only one line "ISBN + 10 or 13 isbn-digits", you can:</Text>
+                        <Text style={styles.bulletText}>1. iOS phone: zoom in the image </Text>
+                        <Text style={styles.bulletText}>2. Android phone: crop the image</Text>
+                    </View>
+                    <Button title="Pick an image from camera roll" onPress={this._pickImage} />
+                    <Button title="Go to Camera" onPress={this.takePicture.bind(this)} />
+                </View>
                 <TouchableOpacity
                     style={styles.manualCloseButton}
                     onPress={() => {this.props.navigation.navigate("Active Listing",{refresh:true})}}>
                     <Text style={{ fontSize: 20, color: 'black'}}> x </Text>
                 </TouchableOpacity>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <Button title="Pick an image from camera roll" onPress={this._pickImage} />
-                    <Button title="Go to Camera" onPress={this.takePicture.bind(this)} />
-                </View>
             </View>
         );
     }

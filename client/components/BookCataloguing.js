@@ -185,33 +185,26 @@ export default class BookCataloguing extends Component{
     }
 
     onCheckPricePress = () => {
-        // this.setState({priceModalVisible: true})
 
-        //===============================
         const isbn = this.props.route.params.isbn
         api.get('/book/autopricing/'+isbn)
                     .then(res => {
                         if(res.status === 200) {
-                            // const data = res.data
-                            // this.setState({
-                            //     book:data
-                            // })
-                            // if(data.images){
-                            //     this.setState({
-                            //         imageArray: data.images
-                            //     })
-                            // }
-                            console.warn(res.data)
-                            // Alert.alert(res)
+                            const data = res.data
+                            if(data.prices_array){
+                                this.setState({
+                                    checkPriceArray: data.prices_array
+                                })
+                            }
+                            this.setState({priceModalVisible: true})
+                            // console.warn(res.data.prices_array)
 
                         }else{
-                            alert('Failed to fetch book details from ISBN '+isbn)
-                            console.warn('Failed to fetch book auto description')
+                            Alert.alert('Failed to fetch book prices from eBay')
                         }
                     }).catch((error) => {
                         console.warn(error.message)
                 })
-        //===============================
     }
 
     deleteImage = (index) =>{
