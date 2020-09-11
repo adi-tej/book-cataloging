@@ -1,13 +1,52 @@
 import * as React from 'react';
-import { Button, Image, View, Platform } from 'react-native';
+import {Button, Image, View, Platform, TouchableOpacity, Text} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
-
+import axios from "axios";
+import styles from "../config/styles";
 export default class OcrScanner2 extends React.Component {
     state = {
         image: null,
     };
-
+    scanPicture = (uri) => {
+        let reqData = new FormData();
+        reqData.append("isOverlayRequired","false");
+        reqData.append("filetype","JPG");
+        reqData.append("url", {
+            uri: uri,
+            type: "image/jpeg",
+            name: "file"
+        });
+        axios.post('https://api.ocr.space/Parse/Image', reqData,{
+            headers:{
+                'Content-Type': 'multipart/form-data',
+                'apikey' : 'f748e6bec288957'
+            }
+        })
+            .then(res => {
+                if(res.status === 200) {
+                    let text = res.data.ParsedResults[0].ParsedText
+                    var lines = text.split('\n')
+                    let found = false
+                    lines.forEach(line => {
+                        if(line.startsWith('ISBN')){
+                            let isbn = line.split(' ')[1].replace(/(\r\n|\n|\r)/gm, "").replace(/-/g,"")
+                            this.props.navigation.navigate('BookCataloguing', {isbn: isbn.toString()})
+                            found = true
+                        }
+                    })
+                    if(!found) {
+                        alert("No ISBN found in the image")
+                        console.log('No ISBN found in the image')
+                    }
+                }else{
+                    alert("Failed to scan the image")
+                    console.log('Failed to scan the image')
+                }
+            }).catch((error)=>{
+            console.log(error.message);
+        });
+    }
     takePicture = async() => {
         await Permissions.askAsync(Permissions.CAMERA);
         const {cancelled, uri} = await ImagePicker.launchCameraAsync({
@@ -17,18 +56,23 @@ export default class OcrScanner2 extends React.Component {
         });
         if (!cancelled) {
             this.setState({image: uri});
+            this.scanPicture(uri)
         }
     };
 
     render() {
-        let { image } = this.state;
 
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <Button title="Pick an image from camera roll" onPress={this._pickImage} />
-                {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
-                <Button title="Go to Camera" onPress={this.takePicture.bind(this)} />
-                {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+            <View style={{flex:1}}>
+                <TouchableOpacity
+                    style={styles.manualCloseButton}
+                    onPress={() => {this.props.navigation.navigate("Active Listing",{refresh:true})}}>
+                    <Text style={{ fontSize: 20, color: 'black'}}> x </Text>
+                </TouchableOpacity>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Button title="Pick an image from camera roll" onPress={this._pickImage} />
+                    <Button title="Go to Camera" onPress={this.takePicture.bind(this)} />
+                </View>
             </View>
         );
     }
@@ -55,6 +99,7 @@ export default class OcrScanner2 extends React.Component {
             });
             if (!result.cancelled) {
                 this.setState({ image: result.uri });
+                this.scanPicture(result.uri)
             }
 
             console.log(result);
