@@ -175,7 +175,7 @@ export default class BookCataloguing extends Component{
 
     onCheckPricePress = () => {
 
-        const isbn = this.props.route.params.isbn
+        const isbn = this.state.book.isbn
         api.get('/book/autopricing/'+isbn)
                     .then(res => {
                         if(res.status === 200) {

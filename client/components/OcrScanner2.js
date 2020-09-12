@@ -74,6 +74,7 @@ export default class OcrScanner2 extends React.Component {
                         <Text style={styles.bulletText}>2. Android phone: crop the image</Text>
                     </View>
                     <Button title="Pick an image from camera roll" onPress={this._pickImage} />
+                    <View style={styles.separator}/>
                     <Button title="Go to Camera" onPress={this.takePicture.bind(this)} />
                 </View>
                 <TouchableOpacity

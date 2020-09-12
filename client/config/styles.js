@@ -427,6 +427,11 @@ const styles = StyleSheet.create({
     bulletText: {
         fontSize: 18,
         marginBottom:'2%'
-    }
+    },
+    separator: {
+        marginVertical: '3%',
+        borderBottomColor: 'white',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+    },
 })
 export default styles
