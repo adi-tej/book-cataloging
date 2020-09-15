@@ -5,7 +5,7 @@ import os
     To connect to local db replace below local_db with your own db url
 """
 
-local_db = 'mysql+pymysql://username:password@127.0.0.1/local-database'
+local_db = 'mysql+pymysql://root:Asdfghjkl834966827@127.0.0.1/circex-dev'
 mysql_aws_db = 'mysql+pymysql://circex:CircEx2020@opshops.ch3sf71im1th.ap-southeast-2.rds.amazonaws.com:3306/opshopdb'
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -32,10 +32,10 @@ class Config:
     GOOGLE_API_BOOK_URL = GOOGLE_API_BASE_URL + '/books/v1/volumes'
 
     """
-        ISBN DB Configuration
+        ISBN DB Configuration (it is the circex account(pro version))
     """
     ISBN_BOOK_URL = 'https://api2.isbndb.com/book'
-    ISBN_AUTH_KEY = '44245_0eebc755e9df899dbcdd5121c6cca21f'
+    ISBN_AUTH_KEY = '44506_a940dba3091f4fe691e9c45312d9d919'
 
 
 class DevelopmentConfig(Config):
