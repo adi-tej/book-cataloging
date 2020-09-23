@@ -4,8 +4,7 @@ import { View} from 'react-native';
 import Scanner from "../BarcodeScanner";
 import ManualInput from "../ManualInput";
 import styles from "../../config/styles";
-import OcrScanner from "../OcrScanner";
-import OcrScanner2 from "../OcrScanner2";
+import OcrScanner2 from "../OcrScanner";
 
 const Tab = createBottomTabNavigator()
 
