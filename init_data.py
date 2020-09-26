@@ -18,9 +18,9 @@ with app.app_context():
     """
         Op-shop Ebay email
     """
-    opshop.email = "aditeja.dasari@student.unsw.edu.au"
-    opshop.name = "opshop1"
-    opshop.address = "Sydney, UNSW"
+    opshop.email = "circexunsw@gmail.com"
+    opshop.name = "CircExUNSW1"
+    opshop.address = "Perth"
     opshop.staff_count = 4
 
     db.session.add(opshop)
