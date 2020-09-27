@@ -4,8 +4,10 @@ import {
     Text,
     View,
 } from "react-native";
+import CheckBox from 'react-native-check-box';
 import styles from "../config/styles";
 import images from "../config/images";
+import colors from "../config/colors";
 
 export default class ShowOrderItems extends Component {
     constructor(props) {
@@ -14,6 +16,7 @@ export default class ShowOrderItems extends Component {
         this.bookCover = this.item.cover;
         this.state = {
             isbn: this.item.isbn,
+            isChecked: false,
         }
     }
 
@@ -28,7 +31,7 @@ export default class ShowOrderItems extends Component {
     render() {
 
         return (
-            <View style={styles.itemContainer}>
+            <View style={[styles.itemContainer, {backgroundColor: 'transparent'}]}>
                 <View style={{flex: 1, flexDirection: "row"}}>
                     <View style={styles.itemCoverView}>
                         <Image style={styles.itemCover} source={!this.bookCover ? images.noImage :
@@ -39,6 +42,16 @@ export default class ShowOrderItems extends Component {
                         <Text style={{color:"grey"}}>ISBN: {this.item.isbn}</Text>
                         <Text style={styles.itemPrice}>$ {this.item.price}</Text>
                     </View>
+                    {/*<CheckBox*/}
+                    {/*    style={{alignSelf: 'center'}}*/}
+                    {/*    onClick={() => {*/}
+                    {/*        this.setState({*/}
+                    {/*            isChecked: !this.state.isChecked*/}
+                    {/*        })*/}
+                    {/*    }}*/}
+                    {/*    checkBoxColor={colors.loginButton}*/}
+                    {/*    isChecked={this.state.isChecked}*/}
+                    {/*/>*/}
                 </View>
             </View>
         );

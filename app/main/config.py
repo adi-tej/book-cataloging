@@ -27,7 +27,8 @@ class Config:
     """
         Google API Configuration
     """
-    GOOGLE_API_KEY = 'AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o'
+    # GOOGLE_API_KEY = 'AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o' #Allen
+    GOOGLE_API_KEY = 'AIzaSyBrePeXhgcgWvfEsXPXSsbYGcHEfp0bxAk'
     GOOGLE_API_BASE_URL = 'https://www.googleapis.com'
     GOOGLE_API_BOOK_URL = GOOGLE_API_BASE_URL + '/books/v1/volumes'
 
@@ -40,7 +41,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = local_db
+    SQLALCHEMY_DATABASE_URI = mysql_aws_db
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     RESTPLUS_MASK_SWAGGER = False
 

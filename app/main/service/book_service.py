@@ -249,6 +249,7 @@ def extract_data_google_api(isbn):
         return None  # return None when item not found
 
     book = data['items'][0].get('volumeInfo', None)
+
     if book:
         book_data['title'] = book.get('title', None)
         book_data['author'] = book.get('authors', [None])[0]
@@ -258,6 +259,7 @@ def extract_data_google_api(isbn):
         book_data["page_count"] = book.get('pageCount', None)
         book_data["description"] = book.get('description', None)
         book_data['cover'] = book.get('imageLinks', {}).get('thumbnail', None)
+
     return book_data  # return book object
 
 

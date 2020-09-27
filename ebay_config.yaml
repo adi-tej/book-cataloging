@@ -1,27 +1,27 @@
 name: ebay_api_config
 
-# Trading API Sandbox - https://www.x.com/developers/ebay/products/trading-api
-api.sandbox.ebay.com:
-    compatability: 719
-    appid: WeiSong-v5applic-SBX-4c8ec878c-5d201430
-    certid: SBX-c8ec878cd38d-2175-4ed7-90fb-2239
-    devid: 5f568d61-c7ea-40e6-9fee-4cb3422d1ff7
-    token: AgAAAA**AQAAAA**aAAAAA**MIT1Xg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4aiC5WHogidj6x9nY+seQ**Ik0FAA**AAMAAA**Lm7FJsJKP/K5EffRdvx2QkLncSwRUXOcP1FZ+hgML466n1okjDBA1EyFa5wtHtBj1Oj3HThyw7qiPgzRmZTCqDaxzrOM9nzZHe2bDVj0Q3T2O+Cr73t7pn+UnoGTwWfQ1PqBizXT1hPGJlq3nfCiwKk9mG7vU1CPfnWbbe6cSwu6d/LvWs2dpvs7/tTydcZfhSvhGxmJ0avs7B2FLtyOyjycW/e3BKdW7ALJAQHzpJS+KIoGjrqmWkwWO0Zgez5A1jLZjJ74SMzcbuKMUDaNRufcWbUOVmaHqllo8FI9fssydiY43sX3nUW/JJksstgr92Ytqpjbcf1JnirdZz8XEeI70gxCc58vdSvgLxlL2avC3d4BimIN71X6iG0gaa/Le35i/YopsgWBWWx7J99JcLd6FDIVLIdxU6Z/iTAzsIL28Q0/tFGmt7yQxA+lv9uJyFtodcSoxuFJb4DjgIjHAaf70GCkzZMKM2+tZ4FEsPd9datfgAQjp1tC8YTaGmk9dCqnQ6Io9V3Vo50ZnIQU+H7EFYc1lqfwQL2SzYktV9wyqUf/zubzQU97N9mwkQchMjIjoIuAn+PdslO9OwQcy0/RBViBmYqqxn30v/c4m8vPYTYEV7C83sijbDmzujv+Ro+SGxtkohEfGXo7yhH8NIF0+zF23+UL/1pl2T0oYg+aw0jJg5rE6VA0Y+RY0aODnlEv+jH9J+moIQJLrkdON6jAORVrxfCaAriI32E+CJMSyThqHRR71XqE4USgBcFy
+## Trading API Sandbox - https://www.x.com/developers/ebay/products/trading-api
+#api.sandbox.ebay.com:
+#    compatability: 719
+#    appid: WeiSong-v5applic-SBX-4c8ec878c-5d201430
+#    certid: SBX-c8ec878cd38d-2175-4ed7-90fb-2239
+#    devid: 5f568d61-c7ea-40e6-9fee-4cb3422d1ff7
+#    token: AgAAAA**AQAAAA**aAAAAA**MIT1Xg**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6wFk4aiC5WHogidj6x9nY+seQ**Ik0FAA**AAMAAA**Lm7FJsJKP/K5EffRdvx2QkLncSwRUXOcP1FZ+hgML466n1okjDBA1EyFa5wtHtBj1Oj3HThyw7qiPgzRmZTCqDaxzrOM9nzZHe2bDVj0Q3T2O+Cr73t7pn+UnoGTwWfQ1PqBizXT1hPGJlq3nfCiwKk9mG7vU1CPfnWbbe6cSwu6d/LvWs2dpvs7/tTydcZfhSvhGxmJ0avs7B2FLtyOyjycW/e3BKdW7ALJAQHzpJS+KIoGjrqmWkwWO0Zgez5A1jLZjJ74SMzcbuKMUDaNRufcWbUOVmaHqllo8FI9fssydiY43sX3nUW/JJksstgr92Ytqpjbcf1JnirdZz8XEeI70gxCc58vdSvgLxlL2avC3d4BimIN71X6iG0gaa/Le35i/YopsgWBWWx7J99JcLd6FDIVLIdxU6Z/iTAzsIL28Q0/tFGmt7yQxA+lv9uJyFtodcSoxuFJb4DjgIjHAaf70GCkzZMKM2+tZ4FEsPd9datfgAQjp1tC8YTaGmk9dCqnQ6Io9V3Vo50ZnIQU+H7EFYc1lqfwQL2SzYktV9wyqUf/zubzQU97N9mwkQchMjIjoIuAn+PdslO9OwQcy0/RBViBmYqqxn30v/c4m8vPYTYEV7C83sijbDmzujv+Ro+SGxtkohEfGXo7yhH8NIF0+zF23+UL/1pl2T0oYg+aw0jJg5rE6VA0Y+RY0aODnlEv+jH9J+moIQJLrkdON6jAORVrxfCaAriI32E+CJMSyThqHRR71XqE4USgBcFy
 
 # Trading API - https://www.x.com/developers/ebay/products/trading-api
 api.ebay.com:
     compatability: 719
     siteid: 15
-    appid: WeiSong-v5applic-PRD-4c8e8a00c-895f9b6b
-    certid: PRD-c8e8a00cdc2a-22bb-4946-949f-bf8a
-    devid: 5f568d61-c7ea-40e6-9fee-4cb3422d1ff7
-    token: AgAAAA**AQAAAA**aAAAAA**L8w0Xw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6MFmIWpDJeKogmdj6x9nY+seQ**8VoGAA**AAMAAA**6xYW4O+7vVb+SOzAZYA/xS9s5oK3bdBkdkh+PGcu61XH4Zch31EcupcSDn/Xsi7GNPecKtYe9uU13aBFK9MMXIN1GzC0z/OVvLE9g6e0gmRC3gJ2BAvsN+b8pN59zsl6f1Lx/81n0wZipxgVg86xr2gz4DTL/6vNhbp2oPkEDH0Ya3804ZDqkwCKH+eAOfp5t9AAql2W793hIrnKHV1SG25r/XSYWjtKOzByz0c5w7nzlglfUTDFD6R6Lgn6k9EvY3MIvgckswldw+4pebpCmztfZEsVEhjHJzynXUm66qDLL250K9d3828V5X9AxCkEkA9L7ebnFzNvgXOn5B6mB7bmTtKFm3mHFsMVFB2JeliGAhiYj1ojVZ6EwVuoeEuc9eIyR+dK1UmPsVzdVJwhj9Tn9gky0IGbvAY6Z2diCn3uDrItfILlDYPAFUu4Gtqt3ekDu5/3qI4rbhInLP71CVJHrLVtuhDW+7fbBJWLi9Lt0pRGiHu6ey7qFd2BhLE7dJ2kna8+AeIZF5RyZyR859kbLYMDpsXT83IKY2FyFgiV0tn2TRP7sB3/+3R1R0vv5AS43xSzTBQo8zS+G9PIyo28NwFnlDD6FnEbRm+UTYpbGtYlHDQZvUCi/S+S0CgQQ8jS/Wyb8w83LWn/4YCn6j5StqQVv9lKAMbrkR2c1xVC93bNACEwZaG9JrqGJ76vPl87N6pymTi4JOeCXB/eMEbqDsR0ENroNICf1Ww16Z9Ir761Y3CVV7AeKZDDVn58
+    appid: MichaelL-Testing-PRD-b3939d325-87c48eba
+    certid: PRD-3939d325953b-3b47-4a03-b2f5-d656
+    devid: 8ff171b5-9bb8-446d-90ca-cd4cd5fc0cd0
+    token: AgAAAA**AQAAAA**aAAAAA**pBJwXw**nY+sHZ2PrBmdj6wVnY+sEZ2PrA2dj6MFmYChDJiKqQqdj6x9nY+seQ**XM0FAA**AAMAAA**V5SeP6aKScsqgRSLbRr75SRpNT3S/tNyGD4MLyQTpMRdnMGHl5p4/Sv51vuDzDE5+KMDJEfJo6VUHhNP0IaA5+o5FuIDxDfRU/g6soq0py4WB9+8BmepstKuXZojB/7OaHKFc4sIsJmtFWCp1iNsNZLoJQu4QzNy3JlrKHvdhWFtc0V5jA1tvA0wV6/Celn3UN7tbnTeT9WaWOyZmbuDDIqbSniBcZdLaBEsUK7b1ZKzEVwej/lVljS+XxEHPdOurnA8l8Zr/eUqihSaFxbCYiING+i3KgOqWY3QGA8zQKsoILmWX9ZQXnwgN3EYGpjxt3jCNpubXVL1kPVk1N0h3JU70grm3NZmYZZxRiyb5/jcbDH1zUnNIcebaHHUFC3QZxvsopDwjO99ThsWtrwEyH8K53dAoBZrgMcKxo6YYfa9tR9IKxfa5tm8CfPJsw94/Bz7qLIqwUvill0Xx/hgBkswuA2toejxROvcJIiy+KTH0J5wMg72Vr3rgVVuJiL7HJxI2woT4LoJKYBUhAQ/feCiGVfow1VyFSjyBoKTbsL+f5j1qqTTj0cG24Oik2qg61tbJulfZxROgtqDf2MdgByszFQ/A2RMNsoQLpf+t6hXFAmhPy/EFcegDiHI2QHkhba4s+k2h3FScg9gjXiO1pjjZ21NzK41k8vBcHA9Jq5MkhiLDxc4dqRFdUHrdNW4d61QbHcBo10CrIaDB4Q8l98R4UISr6rEX/IcvUvnlWbD8k7JY30NQXrb50SpA0JY
 # Finding API - https://www.x.com/developers/ebay/products/finding-api
 svcs.ebay.com:
-    appid: WeiSong-v5applic-SBX-4c8ec878c-5d201430
+    appid: MichaelL-Testing-PRD-b3939d325-87c48eba
     version: 1.0.0
 
 # Shopping API - https://www.x.com/developers/ebay/products/shopping-api
 open.api.ebay.com:
-    appid: WeiSong-v5applic-SBX-4c8ec878c-5d201430
+    appid: MichaelL-Testing-PRD-b3939d325-87c48eba
     version: 671
