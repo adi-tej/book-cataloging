@@ -27,7 +27,6 @@ class Config:
     """
         Google API Configuration
     """
-    # GOOGLE_API_KEY = 'AIzaSyD6-khCY5wCvJbq0JYCIyw75gfxTtgHt_o' #Allen
     GOOGLE_API_KEY = 'AIzaSyBrePeXhgcgWvfEsXPXSsbYGcHEfp0bxAk'
     GOOGLE_API_BASE_URL = 'https://www.googleapis.com'
     GOOGLE_API_BOOK_URL = GOOGLE_API_BASE_URL + '/books/v1/volumes'
