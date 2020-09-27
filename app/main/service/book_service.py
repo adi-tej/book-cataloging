@@ -394,9 +394,8 @@ def upload_to_s3(body, name):
 
 
 def auto_price(isbn):
-	url = 'https://www.ebay.com.au/sch/i.html?_from=R40&_nkw=%{isbn}&_sacat=0&_sop=15'
-	url = url.format(isbn=isbn)
-
+	url = 'https://www.ebay.com.au/sch/i.html?_from=R40&_nkw={isbn}&_sacat=0&_sop=15'
+	url = url.format(isbn=str(isbn))
 	html = requests.get(url)
 
 	soup = BeautifulSoup(
@@ -408,50 +407,50 @@ def auto_price(isbn):
 
 	price_array = []
 
-    i = 0
-    for item in results:
-        if i < 10:
-            price_info = {}
+	i = 0
+	for item in results:
+		if i < 10:
+			price_info = {}
 
-            inside = item.find_all('div', attrs={'class': 's-item__details clearfix'})
-            inside_tag = inside[0]
-            price_tags = inside_tag.find_all('div', attrs={'class': 's-item__detail s-item__detail--primary'})
-            country_tag = inside_tag.find('span', attrs={'class': 's-item__detail s-item__detail--secondary'})
+			inside = item.find_all('div', attrs={'class': 's-item__details clearfix'})
+			inside_tag = inside[0]
+			price_tags = inside_tag.find_all('div', attrs={'class': 's-item__detail s-item__detail--primary'})
+			country_tag = inside_tag.find('span', attrs={'class': 's-item__detail s-item__detail--secondary'})
 
-            if price_tags[0].find('span', attrs={'class': 's-item__price'}):
-                price_info['item_price'] = price_tags[0].find('span', attrs={'class': 's-item__price'}).text.split()[1]
+			if price_tags[0].find('span', attrs={'class': 's-item__price'}):
+				price_info['item_price'] = price_tags[0].find('span', attrs={'class': 's-item__price'}).text.split()[1]
 
-                pat = re.compile(r'^\$\s*([0-9.]*)')
-                if pat.match(price_info['item_price']):
-                    price_info['item_price'] = float(pat.match(price_info['item_price']).group(1))
-            else:
-                price_info['item_price'] = 0
+				pat = re.compile(r'^\$\s*([0-9.]*)')
+				if pat.match(price_info['item_price']):
+					price_info['item_price'] = float(pat.match(price_info['item_price']).group(1))
+			else:
+				price_info['item_price'] = 0
 
-            if price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}):
-                price_info['logistics_price'] = \
-                    price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}).text.split()[1]
+			if price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}):
+				price_info['logistics_price'] = \
+					price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}).text.split()[1]
 
-                pat = re.compile(r'^\$\s*([0-9.]*)')
-                if pat.match(price_info['logistics_price']):
-                    price_info['logistics_price'] = float(pat.match(price_info['logistics_price']).group(1))
+				pat = re.compile(r'^\$\s*([0-9.]*)')
+				if pat.match(price_info['logistics_price']):
+					price_info['logistics_price'] = float(pat.match(price_info['logistics_price']).group(1))
 
-                if price_info['logistics_price'] == "postage":
-                    price_info['logistics_price'] = 0
-            else:
-                price_info['logistics_price'] = 0
+				if price_info['logistics_price'] == "postage":
+					price_info['logistics_price'] = 0
+			else:
+				price_info['logistics_price'] = 0
 
-            if country_tag:
-                country = country_tag.find('span', attrs={'class': 's-item__location s-item__itemLocation'})
-                if country:
-                    price_info['item_location'] = country.text
+			if country_tag:
+				country = country_tag.find('span', attrs={'class': 's-item__location s-item__itemLocation'})
+				if country:
+					price_info['item_location'] = country.text
 
-                    # remove "from" at the beginning
-                    pattern = re.compile(r'From\s*(.*)', re.I)
-                    if pattern.match(price_info['item_location']):
-                        price_info['item_location'] = pattern.match(price_info['item_location']).group(1)
-                else:
-                    price_info['item_location'] = 'Australia'
-            price_array.append(price_info)
-            i += 1
+					# remove "from" at the beginning
+					pattern = re.compile(r'From\s*(.*)', re.I)
+					if pattern.match(price_info['item_location']):
+						price_info['item_location'] = pattern.match(price_info['item_location']).group(1)
+				else:
+					price_info['item_location'] = 'Australia'
+			price_array.append(price_info)
+			i += 1
 
 	return price_array
