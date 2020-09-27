@@ -416,7 +416,6 @@ def auto_price(isbn):
 			inside_tag = inside[0]
 			price_tags = inside_tag.find_all('div', attrs={'class': 's-item__detail s-item__detail--primary'})
 			country_tag = inside_tag.find('span', attrs={'class': 's-item__detail s-item__detail--secondary'})
-
 			if price_tags[0].find('span', attrs={'class': 's-item__price'}):
 				price_info['item_price'] = price_tags[0].find('span', attrs={'class': 's-item__price'}).text.split()[1]
 
@@ -426,17 +425,20 @@ def auto_price(isbn):
 			else:
 				price_info['item_price'] = 0
 
-			if price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}):
-				price_info['logistics_price'] = \
-					price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}).text.split()[1]
+			try:
+				if price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}):
+					price_info['logistics_price'] = \
+						price_tags[2].find('span', attrs={'class': 's-item__shipping s-item__logisticsCost'}).text.split()[1]
 
-				pat = re.compile(r'^\$\s*([0-9.]*)')
-				if pat.match(price_info['logistics_price']):
-					price_info['logistics_price'] = float(pat.match(price_info['logistics_price']).group(1))
+					pat = re.compile(r'^\$\s*([0-9.]*)')
+					if pat.match(price_info['logistics_price']):
+						price_info['logistics_price'] = float(pat.match(price_info['logistics_price']).group(1))
 
-				if price_info['logistics_price'] == "postage":
+					if price_info['logistics_price'] == "postage":
+						price_info['logistics_price'] = 0
+				else:
 					price_info['logistics_price'] = 0
-			else:
+			except IndexError:
 				price_info['logistics_price'] = 0
 
 			if country_tag:
