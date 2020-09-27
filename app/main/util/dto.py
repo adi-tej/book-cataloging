@@ -74,6 +74,7 @@ class BookDto:
         'publisher': fields.String(default=''),
         'page_count': fields.Integer(default=0),
         'price': fields.Float(default=0.0),
+        'weight': fields.Float(default=0.0),
         'genre': fields.String(default=''),
         'cover': fields.String(default=''),
         'description': fields.String(default=''),
