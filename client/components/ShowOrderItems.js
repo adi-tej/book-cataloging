@@ -42,16 +42,16 @@ export default class ShowOrderItems extends Component {
                         <Text style={{color:"grey"}}>ISBN: {this.item.isbn}</Text>
                         <Text style={styles.itemPrice}>$ {this.item.price}</Text>
                     </View>
-                    <CheckBox
-                        style={{alignSelf: 'center'}}
-                        onClick={() => {
-                            this.setState({
-                                isChecked: !this.state.isChecked
-                            })
-                        }}
-                        checkBoxColor={colors.loginButton}
-                        isChecked={this.state.isChecked}
-                    />
+                    {/*<CheckBox*/}
+                    {/*    style={{alignSelf: 'center'}}*/}
+                    {/*    onClick={() => {*/}
+                    {/*        this.setState({*/}
+                    {/*            isChecked: !this.state.isChecked*/}
+                    {/*        })*/}
+                    {/*    }}*/}
+                    {/*    checkBoxColor={colors.loginButton}*/}
+                    {/*    isChecked={this.state.isChecked}*/}
+                    {/*/>*/}
                 </View>
             </View>
         );
