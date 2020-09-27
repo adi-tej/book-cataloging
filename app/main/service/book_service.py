@@ -324,7 +324,6 @@ def list_book(book, image_links, user):
             "DispatchTimeMax": "3"
         },
     }
-    print(request_info)
     resp = ebay_conn.execute("AddItem", request_info)
     return resp.dict()["ItemID"]
 
