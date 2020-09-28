@@ -11,9 +11,6 @@ export default class Checkout extends Component {
     constructor(props) {
         super(props);
         this.book = this.props.book
-        this.state = {
-            modalVisible: this.props.modalVisible
-        }
     }
 
     render() {

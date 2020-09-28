@@ -299,8 +299,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius:10,
         position:"absolute",
         bottom:0,
-        // shadowOffset:{width:10, height:10},
-        // shadowColor:'lightgrey',
         backgroundColor:'rgba(255,255,255, 1)',
     },
     itemInfo:{
@@ -366,7 +364,74 @@ const styles = StyleSheet.create({
         textAlign: "right",
         marginVertical: "3%",
         fontSize: 18
-    }
+    },
 
+    // priceModal
+    priceModalTitle: {
+        fontSize: 18,
+        color: "black",
+        fontWeight: "bold",
+        textAlign: "center",
+        marginVertical: "3%",
+    },
+    closeButton: {
+        position: 'absolute',
+        right: '5%',
+        top: '2%',
+    },
+    headerFormat: {
+        fontSize: 18,
+        marginHorizontal:"3%",
+        flexDirection: "row",
+        marginBottom: "3%",
+    },
+    textFormat: {
+        marginHorizontal:"3%",
+        flexDirection: "row",
+        marginBottom: "2%",
+    },
+    setPrice: {
+        top: "8%",
+        marginHorizontal: "3%",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        marginVertical: "5%"
+    },
+    resourceText: {
+        textAlign: "right",
+        margin: "3%",
+        fontSize: 14,
+        color: "lightgrey",
+        fontStyle: "italic"
+    },
+
+    //ocrScanner
+    ocrView: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: '3%'
+    },
+    noteView: {
+        alignItems: 'flex-start',
+        margin: '3%',
+        backgroundColor:'lightgrey',
+        padding: '3%'
+    },
+    noteText: {
+        fontWeight: "bold",
+        fontSize: 20,
+        marginBottom:'3%'
+    },
+    bulletText: {
+        fontSize: 18,
+        marginBottom:'2%'
+    },
+    separator: {
+        marginVertical: '3%',
+        borderBottomColor: 'white',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+    },
 })
 export default styles

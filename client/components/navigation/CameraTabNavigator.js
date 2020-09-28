@@ -4,6 +4,7 @@ import { View} from 'react-native';
 import Scanner from "../BarcodeScanner";
 import ManualInput from "../ManualInput";
 import styles from "../../config/styles";
+import OcrScanner2 from "../OcrScanner";
 
 const Tab = createBottomTabNavigator()
 
@@ -22,7 +23,7 @@ export default function CameraTabNavigator({navigation,route}){
                 style:styles.cameraScanTabNavigator
             }}>
                 <Tab.Screen name="Barcode" children={()=> <Scanner mode={mode} navigation={navigation}/>} />
-                {/*<Tab.Screen name="OCR" children={()=> <Cataloging mode={mode} navigation={navigation}/>} />*/}
+                <Tab.Screen name="OCR" children={()=> <OcrScanner2 mode={mode} navigation={navigation}/>} />
                 <Tab.Screen name="Manual" children={()=> <ManualInput mode={mode} navigation={navigation}/>}/>
 
             </Tab.Navigator>

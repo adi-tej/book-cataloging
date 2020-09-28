@@ -18,9 +18,9 @@ with app.app_context():
     """
         Op-shop Ebay email
     """
-    opshop.email = "aditeja.dasari@student.unsw.edu.au"
-    opshop.name = "opshop1"
-    opshop.address = "Sydney, UNSW"
+    opshop.email = "circexunsw@gmail.com"
+    opshop.name = "CircExUNSW1"
+    opshop.address = "Perth"
     opshop.staff_count = 4
 
     db.session.add(opshop)
@@ -53,13 +53,13 @@ with app.app_context():
     # ---> books <---
     book1 = Book(id=1, book_id_ebay=1, opshop_id=1, title='What If?', author='Randall Munroe',
                  cover='https://homepages.cae.wisc.edu/~ece533/images/boat.png', publisher='John Murray', edition=1,
-                 price=7.99,status=ItemStatus.LISTED, ISBN_10='8273546373', description='')
+                 price=7.99, weight=1.0,status=ItemStatus.LISTED, ISBN_10='8273546373', description='')
     book2 = Book(id=2, book_id_ebay=2, opshop_id=1, title='Electronic Commerce', author='Gary P. Shneider',
                  cover='https://homepages.cae.wisc.edu/~ece533/images/monarch.png', publisher='Cengage Learning',
-                 edition=1, price=139.95, status=ItemStatus.LISTED, ISBN_10='2355244373', description='')
+                 edition=1, price=139.95, weight=1.0, status=ItemStatus.LISTED, ISBN_10='2355244373', description='')
     book3 = Book(id=3, book_id_ebay=3, opshop_id=1, title='The brief history of Time', author='Stephen Hawking',
                  cover='https://homepages.cae.wisc.edu/~ece533/images/watch.png', publisher='Bantam Books', edition=1,
-                 price=8.99, status=ItemStatus.LISTED, ISBN_13='8273342373546', description='')
+                 price=8.99, weight=1.0, status=ItemStatus.LISTED, ISBN_13='8273342373546', description='')
     db.session.add_all([book1, book2, book3])
     db.session.commit()
     # ---> images <---
